@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <Folder Include="Entity\" />
-    <Folder Include="DescriptionDocument\" />
   </ItemGroup>
 
 </Project>
