@@ -1,0 +1,15 @@
+D:\HanTeng\AttributeSql\AttributeSqlDLL\bin\Debug\netstandard2.0\AttributeSqlDLL.deps.json
+D:\HanTeng\AttributeSql\AttributeSqlDLL\bin\Debug\netstandard2.0\AttributeSqlDLL.dll
+D:\HanTeng\AttributeSql\AttributeSqlDLL\obj\Debug\netstandard2.0\AttributeSqlDLL.AssemblyInfoInputs.cache
+D:\HanTeng\AttributeSql\AttributeSqlDLL\obj\Debug\netstandard2.0\AttributeSqlDLL.AssemblyInfo.cs
+D:\HanTeng\AttributeSql\AttributeSqlDLL\bin\Debug\netstandard2.0\AttributeSqlDLL.pdb
+D:\HanTeng\AttributeSql\AttributeSqlDLL\obj\Debug\netstandard2.0\AttributeSqlDLL.dll
+D:\HanTeng\AttributeSql\AttributeSqlDLL\obj\Debug\netstandard2.0\AttributeSqlDLL.pdb
+D:\AttributeSql\AttributeSqlDLL\bin\Debug\netstandard2.0\AttributeSqlDLL.deps.json
+D:\AttributeSql\AttributeSqlDLL\bin\Debug\netstandard2.0\AttributeSqlDLL.dll
+D:\AttributeSql\AttributeSqlDLL\bin\Debug\netstandard2.0\AttributeSqlDLL.pdb
+D:\AttributeSql\AttributeSqlDLL\obj\Debug\netstandard2.0\AttributeSqlDLL.csprojAssemblyReference.cache
+D:\AttributeSql\AttributeSqlDLL\obj\Debug\netstandard2.0\AttributeSqlDLL.AssemblyInfoInputs.cache
+D:\AttributeSql\AttributeSqlDLL\obj\Debug\netstandard2.0\AttributeSqlDLL.AssemblyInfo.cs
+D:\AttributeSql\AttributeSqlDLL\obj\Debug\netstandard2.0\AttributeSqlDLL.dll
+D:\AttributeSql\AttributeSqlDLL\obj\Debug\netstandard2.0\AttributeSqlDLL.pdb

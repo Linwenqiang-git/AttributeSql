@@ -1,0 +1,66 @@
+程序会根据属性的值类型以及是默认值是否参与查询自动拼接处where条件
+
+--搜索的model																				
+(1)需要继承AttrPageSearch类
+(2)每一个字段必须包含OperationCode特性，意思是针对这个字段的操作符							
+目前支持比较操作符、LIKE、IS等，需要注意的是IS用于判断是否为空，字段类型必须是int,1为not null 2为 null
+(3)TableByName特性用于该字段所属表的别名，不存在别名可不加该特性
+(4)FieldNamete特性用于属性名称与数据库字段名称不一致时添加
+(5)DefaultOrderBy特性用于此次查询的默认排序，分别为字段名，排序方式，表别名
+
+
+[DefaultOrderBy("Created", "DESC", "a")]													
+public class DemoPageSearch : AttrPageSearch													
+{
+	[OperationCode("=")]
+    [Required()]
+    [ParaAllowNull("客户Id不能为空")]
+	public string Field_1 {get;set;}
+	
+	[OperationCode(">")]
+	[TableByName("a")]
+	public int? Field_2 {get;set;}
+	
+	[OperationCode(">")]
+	[TableByName("a")]
+	[FieldName("Date")]
+	public DateTime? Field_3 {get;set;}
+	
+	
+	[OperationCode("IS")]
+    [TableByName("c")]
+    [FieldName("CustomerID")]
+    public int? Iscontract { get; set; }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

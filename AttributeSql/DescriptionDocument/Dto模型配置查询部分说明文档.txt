@@ -1,0 +1,129 @@
+--查询的model
+(1)需要继承自AttrBaseResult
+(2)类上标明需要连接查询的表(多表建议使用别名)
+a:MainTable特性用于标注查询的主表，分别为表名和表别名,只能标注一次
+b:LeftTable特性用于标注查询的左连接表，分别为表名 主表连接字段 左表连接字段 表别名
+c:RightTable特性用于标注查询的右连接表，与左连接相同，
+若连接的不是主表，而是前面的其他表，则最后一个参数为连接的表别名
+(3)DbFieldName特性与where条件的FieldName用法一致，这里为了做个区分就没有用一个
+若查询的字段需要更多复杂的case when 等的判断，可以直接使用;
+(4)Operation特性用于加减乘除的运算,最后一位表示保留的小数
+(5)NonAggregateFuncField非聚合函数的使用，目前支持GROUP_CONCAT、DATE_FORMAT，其他的需要另外扩展
+(6)AggregateFuncField聚合函数使用，对于字段复杂的也可直接写明,目前支持SUM、COUNT,其他的需要另外扩展
+(7)GroupBy特性只能在一个字段上标记一次，可以随意标记在任何属性上，语句的拼接只以特性执行的别名和字段名为准
+--优点
+（1）当需要添加查询字段或者删除查询字段，直接操作类的属性字段即可;
+（2）配合swagger使用,直接在模型上添加注释即可提供给前端查看;
+（3）对于where部分也是根据字段是否有值来确定是否加入到查询条件当中去;
+
+
+
+[MainTable("channelinputreport", "a")]
+[LeftTable("stores", "StoreID", "StoreID", "s")]
+[LeftTable("channel", "ChannelID", "ID", "c")]
+[RightTable("users", "Crator", "UserID", "u","s")]
+public class DemoResultDto : AttrBaseResult
+{
+	[GroupBy("s", "CustomerID")]
+	[TableByName("s")]
+	public string CustomerID {get;set;}
+	
+	
+	[TableByName("a")]
+	[DbFieldName("ChannelInput")]
+	[GroupBy("a", "ChannelInput")]
+    public double ChannelInput { get; set; }
+	
+	
+    [Operation("ChannelInput", "/", "a.TotalCustomer",2)]
+    public double GuestPrimeCost { get; set; }
+	
+
+    [NonAggregateFuncField("GROUP_CONCAT", "DateIn", "a")]
+    public string DateIn { get; set; }
+	
+	[DbFieldName("CASE WHEN a.Status = 1 THEN '已预约' WHEN a.Status = 2 THEN '已入住' WHEN a.Status = 3 THEN '已离店' END ")]
+    public string Status { get; set; }
+	
+	
+	[AggregateFuncField("SUM", "ContractAmount")]
+    public double? ContractAmount { get; set; }
+	
+	
+	[AggregateFuncField("SUM", "IF(FrontMoney IS NULL,0,FrontMoney)+IF(EndMoney IS NULL,0,EndMoney)+IF(StayMoney IS NULL,0,StayMoney)")]
+    public double AmountReceived { get; set; }
+	
+	
+    [Operation("SUM(VisitingCustomer)", "+", "SUM(ValidCustomer)", 2)]
+    public double VisitingScale { get; set; }
+}
+
+//配置完成以后，在服务端只需要一句代码即可完成查询
+service.GetSpecifyResultDto<DemoPageSearch, DemoResultDto, stores, BaseRepository<stores>>((DemoPageSearch)pageSearch, "若该查询出错,出现的错误提示");
+
+
+若前端传来的查询的DemoPageSearch的属性值为以下情况
+DemoPageSearch pageSearch = new DemoPageSearch()
+{
+	Field_1 = "1",
+	Field_3 = DateTime.Now,
+	Iscontract = 1
+}
+最终得到的sql语句为：
+SELECT s.CustomerID,
+	   a.ChannelInput,
+	   Round(CASE WHEN 
+		a.TotalCustomer IS NULL OR a.TotalCustomer = 0 THEN ChannelInput 
+		ELSE ChannelInput/a.TotalCustomer END
+	   ,2) AS GuestPrimeCost,
+	   GROUP_CONCAT(a.DateIn) AS DateIn,
+	   CASE WHEN a.Status = 1 
+			THEN '已预约' 
+			WHEN a.Status = 2 
+			THEN '已入住' 
+			WHEN a.Status = 3 
+			THEN '已离店' END AS Status,
+	   SUM(ContractAmount) AS ContractAmount,
+	   SUM(IF(FrontMoney IS NULL,0,FrontMoney)
+			  +IF(EndMoney IS NULL,0,EndMoney)
+			  +IF(StayMoney IS NULL,0,StayMoney)) AS AmountReceived,
+	   ROUND(SUM(VisitingCustomer) + SUM(ValidCustomer),2) AS VisitingScale
+FROM channelinputreport a
+LEFT JOIN stores s ON a.StoreID = s.StoreID
+LEFT JOIN channel c ON a.ChannelID = c.ID
+RIGHT JOIN users u ON s.Crator = u.UserID
+WHERE 1=1 AND Field_1 = @Field_1 AND a.Date > @Field_3 AND c.CustomerID IS NULL //这里因为没有给Field_2赋值,因此不会参与where条件
+GROUP BY s.CustomerID,a.ChannelInput
+ORDER BY a.Created DESC
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
