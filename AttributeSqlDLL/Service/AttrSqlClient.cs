@@ -174,7 +174,7 @@ namespace AttributeSqlDLL.Service
         /// <param name="DtoModel"></param>
         /// <param name="ErrorMsg"></param>
         /// <returns></returns>
-        public async Task<AttrResultModel> Delete<TDto, TEntity>(TDto DtoModel, string ErrorMsg)
+        public async Task<AttrResultModel> DeleteAsync<TDto, TEntity>(TDto DtoModel, string ErrorMsg)
             where TDto : AttrBaseModel
             where TEntity : AttrEntityBase, new()
         {
@@ -197,7 +197,7 @@ namespace AttributeSqlDLL.Service
         /// <param name="ErrorMsg"></param>
         /// <param name="condition"></param>
         /// <returns></returns>
-        public async Task<AttrResultModel> DeleteAsync<TDto, TEntity>(TDto DtoModel, string ErrorMsg, string[] condition)
+        public async Task<AttrResultModel> DeleteAsync<TDto, TEntity>(TDto DtoModel, string[] condition, string ErrorMsg)
             where TDto : AttrBaseModel
             where TEntity : AttrEntityBase, new()
         {
@@ -209,7 +209,7 @@ namespace AttributeSqlDLL.Service
                 return rm;
             }, ErrorMsg);
         }
-        public async Task<AttrResultModel> DeleteAsync<TEntity>(TEntity entity, string ErrorMsg, string[] condition)
+        public async Task<AttrResultModel> DeleteAsync<TEntity>(TEntity entity, string[] condition, string ErrorMsg)
             where TEntity : AttrEntityBase, new()
         {
             var rm = AttrResultModel.Success();
@@ -231,7 +231,7 @@ namespace AttributeSqlDLL.Service
         /// <param name="PrimaryKey">主键字段</param>
         /// <param name="IngnorIntDefault"></param>
         /// <returns></returns>
-        public async Task<AttrResultModel> SoftDeleteAsync<TDto, TEntity>(TDto DtoModel, string ErrorMsg, string softDeleteField, int value = 0, string PrimaryKey = "", bool IngnorIntDefault = true)
+        public async Task<AttrResultModel> SoftDeleteAsync<TDto, TEntity>(TDto DtoModel, string softDeleteField, int value = 0, string PrimaryKey = "", bool IngnorIntDefault = true, string ErrorMsg = "")
             where TDto : AttrBaseModel
             where TEntity : AttrEntityBase, new()
         {
@@ -243,7 +243,7 @@ namespace AttributeSqlDLL.Service
                 return rm;
             }, ErrorMsg);
         }
-        public async Task<AttrResultModel> SoftDeleteAsync<TEntity>(TEntity entity, string ErrorMsg, string softDeleteField, int value = 0, string PrimaryKey = "", bool IngnorIntDefault = true)
+        public async Task<AttrResultModel> SoftDeleteAsync<TEntity>(TEntity entity,string softDeleteField, int value = 0, string PrimaryKey = "", bool IngnorIntDefault = true, string ErrorMsg = "")
             where TEntity : AttrEntityBase, new()
         {
             var rm = AttrResultModel.Success();

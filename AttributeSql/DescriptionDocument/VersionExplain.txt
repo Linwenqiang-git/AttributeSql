@@ -1,3 +1,7 @@
 ﻿V1.0.0
 首次提交
-1.基于.net core DI的形式添加服务
+基于.net core DI的形式添加服务,简单两步即可使用
+（1）Startup的ConfigureServices添加服务services.AddAttributeSqlService(connStr);
+（2）controller或者service通过构造函数注入使用
+V1.0.1
+添加增删改查的相关demo供参考

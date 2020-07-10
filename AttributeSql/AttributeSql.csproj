@@ -14,8 +14,4 @@
     <ProjectReference Include="..\AttributeSqlDLL\AttributeSqlDLL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Entity\" />
-  </ItemGroup>
-
 </Project>

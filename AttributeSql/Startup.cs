@@ -21,7 +21,8 @@ namespace AttributeSql
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             //使用简单,将类库引用到项目中,添加服务即可
-            services.AddAttributeSqlService("Your Db ConnectStr");
+            var connStr = "Server=127.0.0.1; Port=3306;Stmt=; Database=AttrDemoDb; Uid=root; Pwd=648808699QIANg;Old Guids=true;charset=utf8;Allow User Variables=True;Convert Zero Datetime=True;";
+            services.AddAttributeSqlService(connStr);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
