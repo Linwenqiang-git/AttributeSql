@@ -6,7 +6,7 @@ using AttributeSqlDLL.SqlAttribute.Validator;
 
 namespace AttributeSqlDLL.SqlExtendedMethod
 {
-    public static class FiledNotAllowRepeatExtend
+    internal static class FiledNotAllowRepeatExtend
     {
         /// <summary>
         /// 校验指定字段的值是否重复
@@ -14,7 +14,7 @@ namespace AttributeSqlDLL.SqlExtendedMethod
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static List<string> NotAllowRepeatSql(this AttrBaseModel model)
+        internal static List<string> NotAllowRepeatSql(this AttrBaseModel model)
         {
             string SoftDeleteField = string.Empty;
             long SoftDeleteFieldValue = 1;
@@ -84,7 +84,7 @@ namespace AttributeSqlDLL.SqlExtendedMethod
         /// <param name="model"></param>
         /// <param name="checkSqltag"></param>
         /// <returns></returns>
-        public static string NotAllowKeySql(this AttrBaseModel model,int checkSqltag = 1)
+        internal static string NotAllowKeySql(this AttrBaseModel model,int checkSqltag = 1)
         {
             string SoftDeleteField = string.Empty;
             long SoftDeleteFieldValue = 1;
@@ -158,7 +158,7 @@ namespace AttributeSqlDLL.SqlExtendedMethod
         /// <param name="model"></param>
         /// <param name="num">表示第几个不允许为空的属性</param>
         /// <returns></returns>
-        public static string GetErrorMsg(this AttrBaseModel model,int num = 1)
+        internal static string GetErrorMsg(this AttrBaseModel model,int num = 1)
         {
             int flag = 1;
             StringBuilder builder = new StringBuilder();

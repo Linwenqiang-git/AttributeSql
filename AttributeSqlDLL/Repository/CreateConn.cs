@@ -10,9 +10,9 @@ namespace AttributeSqlDLL.Repository
     /// <summary>
     /// 创建数据库连接
     /// </summary>
-    public static class CreateConn
+    internal static class CreateConn
     {
-        public static DbCommand CreateCommand(this DbConnection conn, string sql)
+        internal static DbCommand CreateCommand(this DbConnection conn, string sql)
         {
             if (conn.State != ConnectionState.Open)
                 conn.Open();
@@ -20,7 +20,7 @@ namespace AttributeSqlDLL.Repository
             cmd.CommandText = sql;
             return cmd;
         }
-        public static DbCommand CreateCommand<TParamter>(this DbConnection conn, string sql, TParamter parameters = null)
+        internal static DbCommand CreateCommand<TParamter>(this DbConnection conn, string sql, TParamter parameters = null)
             where TParamter : class
         {
             if (conn.State != ConnectionState.Open)
@@ -31,7 +31,7 @@ namespace AttributeSqlDLL.Repository
             return cmd;
 
         }
-        public static void CombineParams<TParamter>(ref DbCommand command, TParamter parameters) where TParamter : class
+        internal static void CombineParams<TParamter>(ref DbCommand command, TParamter parameters) where TParamter : class
         {
             if (parameters != null)
             {
@@ -57,7 +57,7 @@ namespace AttributeSqlDLL.Repository
                 command.Parameters.AddRange(param);
             }
         }
-        public static string ToContainString<T>(this List<T> list)
+        internal static string ToContainString<T>(this List<T> list)
         {
             StringBuilder builder = new StringBuilder();
             foreach (var item in list)

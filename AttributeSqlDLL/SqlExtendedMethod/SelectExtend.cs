@@ -5,14 +5,14 @@ using AttributeSqlDLL.SqlAttribute.Select;
 
 namespace AttributeSqlDLL.SqlExtendedMethod
 {
-    public static class SelectExtend
+    internal static class SelectExtend
     {
         /// <summary>
         /// 获取查询字段
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static string Select(this AttrBaseResult model)
+        internal static string Select(this AttrBaseResult model)
         {
             StringBuilder builder = new StringBuilder();
             builder.Append("SELECT ");

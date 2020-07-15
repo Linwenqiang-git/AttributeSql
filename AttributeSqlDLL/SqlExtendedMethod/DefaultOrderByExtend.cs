@@ -6,7 +6,7 @@ using AttributeSqlDLL.SqlAttribute.OrderBy;
 
 namespace AttributeSqlDLL.SqlExtendedMethod
 {
-    public static class DefaultOrderByExtend
+    internal static class DefaultOrderByExtend
     {
         /// <summary>
         /// 获取该查询默认的排序方法
@@ -14,7 +14,7 @@ namespace AttributeSqlDLL.SqlExtendedMethod
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static string DefaultSort(this AttrPageSearch model)
+        internal static string DefaultSort(this AttrPageSearch model)
         {
             object[] sort = model.GetType().GetCustomAttributes(typeof(DefaultOrderByAttribute), true);
             if (sort?.Length == 0)

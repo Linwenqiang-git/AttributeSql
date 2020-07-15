@@ -5,7 +5,7 @@ using AttributeSqlDLL.SqlAttribute.JoinTable;
 
 namespace AttributeSqlDLL.SqlExtendedMethod
 {
-    public static class JoinTableExtend
+    internal static class JoinTableExtend
     {
         /// <summary>
         /// 获取连接的表
@@ -13,7 +13,7 @@ namespace AttributeSqlDLL.SqlExtendedMethod
         /// <typeparam name="T"></typeparam>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static string Join<T>(this AttrBaseResult model) where T : AttrBaseResult
+        internal static string Join<T>(this AttrBaseResult model) where T : AttrBaseResult
         {
             StringBuilder join = new StringBuilder();
             object[] Mainobj = typeof(T).GetCustomAttributes(typeof(MainTableAttribute), true);

@@ -4,9 +4,9 @@ using AttributeSqlDLL.Model;
 
 namespace AttributeSqlDLL.SqlExtendedMethod.CudExtend
 {
-    public static class InsertExtend
+    internal static class InsertExtend
     {
-        public static string InsertEntity(this AttrEntityBase entity)
+        internal static string InsertEntity(this AttrEntityBase entity)
         {
             StringBuilder sql = new StringBuilder();
             sql.Append($"INSERT INTO {entity.GetType().Name}");
@@ -32,7 +32,7 @@ namespace AttributeSqlDLL.SqlExtendedMethod.CudExtend
         /// </summary>
         /// <param name="entities"></param>
         /// <returns></returns>
-        public static string BatchInsertEntity(this AttrEntityBase[] entities)
+        internal static string BatchInsertEntity(this AttrEntityBase[] entities)
         {
             StringBuilder insertSql = new StringBuilder();
             insertSql.Append($"INSERT INTO {entities[0].GetType().Name}");

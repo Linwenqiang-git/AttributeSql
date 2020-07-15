@@ -10,7 +10,7 @@ using MySql.Data.MySqlClient;
 
 namespace AttributeSqlDLL.Repository.DbContextExtensions
 {
-    public static class DbQueryExtend
+    internal static class DbQueryExtend
     {
         /// <summary>
         /// 执行指定的查询语句
@@ -21,7 +21,7 @@ namespace AttributeSqlDLL.Repository.DbContextExtensions
         /// <param name="sql"></param>
         /// <param name="parameters">参数化的字段</param>
         /// <returns></returns>
-        public static async Task<IEnumerable<T>> SqlQuery<T, TParamter>(this DbConnection conn, string sql, TParamter parameters = null, DbTransaction tran = null)
+        internal static async Task<IEnumerable<T>> SqlQuery<T, TParamter>(this DbConnection conn, string sql, TParamter parameters = null, DbTransaction tran = null)
             where T : class, new()
             where TParamter : class
         {
@@ -37,7 +37,7 @@ namespace AttributeSqlDLL.Repository.DbContextExtensions
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public static async Task<int> SqlCountQuery<TParamter>(this DbConnection conn, string sql, TParamter parameters = null, DbTransaction tran = null)
+        internal static async Task<int> SqlCountQuery<TParamter>(this DbConnection conn, string sql, TParamter parameters = null, DbTransaction tran = null)
             where TParamter : class
         {
             DataTable dt = await SqlQuery(conn, sql, parameters, tran);
@@ -57,7 +57,7 @@ namespace AttributeSqlDLL.Repository.DbContextExtensions
         /// <param name="parameters"></param>
         /// <param name="tran"></param>
         /// <returns></returns>
-        public static async Task<int> SqlRowsQuery<TParamter>(this DbConnection conn, string sql, TParamter parameters = null, DbTransaction tran = null)
+        internal static async Task<int> SqlRowsQuery<TParamter>(this DbConnection conn, string sql, TParamter parameters = null, DbTransaction tran = null)
             where TParamter : class
         {
             DataTable dt = await SqlQuery(conn, sql, parameters, tran);

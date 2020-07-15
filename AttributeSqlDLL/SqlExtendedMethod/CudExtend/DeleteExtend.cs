@@ -5,14 +5,14 @@ using AttributeSqlDLL.Model;
 
 namespace AttributeSqlDLL.SqlExtendedMethod.CudExtend
 {
-    public static class DeleteExtend
+    internal static class DeleteExtend
     {
         /// <summary>
         /// 根据主键删除实体
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public static string DeleteByKey(this AttrEntityBase entity,string PrimaryFiled = null)
+        internal static string DeleteByKey(this AttrEntityBase entity,string PrimaryFiled = null)
         {
             StringBuilder sql = new StringBuilder();
             sql.Append($"Delete FROM {entity.GetType().Name} Where ");
@@ -41,7 +41,7 @@ namespace AttributeSqlDLL.SqlExtendedMethod.CudExtend
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public static string DeleteByCondition(this AttrEntityBase entity, string[] condition)
+        internal static string DeleteByCondition(this AttrEntityBase entity, string[] condition)
         {
             if (condition == null || condition.Length == 0)
                 throw new AttrSqlException("未设置删除条件！");
@@ -63,7 +63,7 @@ namespace AttributeSqlDLL.SqlExtendedMethod.CudExtend
         /// <param name="value"></param>
         /// <param name="IngnorIntDefault">忽略int类型的默认值0</param>
         /// <returns></returns>
-        public static string SoftDeleteByCondition(this AttrEntityBase entity, string softDeleteField, int value = 0, string PrimaryKey = "", bool IngnorIntDefault = true)
+        internal static string SoftDeleteByCondition(this AttrEntityBase entity, string softDeleteField, int value = 0, string PrimaryKey = "", bool IngnorIntDefault = true)
         {
             if (string.IsNullOrEmpty(softDeleteField))
                 throw new AttrSqlException("未设置软删除字段！");

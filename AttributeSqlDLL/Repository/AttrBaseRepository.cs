@@ -52,7 +52,7 @@ namespace AttributeSqlDLL.Repository
         #endregion
 
         #region Debug sql
-        public string DebugQuerySql<TResultDto, TPageSearch>(TPageSearch pageSearch,
+        internal string DebugQuerySql<TResultDto, TPageSearch>(TPageSearch pageSearch,
                                                 bool IngnorIntDefault = true,
                                                 Func<string> whereSql = null)
             where TPageSearch : AttrPageSearch
@@ -122,7 +122,7 @@ namespace AttributeSqlDLL.Repository
         /// <param name="tableName"></param>
         /// <param name="IngnorIntDefault">int类型的默认值是否忽略,默认忽略</param>
         /// <returns></returns>
-        public async Task<AttrPageResult<TEntity>> GetAll<TPageSearch, TEntity>(TPageSearch pageSearch, string tableName = "", bool IngnorIntDefault = true)
+        internal async Task<AttrPageResult<TEntity>> GetAll<TPageSearch, TEntity>(TPageSearch pageSearch, string tableName = "", bool IngnorIntDefault = true)
             where TPageSearch : AttrPageSearch
             where TEntity : AttrEntityBase, new()
         {
@@ -161,7 +161,7 @@ namespace AttributeSqlDLL.Repository
         /// <param name="whereSql">返回指定的where语句</param>
         /// <param name="IngnorIntDefault"></param>
         /// <returns></returns>
-        public async Task<AttrPageResult<TResultDto>> GetSpecifyResultDto<TResultDto, TPageSearch>(TPageSearch pageSearch,
+        internal async Task<AttrPageResult<TResultDto>> GetSpecifyResultDto<TResultDto, TPageSearch>(TPageSearch pageSearch,
                                                     bool IngnorIntDefault = true,
                                                     Func<string> whereSql = null)
             where TResultDto : AttrBaseResult, new()
@@ -249,7 +249,7 @@ namespace AttributeSqlDLL.Repository
         /// <typeparam name="TResultDto"></typeparam>
         /// <param name="sql"></param>
         /// <returns></returns>
-        public async Task<AttrPageResult<TResultDto>> ExecQuerySql<TResultDto>(string sql)
+        internal async Task<AttrPageResult<TResultDto>> ExecQuerySql<TResultDto>(string sql)
            where TResultDto : AttrBaseResult, new()
         {
             var page = new AttrPageResult<TResultDto>();
@@ -267,7 +267,7 @@ namespace AttributeSqlDLL.Repository
         /// <typeparam name="TResult"></typeparam>
         /// <param name="sql"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<TResult>> ExecQuerySqlInside<TResult>(string sql)
+        internal async Task<IEnumerable<TResult>> ExecQuerySqlInside<TResult>(string sql)
            where TResult : AttrBaseResult, new()
         {
             IEnumerable<TResult> result = null;
@@ -289,7 +289,7 @@ namespace AttributeSqlDLL.Repository
         /// <param name="entity"></param>
         /// <param name="IsAddOrEdit">0新增，1编辑</param>
         /// <returns></returns>
-        public async Task<bool> CheckFieldRepeat<TBaseModel>(TBaseModel model, int IsAddOrEdit)
+        internal async Task<bool> CheckFieldRepeat<TBaseModel>(TBaseModel model, int IsAddOrEdit)
             where TBaseModel : AttrBaseModel
         {
             List<string> sqls = model.NotAllowRepeatSql();
@@ -332,7 +332,7 @@ namespace AttributeSqlDLL.Repository
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public async virtual Task<int> Insert<T>(T entity)
+        internal async virtual Task<int> Insert<T>(T entity)
             where T : AttrEntityBase
         {
             int result = 0;
@@ -349,7 +349,7 @@ namespace AttributeSqlDLL.Repository
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public async virtual Task<long> InsertReturnKey<T>(T entity)
+        internal async virtual Task<long> InsertReturnKey<T>(T entity)
             where T : AttrEntityBase
         {
             long newIncreaseKet = 0;
@@ -366,7 +366,7 @@ namespace AttributeSqlDLL.Repository
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public async Task<int> BatchInsert<TEntity>(TEntity[] entities) where TEntity : AttrEntityBase, new()
+        internal async Task<int> BatchInsert<TEntity>(TEntity[] entities) where TEntity : AttrEntityBase, new()
         {
             int result = 0;
             if (entities?.Count() > 0)
@@ -405,7 +405,7 @@ namespace AttributeSqlDLL.Repository
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="entities"></param>
         /// <returns></returns>
-        public async Task<int> NonPatameterBatchInsert<TEntity>(TEntity[] entities) where TEntity : AttrEntityBase, new()
+        internal async Task<int> NonPatameterBatchInsert<TEntity>(TEntity[] entities) where TEntity : AttrEntityBase, new()
         {
             int result = 0;
             if (entities?.Count() > 0)
@@ -429,7 +429,7 @@ namespace AttributeSqlDLL.Repository
         /// <param name="entity"></param>
         /// <param name="IgnorIntDefault"></param>
         /// <returns></returns>
-        public async virtual Task<int> UpdateField<T>(T entity, string PrimaryKey = "", bool IgnorIntDefault = true)
+        internal async virtual Task<int> UpdateField<T>(T entity, string PrimaryKey = "", bool IgnorIntDefault = true)
             where T : AttrEntityBase
         {
             int result = 0;
@@ -448,7 +448,7 @@ namespace AttributeSqlDLL.Repository
         /// <param name="entity"></param>
         /// <param name="IgnorIntDefault"></param>
         /// <returns></returns>
-        public async virtual Task<int> UpdateHasValueFieldByDto<TDo, TEntity>(TDo dto, TEntity entity, bool IgnorIntDefault = true)
+        internal async virtual Task<int> UpdateHasValueFieldByDto<TDo, TEntity>(TDo dto, TEntity entity, bool IgnorIntDefault = true)
            where TDo : AttrBaseModel
            where TEntity : AttrEntityBase
         {
@@ -473,7 +473,7 @@ namespace AttributeSqlDLL.Repository
         /// <param name="Primary">主键字段，不指定则默认实体第一个带有Id的字段为主键</param>
         /// <param name="IgnorIntDefault"></param>
         /// <returns></returns>
-        public async virtual Task<int> UpdateHasValueField<T>(T entity, string Primary = "", bool IgnorIntDefault = true)
+        internal async virtual Task<int> UpdateHasValueField<T>(T entity, string Primary = "", bool IgnorIntDefault = true)
             where T : AttrEntityBase
         {
             string sql = entity.GetUpdateField(Primary, IgnorIntDefault);
@@ -495,7 +495,7 @@ namespace AttributeSqlDLL.Repository
         /// <param name="entity"></param>
         /// <param name="sql"></param>
         /// <returns></returns>
-        public async virtual Task<int> ExecUpdateSql<T>(T entity, string sql)
+        internal async virtual Task<int> ExecUpdateSql<T>(T entity, string sql)
             where T : AttrEntityBase
         {
             int result = 0;
@@ -523,7 +523,7 @@ namespace AttributeSqlDLL.Repository
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public async virtual Task<int> Delete<T>(T entity, string primaryKey = null)
+        internal async virtual Task<int> Delete<T>(T entity, string primaryKey = null)
             where T : AttrEntityBase
         {
             int result = 0;
@@ -541,7 +541,7 @@ namespace AttributeSqlDLL.Repository
         /// <param name="entity"></param>
         /// <param name="condition"></param>
         /// <returns></returns>
-        public async virtual Task<int> Delete<T>(T entity, string[] condition)
+        internal async virtual Task<int> Delete<T>(T entity, string[] condition)
             where T : AttrEntityBase
         {
             int result = 0;
@@ -560,7 +560,7 @@ namespace AttributeSqlDLL.Repository
         /// <param name="entity"></param>
         /// <param name="condition"></param>
         /// <returns></returns>
-        public async virtual Task<int> SoftDelete<T>(T entity, string softDeleteField, int value = 0, string PrimaryKey = "", bool IngnorIntDefault = true)
+        internal async virtual Task<int> SoftDelete<T>(T entity, string softDeleteField, int value = 0, string PrimaryKey = "", bool IngnorIntDefault = true)
             where T : AttrEntityBase
         {
             int result = 0;
@@ -579,7 +579,7 @@ namespace AttributeSqlDLL.Repository
         #endregion
 
         #region 事务相关操作
-        public async Task<AttrResultModel> TransactionRun(Func<Task<AttrResultModel>> func)
+        internal async Task<AttrResultModel> TransactionRun(Func<Task<AttrResultModel>> func)
         {
             AttrResultModel result = AttrResultModel.Success();
             if (Context.State != ConnectionState.Open)

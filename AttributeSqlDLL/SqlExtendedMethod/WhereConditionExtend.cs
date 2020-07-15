@@ -8,7 +8,7 @@ using AttributeSqlDLL.SqlAttribute.Where;
 
 namespace AttrSqlDbLite.SqlExtendedMethod
 {
-    public static class WhereConditionExtend
+    internal static class WhereConditionExtend
     {
         #region 参数化where条件
         /// <summary>
@@ -19,7 +19,7 @@ namespace AttrSqlDbLite.SqlExtendedMethod
         /// <param name="model"></param>
         /// <param name="IngnorIntDefault">int类型的默认值是否忽略,默认忽略</param>
         /// <returns></returns>
-        public static string ParaWhere(this AttrPageSearch model, bool IngnorIntDefault = true)
+        internal static string ParaWhere(this AttrPageSearch model, bool IngnorIntDefault = true)
         {
             StringBuilder builder = new StringBuilder();
             builder.Append(" WHERE 1=1");
@@ -113,7 +113,7 @@ namespace AttrSqlDbLite.SqlExtendedMethod
                         {
                             if (objvalue is string)
                             {
-                                builder.Append($" '%{((string)objvalue).Trim()}%'");
+                                builder.Append($" '%{((string)objvalue).Trim().Replace("--","")}%'");
                             }
                             else
                                 builder.Append($" @{prop.Name}");//参数化查询
@@ -167,7 +167,7 @@ namespace AttrSqlDbLite.SqlExtendedMethod
         /// <param name="paraWhere"></param>
         /// <param name="extraWhere"></param>
         /// <returns></returns>
-        public static string ExtraWhere(this string paraWhere, string extraWhere)
+        internal static string ExtraWhere(this string paraWhere, string extraWhere)
         {
             return paraWhere + extraWhere;
         }
@@ -178,7 +178,7 @@ namespace AttrSqlDbLite.SqlExtendedMethod
         /// <param name="func"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static string ExtraWhere(this string paraWhere, Func<AttrPageSearch, string> func, AttrPageSearch model)
+        internal static string ExtraWhere(this string paraWhere, Func<AttrPageSearch, string> func, AttrPageSearch model)
         {
             string ExtraWhere = func.Invoke(model) != string.Empty ? $"  AND {func.Invoke(model)}" : func.Invoke(model);
             return paraWhere + ExtraWhere;
@@ -191,7 +191,7 @@ namespace AttrSqlDbLite.SqlExtendedMethod
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static string NonParaWhere(this AttrPageSearch model)
+        internal static string NonParaWhere(this AttrPageSearch model)
         {
             StringBuilder builder = new StringBuilder();
             builder.Append(" WHERE 1=1");

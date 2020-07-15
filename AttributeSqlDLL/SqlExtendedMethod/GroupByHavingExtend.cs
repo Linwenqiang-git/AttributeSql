@@ -4,9 +4,9 @@ using AttributeSqlDLL.SqlAttribute.GroupHaving;
 
 namespace AttributeSqlDLL.SqlExtendedMethod
 {
-    public static class GroupByHavingExtend
+    internal static class GroupByHavingExtend
     {
-        public static string GroupByHaving(this AttrBaseResult model)
+        internal static string GroupByHaving(this AttrBaseResult model)
         {
             StringBuilder builder = new StringBuilder();
             //拿到所有标记了该特性的字段

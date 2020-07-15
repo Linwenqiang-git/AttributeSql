@@ -7,7 +7,7 @@ using AttributeSqlDLL.SqlAttribute.CudAttr;
 
 namespace AttrSqlDbLite.SqlExtendedMethod
 {
-    public static class UpdateExtend
+    internal static class UpdateExtend
     {
         /// <summary>
         /// 根据主键更新
@@ -15,7 +15,7 @@ namespace AttrSqlDbLite.SqlExtendedMethod
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public static string UpdateField(this AttrEntityBase entity, string PrimaryKey = "")
+        internal static string UpdateField(this AttrEntityBase entity, string PrimaryKey = "")
         {
             StringBuilder sql = new StringBuilder();
             sql.Append($"Update {entity.GetType().Name} SET ");
@@ -54,7 +54,7 @@ namespace AttrSqlDbLite.SqlExtendedMethod
         /// <param name="entity"></param>
         /// <param name="IngnorIntDefault">int类型的默认值是否忽略,默认忽略</param>
         /// <returns></returns>
-        public static string GetUpdateField(this AttrEntityBase entity, string PrimaryKey = "", bool IngnorIntDefault = true)
+        internal static string GetUpdateField(this AttrEntityBase entity, string PrimaryKey = "", bool IngnorIntDefault = true)
         {
             StringBuilder sql = new StringBuilder();
             sql.Append($"Update {entity.GetType().Name} SET ");
@@ -126,7 +126,7 @@ namespace AttrSqlDbLite.SqlExtendedMethod
         /// <param name="entity"></param>
         /// <param name="IngnorIntDefault"></param>
         /// <returns></returns>
-        public static string UpdateFieldByEntityCondition(this AttrBaseModel dto, AttrEntityBase entity, bool IngnorIntDefault = true)
+        internal static string UpdateFieldByEntityCondition(this AttrBaseModel dto, AttrEntityBase entity, bool IngnorIntDefault = true)
         {
             StringBuilder sql = new StringBuilder();
             sql.Append($"Update {entity.GetType().Name} SET ");

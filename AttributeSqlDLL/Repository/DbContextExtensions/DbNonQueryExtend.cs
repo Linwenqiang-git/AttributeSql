@@ -8,7 +8,7 @@ using MySql.Data.MySqlClient;
 
 namespace AttributeSqlDLL.Repository.DbContextExtensions
 {
-    public static class DbNonQueryExtend
+    internal static class DbNonQueryExtend
     {
         /// <summary>
         /// 返回受影响行数
@@ -18,7 +18,7 @@ namespace AttributeSqlDLL.Repository.DbContextExtensions
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public static async Task<int> ExecuteNonQuery<TParamter>(this DbConnection conn, string sql, TParamter parameters, DbTransaction tran = null)
+        internal static async Task<int> ExecuteNonQuery<TParamter>(this DbConnection conn, string sql, TParamter parameters, DbTransaction tran = null)
             where TParamter : class
         {
             int Rows = 0;
@@ -33,7 +33,7 @@ namespace AttributeSqlDLL.Repository.DbContextExtensions
         /// <param name="conn"></param>
         /// <param name="sql"></param>
         /// <returns></returns>
-        public static async Task<int> ExecuteNonQuery(this DbConnection conn, string sql, DbTransaction tran = null)
+        internal static async Task<int> ExecuteNonQuery(this DbConnection conn, string sql, DbTransaction tran = null)
         {
             int Rows = 0;
             await CommonExecute<object>(conn, sql, async (ClientDbCommand) => {
@@ -47,7 +47,7 @@ namespace AttributeSqlDLL.Repository.DbContextExtensions
         /// <param name="conn"></param>
         /// <param name="sql"></param>
         /// <returns></returns>
-        public static async Task<long> ExecuteNonQueryByKey(this DbConnection conn, string sql, DbTransaction tran = null)
+        internal static async Task<long> ExecuteNonQueryByKey(this DbConnection conn, string sql, DbTransaction tran = null)
         {
             long IdentityId = 0;
             await CommonExecute(conn, sql, async (ClientDbCommand) => {
@@ -64,7 +64,7 @@ namespace AttributeSqlDLL.Repository.DbContextExtensions
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public static async Task<long> ExecuteNonQueryByKey<TParamter>(this DbConnection conn, string sql, TParamter parameters, DbTransaction tran = null) where TParamter : class
+        internal static async Task<long> ExecuteNonQueryByKey<TParamter>(this DbConnection conn, string sql, TParamter parameters, DbTransaction tran = null) where TParamter : class
         {
             long IdentityId = 0;
             await CommonExecute(conn, sql, async (ClientDbCommand) => {
