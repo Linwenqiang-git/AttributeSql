@@ -613,6 +613,14 @@ namespace AttributeSqlDLL.Repository
                 return result;
             }
         }
+        /// <summary>
+        /// 获取本次访问上下文的事务
+        /// </summary>
+        /// <returns></returns>
+        internal IDbTransaction GetDBTransaction()
+        {
+            return Tran;
+        }
         #endregion
 
     }

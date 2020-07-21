@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 using System.Threading.Tasks;
 using AttributeSqlDLL.Model;
@@ -276,6 +277,11 @@ namespace AttributeSqlDLL.IService
         /// <param name="func"></param>
         /// <returns></returns>
         Task<AttrResultModel> TransactionRun(Func<Task<AttrResultModel>> func);
+        /// <summary>
+        /// 获取本次访问上下文的事务
+        /// </summary>
+        /// <returns></returns>
+        IDbTransaction GetDBTransaction();
         #endregion
     }
 }

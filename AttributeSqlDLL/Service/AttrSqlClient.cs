@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 using System.Threading.Tasks;
 using AttributeSqlDLL.ExceptionExtension;
@@ -565,6 +566,10 @@ namespace AttributeSqlDLL.Service
                 rm = await Repo.TransactionRun(func);
                 return rm;
             }, "事务执行出错");
+        }
+        public IDbTransaction GetDBTransaction()
+        {
+            return Repo.GetDBTransaction();
         }
         #endregion
 
