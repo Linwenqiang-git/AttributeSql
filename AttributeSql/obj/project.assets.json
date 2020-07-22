@@ -1177,12 +1177,9 @@
         "dependencies": {
           "AttributeSqlDLL.Mysql": "1.0.0",
           "AttributeSqlDLL.SqlServer": "1.0.0",
-          "AutoMapper": "10.0.0",
           "AutoMapper.Extensions.Microsoft.DependencyInjection": "8.0.1",
           "JetBrains.Annotations": "2020.1.0",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "3.0.0",
-          "MySql.Data": "8.0.21",
-          "System.Data.SqlClient": "4.8.1"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "3.0.0"
         },
         "compile": {
           "bin/placeholder/AttributeSqlDLL.Core.dll": {}
@@ -4593,8 +4590,8 @@
     },
     "AttributeSqlDLL.Core/1.0.0": {
       "type": "project",
-      "path": "../AttributeSqlDLL/AttributeSqlDLL.Core.csproj",
-      "msbuildProject": "../AttributeSqlDLL/AttributeSqlDLL.Core.csproj"
+      "path": "../AttributeSqlDLL.Core/AttributeSqlDLL.Core.csproj",
+      "msbuildProject": "../AttributeSqlDLL.Core/AttributeSqlDLL.Core.csproj"
     },
     "AttributeSqlDLL.Mysql/1.0.0": {
       "type": "project",
@@ -4610,6 +4607,7 @@
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
       "AttributeSqlDLL.Core >= 1.0.0",
+      "AutoMapper >= 10.0.0",
       "Microsoft.AspNetCore.Razor.Design >= 2.2.0",
       "Microsoft.Extensions.DependencyInjection.Abstractions >= 3.0.0"
     ]
@@ -4644,8 +4642,8 @@
       "frameworks": {
         "netcoreapp3.1": {
           "projectReferences": {
-            "D:\\AttributeSql\\AttributeSqlDLL\\AttributeSqlDLL.Core.csproj": {
-              "projectPath": "D:\\AttributeSql\\AttributeSqlDLL\\AttributeSqlDLL.Core.csproj"
+            "D:\\AttributeSql\\AttributeSqlDLL.Core\\AttributeSqlDLL.Core.csproj": {
+              "projectPath": "D:\\AttributeSql\\AttributeSqlDLL.Core\\AttributeSqlDLL.Core.csproj"
             }
           }
         }
@@ -4659,6 +4657,10 @@
     "frameworks": {
       "netcoreapp3.1": {
         "dependencies": {
+          "AutoMapper": {
+            "target": "Package",
+            "version": "[10.0.0, )"
+          },
           "Microsoft.AspNetCore.Razor.Design": {
             "suppressParent": "All",
             "target": "Package",

@@ -62,6 +62,83 @@
         }
       }
     },
+    "D:\\AttributeSql\\AttributeSqlDLL.Core\\AttributeSqlDLL.Core.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\AttributeSql\\AttributeSqlDLL.Core\\AttributeSqlDLL.Core.csproj",
+        "projectName": "AttributeSqlDLL.Core",
+        "projectPath": "D:\\AttributeSql\\AttributeSqlDLL.Core\\AttributeSqlDLL.Core.csproj",
+        "packagesPath": "C:\\Users\\lwq\\.nuget\\packages\\",
+        "outputPath": "D:\\AttributeSql\\AttributeSqlDLL.Core\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\lwq\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.0": {
+            "projectReferences": {
+              "D:\\AttributeSql\\AttributeSqlDLL.Mysql\\AttributeSqlDLL.Mysql.csproj": {
+                "projectPath": "D:\\AttributeSql\\AttributeSqlDLL.Mysql\\AttributeSqlDLL.Mysql.csproj"
+              },
+              "D:\\AttributeSql\\AttributeSqlDLL.SqlServer\\AttributeSqlDLL.SqlServer.csproj": {
+                "projectPath": "D:\\AttributeSql\\AttributeSqlDLL.SqlServer\\AttributeSqlDLL.SqlServer.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netstandard2.0": {
+          "dependencies": {
+            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            },
+            "JetBrains.Annotations": {
+              "target": "Package",
+              "version": "[2020.1.0, )"
+            },
+            "Microsoft.Extensions.DependencyInjection.Abstractions": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.102\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
     "D:\\AttributeSql\\AttributeSqlDLL.Mysql\\AttributeSqlDLL.Mysql.csproj": {
       "version": "1.0.0",
       "restore": {
@@ -194,95 +271,6 @@
         }
       }
     },
-    "D:\\AttributeSql\\AttributeSqlDLL\\AttributeSqlDLL.Core.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "D:\\AttributeSql\\AttributeSqlDLL\\AttributeSqlDLL.Core.csproj",
-        "projectName": "AttributeSqlDLL.Core",
-        "projectPath": "D:\\AttributeSql\\AttributeSqlDLL\\AttributeSqlDLL.Core.csproj",
-        "packagesPath": "C:\\Users\\lwq\\.nuget\\packages\\",
-        "outputPath": "D:\\AttributeSql\\AttributeSqlDLL\\obj\\",
-        "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
-        "configFilePaths": [
-          "C:\\Users\\lwq\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
-        ],
-        "originalTargetFrameworks": [
-          "netstandard2.0"
-        ],
-        "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {}
-        },
-        "frameworks": {
-          "netstandard2.0": {
-            "projectReferences": {
-              "D:\\AttributeSql\\AttributeSqlDLL.Mysql\\AttributeSqlDLL.Mysql.csproj": {
-                "projectPath": "D:\\AttributeSql\\AttributeSqlDLL.Mysql\\AttributeSqlDLL.Mysql.csproj"
-              },
-              "D:\\AttributeSql\\AttributeSqlDLL.SqlServer\\AttributeSqlDLL.SqlServer.csproj": {
-                "projectPath": "D:\\AttributeSql\\AttributeSqlDLL.SqlServer\\AttributeSqlDLL.SqlServer.csproj"
-              }
-            }
-          }
-        },
-        "warningProperties": {
-          "warnAsError": [
-            "NU1605"
-          ]
-        }
-      },
-      "frameworks": {
-        "netstandard2.0": {
-          "dependencies": {
-            "AutoMapper": {
-              "target": "Package",
-              "version": "[10.0.0, )"
-            },
-            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
-              "target": "Package",
-              "version": "[8.0.1, )"
-            },
-            "JetBrains.Annotations": {
-              "target": "Package",
-              "version": "[2020.1.0, )"
-            },
-            "Microsoft.Extensions.DependencyInjection.Abstractions": {
-              "target": "Package",
-              "version": "[3.0.0, )"
-            },
-            "MySql.Data": {
-              "target": "Package",
-              "version": "[8.0.21, )"
-            },
-            "NETStandard.Library": {
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[2.0.3, )",
-              "autoReferenced": true
-            },
-            "System.Data.SqlClient": {
-              "target": "Package",
-              "version": "[4.8.1, )"
-            }
-          },
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.102\\RuntimeIdentifierGraph.json"
-        }
-      }
-    },
     "D:\\AttributeSql\\AttributeSql\\AttributeSql.csproj": {
       "version": "1.0.0",
       "restore": {
@@ -309,8 +297,8 @@
         "frameworks": {
           "netcoreapp3.1": {
             "projectReferences": {
-              "D:\\AttributeSql\\AttributeSqlDLL\\AttributeSqlDLL.Core.csproj": {
-                "projectPath": "D:\\AttributeSql\\AttributeSqlDLL\\AttributeSqlDLL.Core.csproj"
+              "D:\\AttributeSql\\AttributeSqlDLL.Core\\AttributeSqlDLL.Core.csproj": {
+                "projectPath": "D:\\AttributeSql\\AttributeSqlDLL.Core\\AttributeSqlDLL.Core.csproj"
               }
             }
           }
@@ -324,6 +312,10 @@
       "frameworks": {
         "netcoreapp3.1": {
           "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
             "Microsoft.AspNetCore.Razor.Design": {
               "suppressParent": "All",
               "target": "Package",
