@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using AttributeSqlDLL.ServiceDI;
+using AttributeSqlDLL.Core.ServiceDI;
+using System.Data.Common;
 
 namespace AttributeSql
 {
     public class Startup
     {
+        private IServiceCollection _services;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -22,12 +23,17 @@ namespace AttributeSql
             services.AddControllers().AddControllersAsServices();
             //使用简单,将类库引用到项目中,添加服务即可
             var connStr = "Server=127.0.0.1; Port=3306;Stmt=; Database=AttrDemoDb; Uid=root; Pwd=648808699QIANg;Old Guids=true;charset=utf8;Allow User Variables=True;Convert Zero Datetime=True;";
-            services.AddAttributeSqlService(connStr);
+            services.AddAttributeSqlService(option =>
+            {
+                option.UseMysql(connStr);
+            });
+            _services = services;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var db = _services.BuildServiceProvider().GetServices<DbConnection>();
             if (env.EnvironmentName.ToLower().Contains("develop"))
             {
                 app.UseDeveloperExceptionPage();

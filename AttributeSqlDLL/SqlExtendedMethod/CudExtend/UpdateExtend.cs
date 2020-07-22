@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using AttributeSqlDLL.ExceptionExtension;
-using AttributeSqlDLL.Model;
-using AttributeSqlDLL.SqlAttribute.CudAttr;
+using AttributeSqlDLL.Core.ExceptionExtension;
+using AttributeSqlDLL.Core.Model;
+using AttributeSqlDLL.Core.SqlAttribute.CudAttr;
 
-namespace AttrSqlDbLite.SqlExtendedMethod
+namespace AttrSqlDbLite.Core.SqlExtendedMethod
 {
     internal static class UpdateExtend
     {

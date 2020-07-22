@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AttributeSqlDLL.SqlAttribute.Where
+namespace AttributeSqlDLL.Core.SqlAttribute.Where
 {
     /// <summary>
     /// 某字段的操作符，只允许标记一个操作符

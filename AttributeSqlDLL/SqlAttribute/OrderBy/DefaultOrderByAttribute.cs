@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AttributeSqlDLL.SqlAttribute.OrderBy
+namespace AttributeSqlDLL.Core.SqlAttribute.OrderBy
 {
     /// <summary>
     /// 默认排序

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Threading.Tasks;
-using AttributeSqlDLL.Model;
+using AttributeSqlDLL.Core.Model;
 
-namespace AttributeSqlDLL.IService
+namespace AttributeSqlDLL.Core.IService
 {
     public interface IAttrSqlClient
     {

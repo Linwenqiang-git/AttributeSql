@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AttributeSqlDLL.Model
+namespace AttributeSqlDLL.Core.Model
 {
     /// <summary>
     /// 数据库实体基础类

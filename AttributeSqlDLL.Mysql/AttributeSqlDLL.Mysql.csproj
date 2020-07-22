@@ -8,4 +8,8 @@
     <PackageReference Include="MySql.Data" Version="8.0.21" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AttributeSqlDLL.Common\AttributeSqlDLL.Common.csproj" />
+  </ItemGroup>
+
 </Project>

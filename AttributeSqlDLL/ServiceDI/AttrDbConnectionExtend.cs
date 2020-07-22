@@ -1,27 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Text;
+﻿using System.Data.Common;
+using AttributeSqlDLL.Common.Repository.DbContextExtensions;
+using AttributeSqlDLL.Mysql.Repository.DbContextExtensions;
+using AttributeSqlDLL.SqlServer.Repository.DbContextExtensions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using MySql.Data.MySqlClient;
 
-namespace AttributeSqlDLL.ServiceDI
+namespace AttributeSqlDLL.Core.ServiceDI
 {
     public static class AttrDbConnectionExtend
     {
-        public static IServiceCollection AddDbConnection<TContext>([NotNull] this IServiceCollection service, [CanBeNull] Func<DbConnection, DbConnection> optionsFunc = null, ServiceLifetime contextLifetime = ServiceLifetime.Transient, ServiceLifetime optionsLifetime = ServiceLifetime.Transient)
-            where TContext : DbConnection
-        {
-            DbConnection dbConnection = null;
-            //根据数据库类型决定实例化的对象，这里暂时写死用mysql
-            service.AddTransient(c => optionsFunc(dbConnection));
+        public static IServiceCollection AddDbConnection([NotNull] this IServiceCollection service, [NotNull] DbOption dbOption)
+        {           
+            service.AddTransient(c => dbOption.dbConnection as DbConnection);
+            if (dbOption.dbType == DbType.DbEnum.Mysql)
+            {
+                service.AddTransient<IDbExtend, MysqlDbExtend>();
+            }
+            else if (dbOption.dbType == DbType.DbEnum.SqlServer)
+            {
+                service.AddTransient<IDbExtend, SqlServerDbExtend>();
+            }
             return service;
-        }
-        public static DbConnection UseMysql(this DbConnection connection, string connStr)
-        {
-            connection = new MySqlConnection(connStr);
-            return connection;
         }        
     }
 }

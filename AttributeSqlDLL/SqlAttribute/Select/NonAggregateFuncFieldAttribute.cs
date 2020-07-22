@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AttributeSqlDLL.SqlAttribute.Select
+namespace AttributeSqlDLL.Core.SqlAttribute.Select
 {
     /// <summary>
     /// 非聚合函数标记

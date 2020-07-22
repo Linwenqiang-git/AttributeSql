@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Threading.Tasks;
-using AttributeSqlDLL.ExceptionExtension;
-using AttributeSqlDLL.IService;
-using AttributeSqlDLL.Model;
-using AttributeSqlDLL.Repository;
+using AttributeSqlDLL.Core.ExceptionExtension;
+using AttributeSqlDLL.Core.IService;
+using AttributeSqlDLL.Core.Model;
+using AttributeSqlDLL.Core.Repository;
 using AutoMapper;
 
-namespace AttributeSqlDLL.Service
+namespace AttributeSqlDLL.Core.Service
 {
     public class AttrSqlClient : IAttrSqlClient
     {

@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
-namespace AttributeSqlDLL.Model
+namespace AttributeSqlDLL.Core.Model
 {
     /// <summary>
     /// 返回给调用方的数据格式

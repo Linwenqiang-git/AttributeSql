@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AttributeSqlDLL.SqlAttribute.Select
+namespace AttributeSqlDLL.Core.SqlAttribute.Select
 {
     /// <summary>
     /// 用于设置查询字段在数据库的名字

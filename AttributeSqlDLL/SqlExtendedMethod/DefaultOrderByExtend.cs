@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Text;
-using AttributeSqlDLL.ExceptionExtension;
-using AttributeSqlDLL.Model;
-using AttributeSqlDLL.SqlAttribute.OrderBy;
+using AttributeSqlDLL.Core.ExceptionExtension;
+using AttributeSqlDLL.Core.Model;
+using AttributeSqlDLL.Core.SqlAttribute.OrderBy;
 
-namespace AttributeSqlDLL.SqlExtendedMethod
+namespace AttributeSqlDLL.Core.SqlExtendedMethod
 {
     internal static class DefaultOrderByExtend
     {

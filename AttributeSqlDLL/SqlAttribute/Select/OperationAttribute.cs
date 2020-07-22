@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AttributeSqlDLL.SqlAttribute.Select
+namespace AttributeSqlDLL.Core.SqlAttribute.Select
 {
     /// <summary>
     /// 运算操作（一个特性只允许绑定一次）

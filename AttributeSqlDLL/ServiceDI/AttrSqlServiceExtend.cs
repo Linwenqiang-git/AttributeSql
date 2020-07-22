@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AttributeSqlDLL.IService;
-using AttributeSqlDLL.Repository;
-using AttributeSqlDLL.Service;
-using AutoMapper;
-using Microsoft.Extensions.DependencyInjection;
-using MySql.Data.MySqlClient;
 
-namespace AttributeSqlDLL.ServiceDI
+using AttributeSqlDLL.Core.IService;
+using AttributeSqlDLL.Core.Repository;
+using AttributeSqlDLL.Core.Service;
+using AttributeSqlDLL.Core.ServiceDI;
+using AutoMapper;
+
+using Microsoft.Extensions.DependencyInjection;
+
+namespace AttributeSqlDLL.Core.ServiceDI
 {
     public static class AttrSqlServiceExtend
     {
@@ -17,13 +17,15 @@ namespace AttributeSqlDLL.ServiceDI
         /// </summary>
         /// <param name="services"></param>
         /// <param name="dbConnString">数据库连接字符串</param>
-        public static IServiceCollection AddAttributeSqlService(this IServiceCollection services, string dbConnString, ServiceLifetime serviceLifetime = ServiceLifetime.Transient)
+        public static IServiceCollection AddAttributeSqlService(this IServiceCollection services, Action<DbOption> dbOption, ServiceLifetime serviceLifetime = ServiceLifetime.Transient)
         {
             //模型转换成实体需要AutuMapper做映射
             services.AddAutoMapper(typeof(AttrSqlServiceExtend));
-            //暂时只支持mysql,后续在扩展支持其他数据库
-            //仓储层注入           
-            services.AddDbConnection<MySqlConnection>(option => { return option.UseMysql(dbConnString); });
+
+            //仓储层注入   
+            var option = new DbOption();
+            dbOption(option);
+            services.AddDbConnection(option);
             services.AddTransient<AttrBaseRepository>();
             //对外服务层注入        
             switch (serviceLifetime)

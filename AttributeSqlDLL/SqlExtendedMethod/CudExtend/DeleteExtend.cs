@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Text;
-using AttributeSqlDLL.ExceptionExtension;
-using AttributeSqlDLL.Model;
+using AttributeSqlDLL.Core.ExceptionExtension;
+using AttributeSqlDLL.Core.Model;
 
-namespace AttributeSqlDLL.SqlExtendedMethod.CudExtend
+namespace AttributeSqlDLL.Core.SqlExtendedMethod.CudExtend
 {
     internal static class DeleteExtend
     {

@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using AttributeSqlDLL.Model;
-using AttributeSqlDLL.SqlAttribute.GroupHaving;
+using AttributeSqlDLL.Core.Model;
+using AttributeSqlDLL.Core.SqlAttribute.GroupHaving;
 
-namespace AttributeSqlDLL.SqlExtendedMethod
+namespace AttributeSqlDLL.Core.SqlExtendedMethod
 {
     internal static class GroupByHavingExtend
     {

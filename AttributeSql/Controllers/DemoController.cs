@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using AttributeSql.Entity;
 using AttributeSql.Model;
-using AttributeSqlDLL.IService;
-using AttributeSqlDLL.Model;
+using AttributeSqlDLL.Core.IService;
+using AttributeSqlDLL.Core.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AttributeSql.Controllers

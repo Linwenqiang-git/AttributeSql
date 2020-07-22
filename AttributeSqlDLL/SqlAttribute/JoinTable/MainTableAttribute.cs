@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AttributeSqlDLL.SqlAttribute.JoinTable
+namespace AttributeSqlDLL.Core.SqlAttribute.JoinTable
 {
     /// <summary>
     /// 主表

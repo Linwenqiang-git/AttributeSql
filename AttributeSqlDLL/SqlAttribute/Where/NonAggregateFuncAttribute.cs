@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AttributeSqlDLL.SqlAttribute.Where
+namespace AttributeSqlDLL.Core.SqlAttribute.Where
 {
     /// <summary>
     /// 非聚合函数

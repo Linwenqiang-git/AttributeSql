@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AttributeSqlDLL.SqlAttribute.GroupHaving
+namespace AttributeSqlDLL.Core.SqlAttribute.GroupHaving
 {
     /// <summary>
     /// 绑定group by 字段，一个字段只允许添加一次

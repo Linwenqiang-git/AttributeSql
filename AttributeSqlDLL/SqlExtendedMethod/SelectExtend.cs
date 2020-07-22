@@ -1,9 +1,9 @@
 ﻿using System.Text;
-using AttributeSqlDLL.Model;
-using AttributeSqlDLL.SqlAttribute.JoinTable;
-using AttributeSqlDLL.SqlAttribute.Select;
+using AttributeSqlDLL.Core.Model;
+using AttributeSqlDLL.Core.SqlAttribute.JoinTable;
+using AttributeSqlDLL.Core.SqlAttribute.Select;
 
-namespace AttributeSqlDLL.SqlExtendedMethod
+namespace AttributeSqlDLL.Core.SqlExtendedMethod
 {
     internal static class SelectExtend
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AttributeSqlDLL.SqlAttribute.JoinTable
+namespace AttributeSqlDLL.Core.SqlAttribute.JoinTable
 {
     //子表的查询
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]

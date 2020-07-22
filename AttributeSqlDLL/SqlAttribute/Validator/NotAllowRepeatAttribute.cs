@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AttributeSqlDLL.SqlAttribute.Validator
+namespace AttributeSqlDLL.Core.SqlAttribute.Validator
 {
     [AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
     public class NotAllowRepeatAttribute : Attribute

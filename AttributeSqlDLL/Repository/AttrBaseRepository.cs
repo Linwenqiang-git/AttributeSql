@@ -5,14 +5,16 @@ using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AttributeSqlDLL.ExceptionExtension;
-using AttributeSqlDLL.Model;
+using AttributeSqlDLL.Core.ExceptionExtension;
+using AttributeSqlDLL.Core.Model;
+using AttributeSqlDLL.Core.SqlExtendedMethod;
+using AttributeSqlDLL.Core.SqlExtendedMethod.CudExtend;
+using AttrSqlDbLite.Core.SqlExtendedMethod;
+using AttributeSqlDLL.Common.Repository.DbContextExtensions;
+using MySql.Data.MySqlClient;
 using AttributeSqlDLL.Mysql.Repository.DbContextExtensions;
-using AttributeSqlDLL.SqlExtendedMethod;
-using AttributeSqlDLL.SqlExtendedMethod.CudExtend;
-using AttrSqlDbLite.SqlExtendedMethod;
 
-namespace AttributeSqlDLL.Repository
+namespace AttributeSqlDLL.Core.Repository
 {
     public class AttrBaseRepository : IDisposable
     {
@@ -20,6 +22,7 @@ namespace AttributeSqlDLL.Repository
         /// 当前访问上下文
         /// </summary>
         private DbConnection Context { get; set; }
+        private IDbExtend DbExtend { get; set; }
         /// <summary>
         /// 当前上下文创建的事务
         /// </summary>
@@ -28,9 +31,10 @@ namespace AttributeSqlDLL.Repository
         /// 构造函数
         /// </summary>
         /// <param name="conn"></param>
-        public AttrBaseRepository(DbConnection conn)
+        public AttrBaseRepository(DbConnection conn, IDbExtend dbExtend)
         {
             Context = conn;
+            DbExtend = dbExtend;
         }
         #region 内部使用
         private async Task<bool> TryCatch(Func<Task<string>> action)
@@ -156,7 +160,7 @@ namespace AttributeSqlDLL.Repository
             }
             await this.TryCatch(async () =>
             {
-                page.Rows = await Context.SqlQuery<TEntity, TPageSearch>($"select * from {tableName} {where} {sort}", pageSearch, Tran);
+                page.Rows = await DbExtend.SqlQuery<TEntity, TPageSearch>(Context,$"select * from {tableName} {where} {sort}", pageSearch, Tran);
                 return $"select * from {tableName} {where} {sort}";
             });
             return page;
@@ -230,14 +234,14 @@ namespace AttributeSqlDLL.Repository
             sql.Append(Limit);
             await TryCatch(async () =>
             {
-                page.Rows = await Context.SqlQuery<TResultDto, TPageSearch>($"{sql}", pageSearch, Tran);
+                page.Rows = await DbExtend.SqlQuery<TResultDto, TPageSearch>(Context,$"{sql}", pageSearch, Tran);
                 //如果有分页，统计当前查询共有多少条数据
                 if (!string.IsNullOrEmpty(Limit))
                 {
                     string Countsql = $"SELECT COUNT(1) as rownum {join} {where} {groupByHaving}";
                     try
                     {
-                        page.Total = await Context.SqlCountQuery(Countsql, pageSearch);
+                        page.Total = await DbExtend.SqlCountQuery(Context,Countsql, pageSearch);
                     }
                     catch (AttrSqlException ex)
                     {
@@ -245,7 +249,7 @@ namespace AttributeSqlDLL.Repository
                         {
                             //去掉limit
                             Countsql = $"{select} {join} {where} {groupByHaving}";
-                            page.Total = await Context.SqlRowsQuery(Countsql, pageSearch);
+                            page.Total = await DbExtend.SqlRowsQuery(Context,Countsql, pageSearch);
                         }
                     }
                 }
@@ -265,7 +269,7 @@ namespace AttributeSqlDLL.Repository
             var page = new AttrPageResult<TResultDto>();
             await this.TryCatch(async () =>
             {
-                page.Rows = await Context.SqlQuery<TResultDto, AttrEntityBase>($"{sql}", null, Tran);
+                page.Rows = await DbExtend.SqlQuery<TResultDto, AttrEntityBase>(Context,$"{sql}", null, Tran);
                 return sql;
             });
             return page;
@@ -283,7 +287,7 @@ namespace AttributeSqlDLL.Repository
             IEnumerable<TResult> result = null;
             await this.TryCatch(async () =>
             {
-                result = await Context.SqlQuery<TResult, AttrEntityBase>($"{sql}", null, Tran);
+                result = await DbExtend.SqlQuery<TResult, AttrEntityBase>(Context,$"{sql}", null, Tran);
                 return sql;
             });
             return result;
@@ -308,7 +312,7 @@ namespace AttributeSqlDLL.Repository
             int nums = 1;
             foreach (var sql in sqls)
             {
-                int resultnum = await Context.SqlRowsQuery(sql, model, Tran);
+                int resultnum = await DbExtend.SqlRowsQuery(Context,sql, model, Tran);
                 if (IsAddOrEdit == 0)
                 {
                     if (resultnum != 0)
@@ -322,7 +326,7 @@ namespace AttributeSqlDLL.Repository
                     {
                         //判断返回的是否是当前编辑的实体
                         string keysql = model.NotAllowKeySql(nums);
-                        var result = await Context.SqlQuery<dynamic, TBaseModel>(keysql, model, Tran);
+                        var result = await DbExtend.SqlQuery<dynamic, TBaseModel>(Context,keysql, model, Tran);
                         resultnum = result.Count();
                         if (resultnum == 0)
                         {
@@ -349,7 +353,7 @@ namespace AttributeSqlDLL.Repository
             await this.TryCatch(async () =>
             {
                 string sql = entity.InsertEntity();
-                result = await Context.ExecuteNonQuery(sql, entity, Tran);
+                result = await DbExtend.ExecuteNonQuery(Context,sql, entity, Tran);
                 return sql;
             });
             return result;
@@ -366,7 +370,7 @@ namespace AttributeSqlDLL.Repository
             await this.TryCatch(async () =>
             {
                 string sql = entity.InsertEntity();
-                newIncreaseKet = await Context.ExecuteNonQueryByKey(sql, entity, Tran);
+                newIncreaseKet = await DbExtend.ExecuteNonQueryByKey(Context,sql, entity, Tran);
                 return sql;
             });
             return newIncreaseKet;
@@ -391,7 +395,7 @@ namespace AttributeSqlDLL.Repository
                         {
                             foreach (var item in entities)
                             {
-                                result += await Context.ExecuteNonQuery(sql.ToString(), item, Tran);
+                                result += await DbExtend.ExecuteNonQuery(Context,sql.ToString(), item, Tran);
                             }
                             if (result == entities.Length)
                                 return AttrResultModel.Success();
@@ -402,7 +406,7 @@ namespace AttributeSqlDLL.Repository
                     else
                         foreach (var item in entities)
                         {
-                            result += await Context.ExecuteNonQuery(sql.ToString(), item, Tran);
+                            result += await DbExtend.ExecuteNonQuery(Context,sql.ToString(), item, Tran);
                         }
                     return sql.ToString();
                 });
@@ -423,7 +427,7 @@ namespace AttributeSqlDLL.Repository
                 string sql = entities.BatchInsertEntity();
                 await this.TryCatch(async () =>
                 {
-                    result += await Context.ExecuteNonQuery<AttrEntityBase>(sql.ToString(), null, Tran);
+                    result += await DbExtend.ExecuteNonQuery<AttrEntityBase>(Context,sql.ToString(), null, Tran);
                     return sql.ToString();
                 });
             }
@@ -446,7 +450,7 @@ namespace AttributeSqlDLL.Repository
             await this.TryCatch(async () =>
             {
                 string sql = entity.UpdateField(PrimaryKey);
-                result = await Context.ExecuteNonQuery(sql, entity, Tran);
+                result = await DbExtend.ExecuteNonQuery(Context,sql, entity, Tran);
                 return sql;
             });
             return result;
@@ -470,7 +474,7 @@ namespace AttributeSqlDLL.Repository
             }
             await this.TryCatch(async () =>
             {
-                result = await Context.ExecuteNonQuery(sql, entity, Tran);
+                result = await DbExtend.ExecuteNonQuery(Context,sql, entity, Tran);
                 return sql;
             });
             return result;
@@ -494,7 +498,7 @@ namespace AttributeSqlDLL.Repository
             }
             await this.TryCatch(async () =>
             {
-                result = await Context.ExecuteNonQuery(sql, entity, Tran);
+                result = await DbExtend.ExecuteNonQuery(Context,sql, entity, Tran);
                 return sql;
             });
             return result;
@@ -517,10 +521,10 @@ namespace AttributeSqlDLL.Repository
             {
                 if (entity != null)
                 {
-                    result = await Context.ExecuteNonQuery(sql, entity, Tran);
+                    result = await DbExtend.ExecuteNonQuery(Context,sql, entity, Tran);
                 }
                 else
-                    result = await Context.ExecuteNonQuery(sql, Tran);
+                    result = await DbExtend.ExecuteNonQuery(Context,sql, Tran);
                 return sql;
             });
             return result;
@@ -540,7 +544,7 @@ namespace AttributeSqlDLL.Repository
             await this.TryCatch(async () =>
             {
                 string sql = entity.DeleteByKey(primaryKey);
-                result = await Context.ExecuteNonQuery(sql, entity, Tran);
+                result = await DbExtend.ExecuteNonQuery(Context,sql, entity, Tran);
                 return sql;
             });
             return result;
@@ -558,7 +562,7 @@ namespace AttributeSqlDLL.Repository
             await this.TryCatch(async () =>
             {
                 string sql = entity.DeleteByCondition(condition);
-                result = await Context.ExecuteNonQuery(sql, entity, Tran);
+                result = await DbExtend.ExecuteNonQuery(Context,sql, entity, Tran);
                 return sql;
             });
             return result;
@@ -577,7 +581,7 @@ namespace AttributeSqlDLL.Repository
             await this.TryCatch(async () =>
             {
                 string sql = entity.SoftDeleteByCondition(softDeleteField, value, PrimaryKey, IngnorIntDefault);
-                result = await Context.ExecuteNonQuery(sql, entity, Tran);
+                result = await DbExtend.ExecuteNonQuery(Context,sql, entity, Tran);
                 return sql;
             });
             return result;

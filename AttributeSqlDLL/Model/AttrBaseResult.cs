@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AttributeSqlDLL.Model
+namespace AttributeSqlDLL.Core.Model
 {
     /// <summary>
     /// 返回结果父类

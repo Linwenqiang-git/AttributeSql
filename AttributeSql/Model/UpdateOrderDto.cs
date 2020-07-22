@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AttributeSqlDLL.Model;
-using AttributeSqlDLL.SqlAttribute.Validator;
+using AttributeSqlDLL.Core.Model;
+using AttributeSqlDLL.Core.SqlAttribute.Validator;
 
 namespace AttributeSql.Model
 {

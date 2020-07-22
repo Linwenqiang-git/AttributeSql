@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AttributeSqlDLL.SqlAttribute.CudAttr
+namespace AttributeSqlDLL.Core.SqlAttribute.CudAttr
 {
     /// <summary>
     /// 指定字段为更新条件

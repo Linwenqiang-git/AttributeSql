@@ -8,4 +8,8 @@
     <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AttributeSqlDLL.Common\AttributeSqlDLL.Common.csproj" />
+  </ItemGroup>
+
 </Project>

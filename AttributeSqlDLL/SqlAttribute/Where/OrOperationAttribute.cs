@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AttributeSqlDLL.SqlAttribute.Where
+namespace AttributeSqlDLL.Core.SqlAttribute.Where
 {
     /// <summary>
     /// OR操作，该操作的表达式存储在数组中，最后用OR操作符连接
