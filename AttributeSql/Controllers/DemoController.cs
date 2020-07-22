@@ -25,7 +25,7 @@ namespace AttributeSql.Controllers
         /// <param name="pageSearch"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<AttrResultModel> OrderQuery(OrderPageSearch pageSearch)
+        public async Task<AttrResultModel> OrderQuery([FromBody] OrderPageSearch pageSearch)
         {
             //对于查询而言,可不创建实体,可以直接通过DebugQuerySql来获取最终生成的sql文本
             string sql = client.DebugQuerySql<OrderSearchResultDto,OrderPageSearch>(pageSearch);
@@ -40,7 +40,7 @@ namespace AttributeSql.Controllers
         /// <param name="orderDto"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<AttrResultModel> InsertOrder(CreateOrderDto orderDto)
+        public async Task<AttrResultModel> InsertOrder([FromBody] CreateOrderDto orderDto)
         {
             //事务新增,如果任一操作失败,都会回滚
             var result = await client.TransactionRun(async () =>
@@ -77,7 +77,7 @@ namespace AttributeSql.Controllers
         /// <param name="orderDto"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<AttrResultModel> UpdateOrder(CreateOrderDto orderDto)
+        public async Task<AttrResultModel> UpdateOrder([FromBody] CreateOrderDto orderDto)
         {
             //这里如果不指定主键的话，默认会按照实体的第一个带有ID的字段为主键,建议手动指定
             var result = await client.UpdateHasValueFieldAsync<CreateOrderDto, R01_Order>(orderDto,"更新出错", "R01_OrderId");
@@ -91,7 +91,7 @@ namespace AttributeSql.Controllers
         /// <param name="orderDto"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<AttrResultModel> DeleteOrder(CreateOrderDto orderDto)
+        public async Task<AttrResultModel> DeleteOrder([FromBody] CreateOrderDto orderDto)
         {
             var result = await client.TransactionRun(async () =>
             {

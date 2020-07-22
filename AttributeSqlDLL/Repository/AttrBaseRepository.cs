@@ -7,17 +7,27 @@ using System.Text;
 using System.Threading.Tasks;
 using AttributeSqlDLL.ExceptionExtension;
 using AttributeSqlDLL.Model;
-using AttributeSqlDLL.Repository.DbContextExtensions;
+using AttributeSqlDLL.Mysql.Repository.DbContextExtensions;
 using AttributeSqlDLL.SqlExtendedMethod;
 using AttributeSqlDLL.SqlExtendedMethod.CudExtend;
 using AttrSqlDbLite.SqlExtendedMethod;
 
 namespace AttributeSqlDLL.Repository
 {
-    public class AttrBaseRepository
+    public class AttrBaseRepository : IDisposable
     {
-        private readonly DbConnection Context;
-        private DbTransaction Tran = null;
+        /// <summary>
+        /// 当前访问上下文
+        /// </summary>
+        private DbConnection Context { get; set; }
+        /// <summary>
+        /// 当前上下文创建的事务
+        /// </summary>
+        private DbTransaction Tran { get; set; } = null;
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="conn"></param>
         public AttrBaseRepository(DbConnection conn)
         {
             Context = conn;
@@ -622,6 +632,19 @@ namespace AttributeSqlDLL.Repository
             return Tran;
         }
         #endregion
+
+        public void Dispose()
+        {
+            try
+            {
+                Tran?.Dispose();
+                Context?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("AttrSql 连接释放出错！",ex);
+            }
+        }
 
     }
 }

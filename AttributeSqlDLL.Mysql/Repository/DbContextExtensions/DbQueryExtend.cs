@@ -4,13 +4,15 @@ using System.Data;
 using System.Data.Common;
 using System.Reflection;
 using System.Threading.Tasks;
-
-using AttributeSqlDLL.ExceptionExtension;
+using AttributeSqlDLL.Mysql.ExceptionExtension;
 using MySql.Data.MySqlClient;
 
-namespace AttributeSqlDLL.Repository.DbContextExtensions
+namespace AttributeSqlDLL.Mysql.Repository.DbContextExtensions
 {
-    internal static class DbQueryExtend
+    /// <summary>
+    /// 查询类扩展方法
+    /// </summary>
+    public static class DbQueryExtend
     {
         /// <summary>
         /// 执行指定的查询语句
@@ -21,7 +23,7 @@ namespace AttributeSqlDLL.Repository.DbContextExtensions
         /// <param name="sql"></param>
         /// <param name="parameters">参数化的字段</param>
         /// <returns></returns>
-        internal static async Task<IEnumerable<T>> SqlQuery<T, TParamter>(this DbConnection conn, string sql, TParamter parameters = null, DbTransaction tran = null)
+        public static async Task<IEnumerable<T>> SqlQuery<T, TParamter>(this DbConnection conn, string sql, TParamter parameters = null, DbTransaction tran = null)
             where T : class, new()
             where TParamter : class
         {
@@ -37,7 +39,7 @@ namespace AttributeSqlDLL.Repository.DbContextExtensions
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        internal static async Task<int> SqlCountQuery<TParamter>(this DbConnection conn, string sql, TParamter parameters = null, DbTransaction tran = null)
+        public static async Task<int> SqlCountQuery<TParamter>(this DbConnection conn, string sql, TParamter parameters = null, DbTransaction tran = null)
             where TParamter : class
         {
             DataTable dt = await SqlQuery(conn, sql, parameters, tran);
@@ -57,7 +59,7 @@ namespace AttributeSqlDLL.Repository.DbContextExtensions
         /// <param name="parameters"></param>
         /// <param name="tran"></param>
         /// <returns></returns>
-        internal static async Task<int> SqlRowsQuery<TParamter>(this DbConnection conn, string sql, TParamter parameters = null, DbTransaction tran = null)
+        public static async Task<int> SqlRowsQuery<TParamter>(this DbConnection conn, string sql, TParamter parameters = null, DbTransaction tran = null)
             where TParamter : class
         {
             DataTable dt = await SqlQuery(conn, sql, parameters, tran);
@@ -78,7 +80,7 @@ namespace AttributeSqlDLL.Repository.DbContextExtensions
             {
                 DbCommand cmd = conn.CreateCommand(sql, parameters);
                 DataSet ds = new DataSet();
-                //暂时写死，后续根据连接情况设置多数据库连接
+                //暂时写死，后续根据连接情况设置多数据库连接                
                 MySqlCommand mysqlCommand = cmd as MySqlCommand;
                 MySqlDataAdapter adapter = new MySqlDataAdapter(mysqlCommand);
                 if (tran != null)

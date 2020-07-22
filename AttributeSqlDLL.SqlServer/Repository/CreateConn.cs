@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Data.SqlClient;
 using System.Text;
-using MySql.Data.MySqlClient;
 
-namespace AttributeSqlDLL.Repository
+namespace AttributeSqlDLL.SqlServer.Repository
 {
     /// <summary>
     /// 创建数据库连接
     /// </summary>
-    internal static class CreateConn
+    public static class CreateConn
     {
-        internal static DbCommand CreateCommand(this DbConnection conn, string sql)
+        public static DbCommand CreateCommand(this DbConnection conn, string sql)
         {
             if (conn.State != ConnectionState.Open)
                 conn.Open();
@@ -20,7 +20,7 @@ namespace AttributeSqlDLL.Repository
             cmd.CommandText = sql;
             return cmd;
         }
-        internal static DbCommand CreateCommand<TParamter>(this DbConnection conn, string sql, TParamter parameters = null)
+        public static DbCommand CreateCommand<TParamter>(this DbConnection conn, string sql, TParamter parameters = null)
             where TParamter : class
         {
             if (conn.State != ConnectionState.Open)
@@ -31,16 +31,16 @@ namespace AttributeSqlDLL.Repository
             return cmd;
 
         }
-        internal static void CombineParams<TParamter>(ref DbCommand command, TParamter parameters) where TParamter : class
+        public static void CombineParams<TParamter>(ref DbCommand command, TParamter parameters) where TParamter : class
         {
             if (parameters != null)
             {
                 int length = parameters.GetType().GetProperties().Length;
-                MySqlParameter[] param = new MySqlParameter[length];
+                SqlParameter[] param = new SqlParameter[length];
                 int cursor = 0;
                 foreach (var item in parameters.GetType().GetProperties())
                 {
-                    param[cursor] = new MySqlParameter();
+                    param[cursor] = new SqlParameter();
                     param[cursor].ParameterName = $"@{item.Name}";
                     param[cursor].Value = item.GetValue(parameters, null);
                     //参数类型是list的，需要转换成string
@@ -57,7 +57,7 @@ namespace AttributeSqlDLL.Repository
                 command.Parameters.AddRange(param);
             }
         }
-        internal static string ToContainString<T>(this List<T> list)
+        public static string ToContainString<T>(this List<T> list)
         {
             StringBuilder builder = new StringBuilder();
             foreach (var item in list)

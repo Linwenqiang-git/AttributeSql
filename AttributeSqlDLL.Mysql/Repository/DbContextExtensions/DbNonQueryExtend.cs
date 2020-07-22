@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Text;
 using System.Threading.Tasks;
-using AttributeSqlDLL.ExceptionExtension;
+using AttributeSqlDLL.Mysql.ExceptionExtension;
 using MySql.Data.MySqlClient;
 
-namespace AttributeSqlDLL.Repository.DbContextExtensions
+namespace AttributeSqlDLL.Mysql.Repository.DbContextExtensions
 {
-    internal static class DbNonQueryExtend
+    /// <summary>
+    /// 非查询类扩展方法
+    /// </summary>
+    public static class DbNonQueryExtend
     {
         /// <summary>
         /// 返回受影响行数
@@ -18,7 +21,7 @@ namespace AttributeSqlDLL.Repository.DbContextExtensions
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        internal static async Task<int> ExecuteNonQuery<TParamter>(this DbConnection conn, string sql, TParamter parameters, DbTransaction tran = null)
+        public static async Task<int> ExecuteNonQuery<TParamter>(this DbConnection conn, string sql, TParamter parameters, DbTransaction tran = null)
             where TParamter : class
         {
             int Rows = 0;
@@ -33,7 +36,7 @@ namespace AttributeSqlDLL.Repository.DbContextExtensions
         /// <param name="conn"></param>
         /// <param name="sql"></param>
         /// <returns></returns>
-        internal static async Task<int> ExecuteNonQuery(this DbConnection conn, string sql, DbTransaction tran = null)
+        public static async Task<int> ExecuteNonQuery(this DbConnection conn, string sql, DbTransaction tran = null)
         {
             int Rows = 0;
             await CommonExecute<object>(conn, sql, async (ClientDbCommand) => {
@@ -47,7 +50,7 @@ namespace AttributeSqlDLL.Repository.DbContextExtensions
         /// <param name="conn"></param>
         /// <param name="sql"></param>
         /// <returns></returns>
-        internal static async Task<long> ExecuteNonQueryByKey(this DbConnection conn, string sql, DbTransaction tran = null)
+        public static async Task<long> ExecuteNonQueryByKey(this DbConnection conn, string sql, DbTransaction tran = null)
         {
             long IdentityId = 0;
             await CommonExecute(conn, sql, async (ClientDbCommand) => {
@@ -64,7 +67,7 @@ namespace AttributeSqlDLL.Repository.DbContextExtensions
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        internal static async Task<long> ExecuteNonQueryByKey<TParamter>(this DbConnection conn, string sql, TParamter parameters, DbTransaction tran = null) where TParamter : class
+        public static async Task<long> ExecuteNonQueryByKey<TParamter>(this DbConnection conn, string sql, TParamter parameters, DbTransaction tran = null) where TParamter : class
         {
             long IdentityId = 0;
             await CommonExecute(conn, sql, async (ClientDbCommand) => {
