@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Data.OracleClient;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using AttributeSqlDLL.Common.Repository.DbContextExtensions;
-using AttributeSqlDLL.Mysql.ExceptionExtension;
-using MySql.Data.MySqlClient;
+using AttributeSqlDLL.Oracle.ExceptionExtension;
 
-namespace AttributeSqlDLL.Mysql.Repository.DbContextExtensions
+namespace AttributeSqlDLL.Oracle.Repository.DbContextExtensions
 {
-    public class MySqlDbExtend : IDbExtend
+    public class OracleDbExtend : IDbExtend
     {
-        public MySqlDbExtend() { }
+        public OracleDbExtend() { }
 
         #region  DbQueryExtend
         /// <summary>
@@ -111,8 +111,7 @@ namespace AttributeSqlDLL.Mysql.Repository.DbContextExtensions
         {
             long IdentityId = 0;
             await CommonExecute(conn, sql, async (ClientDbCommand) => {
-                await ClientDbCommand.ExecuteNonQueryAsync();
-                IdentityId = ClientDbCommand.LastInsertedId;
+                IdentityId = Convert.ToInt64(await ClientDbCommand.ExecuteScalarAsync());
             }, tran);
             return IdentityId;
         }
@@ -128,33 +127,31 @@ namespace AttributeSqlDLL.Mysql.Repository.DbContextExtensions
         {
             long IdentityId = 0;
             await CommonExecute(conn, sql, async (ClientDbCommand) => {
-                await ClientDbCommand.ExecuteNonQueryAsync();
-                IdentityId = ClientDbCommand.LastInsertedId;
+                IdentityId = Convert.ToInt64(await ClientDbCommand.ExecuteScalarAsync());
             }, parameters, tran);
             return IdentityId;
         }
         #endregion
 
         #region  内部使用
-        private async Task CommonExecute<TParamter>(DbConnection conn, string sql, Func<MySqlCommand, Task> func, TParamter parameters = null, DbTransaction tran = null)
+        private async Task CommonExecute<TParamter>(DbConnection conn, string sql, Func<OracleCommand, Task> func, TParamter parameters = null, DbTransaction tran = null)
             where TParamter : class
         {
             DbCommand cmd = conn.CreateCommand(sql, parameters);
             try
             {
-                //暂时写死，后续根据连接情况设置多数据库连接
-                MySqlCommand mysqlCommand = cmd as MySqlCommand;
+                OracleCommand oracleCommand = cmd as OracleCommand;
                 if (tran != null)
                 {
-                    //包含事务就不要释放连接，由事务调用出统一关闭
-                    mysqlCommand.Transaction = tran as MySqlTransaction;
-                    await func(mysqlCommand);
+                    //包含事务就不要释放连接，由事务调用处统一关闭
+                    oracleCommand.Transaction = tran as OracleTransaction;
+                    await func(oracleCommand);
                 }
                 else
                 {
                     using (conn)
                     {
-                        await func(mysqlCommand);
+                        await func(oracleCommand);
                     }
                 }
             }
@@ -177,17 +174,16 @@ namespace AttributeSqlDLL.Mysql.Repository.DbContextExtensions
             {
                 DbCommand cmd = conn.CreateCommand(sql, parameters);
                 DataSet ds = new DataSet();
-                //暂时写死，后续根据连接情况设置多数据库连接                
-                MySqlCommand mysqlCommand = cmd as MySqlCommand;
-                MySqlDataAdapter adapter = new MySqlDataAdapter(mysqlCommand);
+                OracleCommand oracleCommand = cmd as OracleCommand;
+                OracleDataAdapter adapter = new OracleDataAdapter(oracleCommand);
                 if (tran != null)
                 {
-                    await adapter.FillAsync(ds);
+                    await Task.Run(() => adapter.Fill(ds));
                     return ds.Tables[0];
                 }
                 using (conn)
                 {
-                    await adapter.FillAsync(ds);
+                    await Task.Run(() => adapter.Fill(ds));
                     return ds.Tables[0];
                 }
             }
