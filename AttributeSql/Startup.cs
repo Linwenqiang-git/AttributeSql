@@ -22,10 +22,12 @@ namespace AttributeSql
         {
             services.AddControllers().AddControllersAsServices();
             //使用简单,将类库引用到项目中,添加服务即可
-            var connStr = "Server=127.0.0.1; Port=3306;Stmt=; Database=AttrDemoDb; Uid=root; Pwd=123456;Old Guids=true;charset=utf8;Allow User Variables=True;Convert Zero Datetime=True;";
+            //var connStr = "Server=127.0.0.1; Port=3306;Stmt=; Database=AttrDemoDb; Uid=root; Pwd=123456;Old Guids=true;charset=utf8;Allow User Variables=True;Convert Zero Datetime=True;";
+            var connStr = "Server=120.27.141.179;Database=qingxischool;User ID=sa;Password=qwe123456;MultipleActiveResultSets=True;";
             services.AddAttributeSqlService(option =>
             {
-                option.UseMysql(connStr);
+                option.UseSqlServer(connStr);
+                //option.UseMysql(connStr);
             });
             _services = services;
         }

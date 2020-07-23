@@ -35,26 +35,25 @@ namespace AttributeSqlDLL.SqlServer.Repository
         {
             if (parameters != null)
             {
-                int length = parameters.GetType().GetProperties().Length;
-                SqlParameter[] param = new SqlParameter[length];
-                int cursor = 0;
+                List<SqlParameter> param = new List<SqlParameter>();
                 foreach (var item in parameters.GetType().GetProperties())
                 {
-                    param[cursor] = new SqlParameter();
-                    param[cursor].ParameterName = $"@{item.Name}";
-                    param[cursor].Value = item.GetValue(parameters, null);
+                    var parameter = new SqlParameter();
+                    parameter.ParameterName = $"@{item.Name}";
+                    parameter.Value = item.GetValue(parameters, null);
                     //参数类型是list的，需要转换成string
-                    if (param[cursor].Value?.GetType() == typeof(List<int>))
-                        param[cursor].Value = ((List<int>)param[cursor].Value).ToContainString();
-                    else if (param[cursor].Value?.GetType() == typeof(List<byte>))
-                        param[cursor].Value = ((List<byte>)param[cursor].Value).ToContainString();
-                    else if (param[cursor].Value?.GetType() == typeof(List<long>))
-                        param[cursor].Value = ((List<long>)param[cursor].Value).ToContainString();
-                    else if (param[cursor].Value?.GetType() == typeof(List<string>))
-                        param[cursor].Value = ((List<string>)param[cursor].Value).ToContainString();
-                    ++cursor;
+                    if (parameter.Value?.GetType() == typeof(List<int>))
+                        parameter.Value = ((List<int>)parameter.Value).ToContainString();
+                    else if (parameter.Value?.GetType() == typeof(List<byte>))
+                        parameter.Value = ((List<byte>)parameter.Value).ToContainString();
+                    else if (parameter.Value?.GetType() == typeof(List<long>))
+                        parameter.Value = ((List<long>)parameter.Value).ToContainString();
+                    else if (parameter.Value?.GetType() == typeof(List<string>))
+                        parameter.Value = ((List<string>)parameter.Value).ToContainString();
+                    if (parameter.Value != null)
+                        param.Add(parameter);
                 }
-                command.Parameters.AddRange(param);
+                command.Parameters.AddRange(param.ToArray());
             }
         }
         public static string ToContainString<T>(this List<T> list)

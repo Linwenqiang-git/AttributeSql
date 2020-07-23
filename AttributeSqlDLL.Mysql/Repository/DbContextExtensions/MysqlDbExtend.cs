@@ -5,7 +5,7 @@ using System.Data.Common;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using AttributeSqlDLL.Common.Repository.DbContextExtensions;
+using AttributeSqlDLL.Common.SqlExtendMethod;
 using AttributeSqlDLL.Mysql.ExceptionExtension;
 using MySql.Data.MySqlClient;
 
@@ -14,6 +14,106 @@ namespace AttributeSqlDLL.Mysql.Repository.DbContextExtensions
     public class MySqlDbExtend : IDbExtend
     {
         public MySqlDbExtend() { }
+
+        #region  内部使用
+        private async Task CommonExecute<TParamter>(DbConnection conn, string sql, Func<MySqlCommand, Task> func, TParamter parameters = null, DbTransaction tran = null)
+            where TParamter : class
+        {
+            DbCommand cmd = conn.CreateCommand(sql, parameters);
+            try
+            {
+                //暂时写死，后续根据连接情况设置多数据库连接
+                MySqlCommand mysqlCommand = cmd as MySqlCommand;
+                if (tran != null)
+                {
+                    //包含事务就不要释放连接，由事务调用出统一关闭
+                    mysqlCommand.Transaction = tran as MySqlTransaction;
+                    await func(mysqlCommand);
+                }
+                else
+                {
+                    using (conn)
+                    {
+                        await func(mysqlCommand);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new AttrSqlException(ex.Message);
+            }
+        }
+        /// <summary>
+        /// 内部使用-执行最终的查询
+        /// </summary>
+        /// <typeparam name="TParamter"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="sql"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        private async Task<DataTable> SqlQuery<TParamter>(DbConnection conn, string sql, TParamter parameters = null, DbTransaction tran = null) where TParamter : class
+        {
+            try
+            {
+                DbCommand cmd = conn.CreateCommand(sql, parameters);
+                DataSet ds = new DataSet();
+                //暂时写死，后续根据连接情况设置多数据库连接                
+                MySqlCommand mysqlCommand = cmd as MySqlCommand;
+                MySqlDataAdapter adapter = new MySqlDataAdapter(mysqlCommand);
+                if (tran != null)
+                {
+                    await adapter.FillAsync(ds);
+                    return ds.Tables[0];
+                }
+                using (conn)
+                {
+                    await adapter.FillAsync(ds);
+                    return ds.Tables[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new AttrSqlException(ex.Message);
+            }
+        }
+        /// <summary>
+        /// 将datatable转换成IEnumerable
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dt"></param>
+        /// <returns></returns>
+        private IEnumerable<T> ToEnumerable<T>(DataTable dt) where T : class, new()
+        {
+            PropertyInfo[] propertyInfos = typeof(T).GetProperties();
+            T[] ts = new T[dt.Rows.Count];
+            int i = 0;
+            string fieldName = string.Empty;
+            foreach (DataRow row in dt.Rows)
+            {
+                try
+                {
+                    T t = new T();
+                    foreach (PropertyInfo p in propertyInfos)
+                    {
+                        fieldName = p.Name;
+                        if (dt.Columns.IndexOf(p.Name) != -1 && row[p.Name] != DBNull.Value)
+                        {
+                            p.SetValue(t, row[p.Name]);
+                        }
+                    }
+                    ts[i] = t;
+                    i++;
+                }
+                catch (Exception ex)
+                {
+                    throw new AttrSqlException($"查询结果[{fieldName}]类型转换出错,请检查Dto模型参数类型配置：{ex.Message}");
+                }
+            }
+            return ts;
+        }
+
+
+        #endregion
 
         #region  DbQueryExtend
         /// <summary>
@@ -135,102 +235,11 @@ namespace AttributeSqlDLL.Mysql.Repository.DbContextExtensions
         }
         #endregion
 
-        #region  内部使用
-        private async Task CommonExecute<TParamter>(DbConnection conn, string sql, Func<MySqlCommand, Task> func, TParamter parameters = null, DbTransaction tran = null)
-            where TParamter : class
+        public string PaginationSql(int? Offset, int? Size)
         {
-            DbCommand cmd = conn.CreateCommand(sql, parameters);
-            try
-            {
-                //暂时写死，后续根据连接情况设置多数据库连接
-                MySqlCommand mysqlCommand = cmd as MySqlCommand;
-                if (tran != null)
-                {
-                    //包含事务就不要释放连接，由事务调用出统一关闭
-                    mysqlCommand.Transaction = tran as MySqlTransaction;
-                    await func(mysqlCommand);
-                }
-                else
-                {
-                    using (conn)
-                    {
-                        await func(mysqlCommand);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new AttrSqlException(ex.Message);
-            }
+            return $"LIMIT {Offset},{Size}";
         }
-        /// <summary>
-        /// 内部使用-执行最终的查询
-        /// </summary>
-        /// <typeparam name="TParamter"></typeparam>
-        /// <param name="conn"></param>
-        /// <param name="sql"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        private async Task<DataTable> SqlQuery<TParamter>(DbConnection conn, string sql, TParamter parameters = null, DbTransaction tran = null) where TParamter : class
-        {
-            try
-            {
-                DbCommand cmd = conn.CreateCommand(sql, parameters);
-                DataSet ds = new DataSet();
-                //暂时写死，后续根据连接情况设置多数据库连接                
-                MySqlCommand mysqlCommand = cmd as MySqlCommand;
-                MySqlDataAdapter adapter = new MySqlDataAdapter(mysqlCommand);
-                if (tran != null)
-                {
-                    await adapter.FillAsync(ds);
-                    return ds.Tables[0];
-                }
-                using (conn)
-                {
-                    await adapter.FillAsync(ds);
-                    return ds.Tables[0];
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new AttrSqlException(ex.Message);
-            }
-        }
-        /// <summary>
-        /// 将datatable转换成IEnumerable
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="dt"></param>
-        /// <returns></returns>
-        private IEnumerable<T> ToEnumerable<T>(DataTable dt) where T : class, new()
-        {
-            PropertyInfo[] propertyInfos = typeof(T).GetProperties();
-            T[] ts = new T[dt.Rows.Count];
-            int i = 0;
-            string fieldName = string.Empty;
-            foreach (DataRow row in dt.Rows)
-            {
-                try
-                {
-                    T t = new T();
-                    foreach (PropertyInfo p in propertyInfos)
-                    {
-                        fieldName = p.Name;
-                        if (dt.Columns.IndexOf(p.Name) != -1 && row[p.Name] != DBNull.Value)
-                        {
-                            p.SetValue(t, row[p.Name]);
-                        }
-                    }
-                    ts[i] = t;
-                    i++;
-                }
-                catch (Exception ex)
-                {
-                    throw new AttrSqlException($"查询结果[{fieldName}]类型转换出错,请检查Dto模型参数类型配置：{ex.Message}");
-                }
-            }
-            return ts;
-        }
-        #endregion
+
+        
     }
 }

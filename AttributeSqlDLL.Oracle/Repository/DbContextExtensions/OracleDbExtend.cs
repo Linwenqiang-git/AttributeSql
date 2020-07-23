@@ -6,7 +6,7 @@ using System.Data.OracleClient;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using AttributeSqlDLL.Common.Repository.DbContextExtensions;
+using AttributeSqlDLL.Common.SqlExtendMethod;
 using AttributeSqlDLL.Oracle.ExceptionExtension;
 
 namespace AttributeSqlDLL.Oracle.Repository.DbContextExtensions
@@ -14,6 +14,102 @@ namespace AttributeSqlDLL.Oracle.Repository.DbContextExtensions
     public class OracleDbExtend : IDbExtend
     {
         public OracleDbExtend() { }
+
+        #region  内部使用
+        private async Task CommonExecute<TParamter>(DbConnection conn, string sql, Func<OracleCommand, Task> func, TParamter parameters = null, DbTransaction tran = null)
+            where TParamter : class
+        {
+            DbCommand cmd = conn.CreateCommand(sql, parameters);
+            try
+            {
+                OracleCommand oracleCommand = cmd as OracleCommand;
+                if (tran != null)
+                {
+                    //包含事务就不要释放连接，由事务调用处统一关闭
+                    oracleCommand.Transaction = tran as OracleTransaction;
+                    await func(oracleCommand);
+                }
+                else
+                {
+                    using (conn)
+                    {
+                        await func(oracleCommand);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new AttrSqlException(ex.Message);
+            }
+        }
+        /// <summary>
+        /// 内部使用-执行最终的查询
+        /// </summary>
+        /// <typeparam name="TParamter"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="sql"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        private async Task<DataTable> SqlQuery<TParamter>(DbConnection conn, string sql, TParamter parameters = null, DbTransaction tran = null) where TParamter : class
+        {
+            try
+            {
+                DbCommand cmd = conn.CreateCommand(sql, parameters);
+                DataSet ds = new DataSet();
+                OracleCommand oracleCommand = cmd as OracleCommand;
+                OracleDataAdapter adapter = new OracleDataAdapter(oracleCommand);
+                if (tran != null)
+                {
+                    await Task.Run(() => adapter.Fill(ds));
+                    return ds.Tables[0];
+                }
+                using (conn)
+                {
+                    await Task.Run(() => adapter.Fill(ds));
+                    return ds.Tables[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new AttrSqlException(ex.Message);
+            }
+        }
+        /// <summary>
+        /// 将datatable转换成IEnumerable
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dt"></param>
+        /// <returns></returns>
+        private IEnumerable<T> ToEnumerable<T>(DataTable dt) where T : class, new()
+        {
+            PropertyInfo[] propertyInfos = typeof(T).GetProperties();
+            T[] ts = new T[dt.Rows.Count];
+            int i = 0;
+            string fieldName = string.Empty;
+            foreach (DataRow row in dt.Rows)
+            {
+                try
+                {
+                    T t = new T();
+                    foreach (PropertyInfo p in propertyInfos)
+                    {
+                        fieldName = p.Name;
+                        if (dt.Columns.IndexOf(p.Name) != -1 && row[p.Name] != DBNull.Value)
+                        {
+                            p.SetValue(t, row[p.Name]);
+                        }
+                    }
+                    ts[i] = t;
+                    i++;
+                }
+                catch (Exception ex)
+                {
+                    throw new AttrSqlException($"查询结果[{fieldName}]类型转换出错,请检查Dto模型参数类型配置：{ex.Message}");
+                }
+            }
+            return ts;
+        }        
+        #endregion
 
         #region  DbQueryExtend
         /// <summary>
@@ -133,100 +229,12 @@ namespace AttributeSqlDLL.Oracle.Repository.DbContextExtensions
         }
         #endregion
 
-        #region  内部使用
-        private async Task CommonExecute<TParamter>(DbConnection conn, string sql, Func<OracleCommand, Task> func, TParamter parameters = null, DbTransaction tran = null)
-            where TParamter : class
+        #region  IPaginationExtend       
+        public string PaginationSql(int? Offset, int? Size)
         {
-            DbCommand cmd = conn.CreateCommand(sql, parameters);
-            try
-            {
-                OracleCommand oracleCommand = cmd as OracleCommand;
-                if (tran != null)
-                {
-                    //包含事务就不要释放连接，由事务调用处统一关闭
-                    oracleCommand.Transaction = tran as OracleTransaction;
-                    await func(oracleCommand);
-                }
-                else
-                {
-                    using (conn)
-                    {
-                        await func(oracleCommand);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new AttrSqlException(ex.Message);
-            }
-        }
-        /// <summary>
-        /// 内部使用-执行最终的查询
-        /// </summary>
-        /// <typeparam name="TParamter"></typeparam>
-        /// <param name="conn"></param>
-        /// <param name="sql"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        private async Task<DataTable> SqlQuery<TParamter>(DbConnection conn, string sql, TParamter parameters = null, DbTransaction tran = null) where TParamter : class
-        {
-            try
-            {
-                DbCommand cmd = conn.CreateCommand(sql, parameters);
-                DataSet ds = new DataSet();
-                OracleCommand oracleCommand = cmd as OracleCommand;
-                OracleDataAdapter adapter = new OracleDataAdapter(oracleCommand);
-                if (tran != null)
-                {
-                    await Task.Run(() => adapter.Fill(ds));
-                    return ds.Tables[0];
-                }
-                using (conn)
-                {
-                    await Task.Run(() => adapter.Fill(ds));
-                    return ds.Tables[0];
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new AttrSqlException(ex.Message);
-            }
-        }
-        /// <summary>
-        /// 将datatable转换成IEnumerable
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="dt"></param>
-        /// <returns></returns>
-        private IEnumerable<T> ToEnumerable<T>(DataTable dt) where T : class, new()
-        {
-            PropertyInfo[] propertyInfos = typeof(T).GetProperties();
-            T[] ts = new T[dt.Rows.Count];
-            int i = 0;
-            string fieldName = string.Empty;
-            foreach (DataRow row in dt.Rows)
-            {
-                try
-                {
-                    T t = new T();
-                    foreach (PropertyInfo p in propertyInfos)
-                    {
-                        fieldName = p.Name;
-                        if (dt.Columns.IndexOf(p.Name) != -1 && row[p.Name] != DBNull.Value)
-                        {
-                            p.SetValue(t, row[p.Name]);
-                        }
-                    }
-                    ts[i] = t;
-                    i++;
-                }
-                catch (Exception ex)
-                {
-                    throw new AttrSqlException($"查询结果[{fieldName}]类型转换出错,请检查Dto模型参数类型配置：{ex.Message}");
-                }
-            }
-            return ts;
+            throw new NotImplementedException("暂不支持分页");
         }
         #endregion
+
     }
 }

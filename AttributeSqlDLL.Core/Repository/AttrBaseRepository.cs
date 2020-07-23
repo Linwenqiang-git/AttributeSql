@@ -10,9 +10,7 @@ using AttributeSqlDLL.Core.Model;
 using AttributeSqlDLL.Core.SqlExtendedMethod;
 using AttributeSqlDLL.Core.SqlExtendedMethod.CudExtend;
 using AttrSqlDbLite.Core.SqlExtendedMethod;
-using AttributeSqlDLL.Common.Repository.DbContextExtensions;
-using MySql.Data.MySqlClient;
-using AttributeSqlDLL.Mysql.Repository.DbContextExtensions;
+using AttributeSqlDLL.Common.SqlExtendMethod;
 
 namespace AttributeSqlDLL.Core.Repository
 {
@@ -114,7 +112,7 @@ namespace AttributeSqlDLL.Core.Repository
                     throw new AttrSqlException("无法识别的分页数据！");
                 }
                 else
-                    Limit = $"LIMIT {pageSearch.Offset},{pageSearch.Size}";
+                    Limit = DbExtend.PaginationSql(pageSearch.Offset, pageSearch.Size);
             }
             StringBuilder sql = new StringBuilder();
             sql.Append(select);
@@ -219,11 +217,11 @@ namespace AttributeSqlDLL.Core.Repository
             if (pageSearch.Index != null && pageSearch.Size != null)
             {
                 if (pageSearch.Index < 1 || pageSearch.Size < 1)
-                {
+                {                    
                     throw new AttrSqlException("无法识别的分页数据！");
                 }
                 else
-                    Limit = $"LIMIT {pageSearch.Offset},{pageSearch.Size}";
+                    Limit = DbExtend.PaginationSql(pageSearch.Offset, pageSearch.Size);
             }
             StringBuilder sql = new StringBuilder();
             sql.Append(select);
