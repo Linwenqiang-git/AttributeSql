@@ -103,22 +103,24 @@ namespace AttributeSqlDLL.Core.Service
         /// </summary>
         /// <typeparam name="TPageSearch"></typeparam>
         /// <typeparam name="TResultDto"></typeparam>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <typeparam name="TRepo"></typeparam>
         /// <param name="pageSearch"></param>
         /// <param name="ErrorMsg"></param>
+        /// <param name="IngnorIntDefault"></param>
+        /// <param name="whereSql"></param>
+        /// <param name="usingCache"></param>
         /// <returns></returns>
         public async Task<AttrResultModel> GetSpecifyResultDto<TPageSearch, TResultDto>(TPageSearch pageSearch,
                                                 string ErrorMsg = "",
                                                 bool IngnorIntDefault = true,
-                                                Func<string> whereSql = null)
+                                                Func<string> whereSql = null,
+                                                bool usingCache = true)
             where TPageSearch : AttrPageSearch
             where TResultDto : AttrBaseResult, new()
         {
             var rm = AttrResultModel.Success();
             return await TryCatch(async () =>
             {
-                var result = await Repo.GetSpecifyResultDto<TResultDto, TPageSearch>(pageSearch, IngnorIntDefault, whereSql);
+                var result = await Repo.GetSpecifyResultDto<TResultDto, TPageSearch>(pageSearch, IngnorIntDefault, whereSql, usingCache);
                 rm.Result = result;
                 rm.Total = result.Total;
                 return rm;

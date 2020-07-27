@@ -11,6 +11,7 @@ using AttributeSqlDLL.Core.SqlExtendedMethod;
 using AttributeSqlDLL.Core.SqlExtendedMethod.CudExtend;
 using AttrSqlDbLite.Core.SqlExtendedMethod;
 using AttributeSqlDLL.Common.SqlExtendMethod;
+using System.Diagnostics;
 
 namespace AttributeSqlDLL.Core.Repository
 {
@@ -21,6 +22,10 @@ namespace AttributeSqlDLL.Core.Repository
         /// </summary>
         private DbConnection Context { get; set; }
         private IDbExtend DbExtend { get; set; }
+        /// <summary>
+        /// sql缓存
+        /// </summary>
+        private static Dictionary<string, AttrSqlCacheModel> SqlCache = new Dictionary<string, AttrSqlCacheModel>();
         /// <summary>
         /// 当前上下文创建的事务
         /// </summary>
@@ -61,6 +66,44 @@ namespace AttributeSqlDLL.Core.Repository
             }
             return HasError;
         }
+        /// <summary>
+        /// 获取方法调用的堆栈信息
+        /// </summary>
+        /// <returns></returns>
+        private void GetStackTraceModelName<TResultDto>(out string select, out string join, out string groupByHaving) where TResultDto : AttrBaseResult, new()
+        {
+            //当前堆栈信息
+            StackTrace st = new StackTrace();
+            select = join = groupByHaving = string.Empty;
+            var sts = st.GetFrames().Select(s => s.GetMethod()).ToList().Where(s => s.DeclaringType == null ?
+                    false : s.DeclaringType.FullName.ToLower().Contains("controller") &&
+                    !s.DeclaringType.Name.ToLower().Contains("controller"))
+                    .Select(s => s.DeclaringType.Name).ToList();
+            if (sts?.Count() > 0)
+            {
+                if (!SqlCache.ContainsKey(sts[0]))
+                {
+                    TResultDto dto = new TResultDto();
+                    select = dto.Select();//获取查询的字段
+                    join = dto.Join<TResultDto>();//获取连接的表
+                    groupByHaving = dto.GroupByHaving();
+                    AttrSqlCacheModel model = new AttrSqlCacheModel()
+                    {
+                        Select = select,
+                        Join = join,
+                        GroupByHaving = groupByHaving
+                    };
+                    SqlCache.Add(sts[0], model);
+                }
+                else
+                {
+                    var cacheModel = SqlCache[sts[0]];
+                    select = cacheModel.Select;//获取查询的字段
+                    join = cacheModel.Join;//获取连接的表
+                    groupByHaving = cacheModel.GroupByHaving;
+                }
+            }
+        }
         #endregion
 
         #region Debug sql
@@ -70,8 +113,7 @@ namespace AttributeSqlDLL.Core.Repository
             where TPageSearch : AttrPageSearch
             where TResultDto : AttrBaseResult, new()
         {
-            TResultDto dto = new TResultDto();
-            var page = new AttrPageResult<TResultDto>(pageSearch.Index, pageSearch.Size);
+            TResultDto dto = new TResultDto();            
             string select = dto.Select();//获取查询的字段
             string join = dto.Join<TResultDto>();//获取连接的表
             string where = pageSearch.ParaWhere(IngnorIntDefault);//获取参数化查询where条件      
@@ -172,17 +214,28 @@ namespace AttributeSqlDLL.Core.Repository
         /// <param name="pageSearch"></param>
         /// <param name="whereSql">返回指定的where语句</param>
         /// <param name="IngnorIntDefault"></param>
+        /// <param name="usingCache">是否启用sql缓存(默认启用)</param>
         /// <returns></returns>
         internal async Task<AttrPageResult<TResultDto>> GetSpecifyResultDto<TResultDto, TPageSearch>(TPageSearch pageSearch,
                                                     bool IngnorIntDefault = true,
-                                                    Func<string> whereSql = null)
+                                                    Func<string> whereSql = null,
+                                                    bool usingCache = true)
             where TResultDto : AttrBaseResult, new()
             where TPageSearch : AttrPageSearch
         {
-            TResultDto dto = new TResultDto();
-            var page = new AttrPageResult<TResultDto>(pageSearch.Index, pageSearch.Size);
-            string select = dto.Select();//获取查询的字段
-            string join = dto.Join<TResultDto>();//获取连接的表
+            StringBuilder sql = new StringBuilder();
+            string select = string.Empty, join = string.Empty, groupByHaving = string.Empty;
+            if (usingCache)
+            {
+                GetStackTraceModelName<TResultDto>(out select, out join, out groupByHaving);
+            }
+            else
+            {
+                TResultDto dto = new TResultDto();
+                select = dto.Select();//获取查询的字段
+                join = dto.Join<TResultDto>();//获取连接的表
+                groupByHaving = dto.GroupByHaving(); //获取分组部分
+            }
             string where = pageSearch.ParaWhere(IngnorIntDefault);//获取参数化查询where条件      
             if (whereSql != null)
             {
@@ -194,9 +247,7 @@ namespace AttributeSqlDLL.Core.Repository
                 {
                     where += $" and {whereSql.Invoke()}";
                 }
-            }
-            string groupByHaving = dto.GroupByHaving(); //获取分组部分
-
+            }            
             //排序规则
             string sort = string.Empty;
             if (!string.IsNullOrEmpty(pageSearch.SortField))
@@ -222,14 +273,14 @@ namespace AttributeSqlDLL.Core.Repository
                 }
                 else
                     Limit = DbExtend.PaginationSql(pageSearch.Offset, pageSearch.Size);
-            }
-            StringBuilder sql = new StringBuilder();
+            }            
             sql.Append(select);
             sql.Append(join);
             sql.Append(where);
             sql.Append(groupByHaving);
             sql.Append(sort);
             sql.Append(Limit);
+            var page = new AttrPageResult<TResultDto>(pageSearch.Index, pageSearch.Size);
             await TryCatch(async () =>
             {
                 page.Rows = await DbExtend.SqlQuery<TResultDto, TPageSearch>(Context,$"{sql}", pageSearch, Tran);
@@ -644,9 +695,8 @@ namespace AttributeSqlDLL.Core.Repository
             }
             catch (Exception ex)
             {
-                throw new Exception("AttrSql 连接释放出错！",ex);
+                throw new Exception("AttrSql 连接释放出错！", ex);
             }
         }
-
     }
 }

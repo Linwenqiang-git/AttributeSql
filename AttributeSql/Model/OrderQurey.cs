@@ -69,18 +69,18 @@ namespace AttributeSql.Model
         /// <summary> 
         /// field2
         /// </summary>
-        //[DbFieldName("(select R03_PayRecordNo from R03_PayRecord where R03_PayRecord.R02_OrderPayId = o.R02_OrderPayId ORDER BY R03_CreateTime DESC limit 1)")]
-        //public string OrderPayNo { get; set; }
+        [DbFieldName("(select R03_PayRecordNo from R03_PayRecord where R03_PayRecord.R02_OrderPayId = o.R02_OrderPayId ORDER BY R03_CreateTime DESC limit 1)")]
+        public string OrderPayNo { get; set; }
         /// <summary>
         /// field3
         /// </summary>
-        //[DbFieldName("(select R03_PayMode from R03_PayRecord where R03_PayRecord.R02_OrderPayId = o.R02_OrderPayId ORDER BY R03_CreateTime DESC limit 1)")]
-        //public int? PayMode { get; set; }
+        [DbFieldName("(select R03_PayMode from R03_PayRecord where R03_PayRecord.R02_OrderPayId = o.R02_OrderPayId ORDER BY R03_CreateTime DESC limit 1)")]
+        public int? PayMode { get; set; }
         /// <summary>
         /// field4
         /// </summary>
-        //[DbFieldName("(select R03_PayAccount from R03_PayRecord where R03_PayRecord.R02_OrderPayId = o.R02_OrderPayId ORDER BY R03_CreateTime DESC limit 1)")]
-        //public string PayAccount { get; set; }
+        [DbFieldName("(select R03_PayAccount from R03_PayRecord where R03_PayRecord.R02_OrderPayId = o.R02_OrderPayId ORDER BY R03_CreateTime DESC limit 1)")]
+        public string PayAccount { get; set; }
         /// <summary>
         /// field5
         /// </summary>
@@ -103,8 +103,8 @@ namespace AttributeSql.Model
         /// field8
         /// </summary>        
         //[DbFieldName("(select top 1 R03_PayAmount from R03_PayRecord where R03_PayRecord.R02_OrderPayId = o.R02_OrderPayId ORDER BY R03_CreateTime DESC)")]
-        //[DbFieldName("(select R03_PayAmount from R03_PayRecord where R03_PayRecord.R02_OrderPayId = o.R02_OrderPayId ORDER BY R03_CreateTime DESC limit 1)")]
-        //public double? PayAmount { get; set; }
+        [DbFieldName("(select R03_PayAmount from R03_PayRecord where R03_PayRecord.R02_OrderPayId = o.R02_OrderPayId ORDER BY R03_CreateTime DESC limit 1)")]
+        public double? PayAmount { get; set; }
         /// <summary>
         /// field9
         /// </summary>
@@ -126,8 +126,8 @@ namespace AttributeSql.Model
         /// <summary>
         /// field12
         /// </summary>
-        //[DbFieldName("(select R03_PayStatus from R03_PayRecord where R03_PayRecord.R02_OrderPayId = o.R02_OrderPayId ORDER BY R03_CreateTime DESC limit 1)")]
-        //public int R03_PayStatus { get; set; }
+        [DbFieldName("(select R03_PayStatus from R03_PayRecord where R03_PayRecord.R02_OrderPayId = o.R02_OrderPayId ORDER BY R03_CreateTime DESC limit 1)")]
+        public int R03_PayStatus { get; set; }
         /// <summary>
         /// field13
         /// </summary>

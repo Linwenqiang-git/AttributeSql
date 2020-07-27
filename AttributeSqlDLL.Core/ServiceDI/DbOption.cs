@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using AttributeSqlDLL.Core.DbType;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AttributeSqlDLL.Core.ServiceDI
 {

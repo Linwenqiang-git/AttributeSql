@@ -1,4 +1,5 @@
 ﻿using System.Data.Common;
+using System.Data.SqlClient;
 using AttributeSqlDLL.Common.SqlExtendMethod;
 using AttributeSqlDLL.Core.ExceptionExtension;
 using AttributeSqlDLL.Mysql.Repository.DbContextExtensions;

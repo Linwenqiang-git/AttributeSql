@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace AttributeSqlDLL.Common.SqlExtendMethod
 {
     public partial interface IDbExtend : IPaginationExtend
-    {
+    {       
         #region  DbQueryExtend
         Task<IEnumerable<T>> SqlQuery<T, TParamter>(DbConnection conn, string sql, TParamter parameters = null, DbTransaction tran = null)
             where T : class, new()
@@ -24,7 +24,8 @@ namespace AttributeSqlDLL.Common.SqlExtendMethod
             where TParamter : class;
         Task<int> ExecuteNonQuery(DbConnection conn, string sql, DbTransaction tran = null);
         Task<long> ExecuteNonQueryByKey(DbConnection conn, string sql, DbTransaction tran = null);
-        Task<long> ExecuteNonQueryByKey<TParamter>(DbConnection conn, string sql, TParamter parameters, DbTransaction tran = null) where TParamter : class;
+        Task<long> ExecuteNonQueryByKey<TParamter>(DbConnection conn, string sql, TParamter parameters, DbTransaction tran = null)
+            where TParamter : class;
         #endregion
 
     }

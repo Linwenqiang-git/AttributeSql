@@ -30,10 +30,20 @@ namespace AttributeSql.Controllers
             //pageSearch.Index = 1;
             //pageSearch.Size = 10;
             //对于查询而言,可不创建实体,可以直接通过DebugQuerySql来获取最终生成的sql文本
+            var result = AttrResultModel.Success();
             string sql = client.DebugQuerySql<OrderSearchResultDto,OrderPageSearch>(pageSearch);
-            var result = await client.GetSpecifyResultDto<OrderPageSearch, OrderSearchResultDto>(pageSearch);
-            //若需要遍历查询结果
-            var list = ((AttrPageResult<OrderSearchResultDto>)result.Result).Rows.ToList();
+            try
+            {
+                result = await client.GetSpecifyResultDto<OrderPageSearch, OrderSearchResultDto>(pageSearch);
+                //若需要遍历查询结果
+                var list = ((AttrPageResult<OrderSearchResultDto>)result.Result).Rows.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                result.Code = ResultCode.UnknownError;
+                result.Msg = ex.Message;
+            }
             return result;
         }
         /// <summary>

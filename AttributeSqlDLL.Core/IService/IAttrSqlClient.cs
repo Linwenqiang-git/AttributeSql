@@ -42,7 +42,7 @@ namespace AttributeSqlDLL.Core.IService
         /// <param name="IngnorIntDefault"></param>
         /// <param name="whereSql"></param>
         /// <returns></returns>
-        Task<AttrResultModel> GetSpecifyResultDto<TPageSearch, TResultDto>(TPageSearch pageSearch, string ErrorMsg = "", bool IngnorIntDefault = false, Func<string> whereSql = null)
+        Task<AttrResultModel> GetSpecifyResultDto<TPageSearch, TResultDto>(TPageSearch pageSearch, string ErrorMsg = "", bool IngnorIntDefault = false, Func<string> whereSql = null, bool usingCache = true)
             where TPageSearch : AttrPageSearch
             where TResultDto : AttrBaseResult, new();
         /// <summary>

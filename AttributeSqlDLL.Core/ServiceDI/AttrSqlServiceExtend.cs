@@ -26,7 +26,7 @@ namespace AttributeSqlDLL.Core.ServiceDI
             var option = new DbOption();
             dbOption(option);
             services.AddDbConnection(option);
-            services.AddTransient<AttrBaseRepository>();
+            services.AddTransient<AttrBaseRepository>();            
             //对外服务层注入        
             switch (serviceLifetime)
             {
