@@ -1,8 +1,14 @@
-# AttributeSql
+# AttributeSql 特性sql
 ## Summary
 c#开发，基于.net core 依赖注入的方式添加服务,方便快捷；  
-特性sql,基于model上添加特性的方式，通过特定的扩展方式将特性的配置转换成sql语句，便于查询的扩展以及查询条件的动态绑定；  
+特性sql,基于`model`上添加`特性`的方式，通过特定的扩展方式将特性的配置转换成sql语句，便于查询的扩展以及查询条件的动态绑定；  
 Support Db：Mysql、Sqlserver、Oracle
+## Advantage
+* 动态拼接where部分，不需要在服务层编写重复性的代码，Dto端配置好，服务端只需要一句话即可完成各种复杂的查询；
+* 展示给前端的字段与数据库实际配置字段分开，可任意起别名，安全性高；
+* sql查询部分自动缓存，只要服务不重启，同一接口的查询从缓存读取sql，效率高；
+* select字段或者where部分字段的添加或删除便捷，只需要修改Dto模型即可，对表结构变化以及查询多样化兼容性好；
+* 配合Swagger文档使用，方便文档查阅；
 ## Demo
 ### demo version core3.1
 服务层ConfigureServices简单一句话即可完成参数注入：
@@ -12,7 +18,7 @@ services.AddAttributeSqlService(option =>
     option.UseMysql(connStr);  
 });  
 ``` 
-Dto模型配置：
+### Dto模型配置：
 #### where部分
 OperationCode为该字段操作符，TableByName为表别名，DbFieldName为数据库字段名
 ``` c#
@@ -219,7 +225,7 @@ FROM
 ORDER BY
 	p.C02_CustomerId DESC
 ``` 
-## Other functions 
+## Other Functions 
 #### delete
 ```c#
 //根据主键删除数据（默认实体内第一个带ID的字段为主键,且该字段必须有值）
@@ -247,4 +253,6 @@ Task<AttrResultModel> NonPatameterBatchInsertAsync<TEntity>(TEntity[] Entities, 
 Task<AttrResultModel> TransactionRun(Func<Task<AttrResultModel>> func);
 ```
 ## Contact
-QQ：648808699；  
+QQ：648808699
+Welcome Message
+
