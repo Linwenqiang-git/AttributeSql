@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AttributeSqlDLL.Mysql.ExceptionExtension
+namespace AttributeSqlDLL.Common.ExceptionExtension
 {
     public class AttrSqlException : Exception
     {

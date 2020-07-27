@@ -5,13 +5,13 @@ using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AttributeSqlDLL.Core.ExceptionExtension;
 using AttributeSqlDLL.Core.Model;
 using AttributeSqlDLL.Core.SqlExtendedMethod;
 using AttributeSqlDLL.Core.SqlExtendedMethod.CudExtend;
 using AttrSqlDbLite.Core.SqlExtendedMethod;
 using AttributeSqlDLL.Common.SqlExtendMethod;
 using System.Diagnostics;
+using AttributeSqlDLL.Common.ExceptionExtension;
 
 namespace AttributeSqlDLL.Core.Repository
 {

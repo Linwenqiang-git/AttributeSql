@@ -1,8 +1,8 @@
 ﻿using System.Data.Common;
 using System.Data.SqlClient;
+using AttributeSqlDLL.Common.ExceptionExtension;
 using AttributeSqlDLL.Common.Model;
 using AttributeSqlDLL.Common.SqlExtendMethod;
-using AttributeSqlDLL.Core.ExceptionExtension;
 using AttributeSqlDLL.Mysql.Repository.DbContextExtensions;
 using AttributeSqlDLL.Oracle.Repository.DbContextExtensions;
 using AttributeSqlDLL.SqlServer.Repository.DbContextExtensions;

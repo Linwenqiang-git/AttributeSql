@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
+using AttributeSqlDLL.Common.ExceptionExtension;
 using AttributeSqlDLL.Common.SqlExtendMethod;
-using AttributeSqlDLL.Mysql.ExceptionExtension;
 using MySql.Data.MySqlClient;
 
 namespace AttributeSqlDLL.Mysql.Repository.DbContextExtensions

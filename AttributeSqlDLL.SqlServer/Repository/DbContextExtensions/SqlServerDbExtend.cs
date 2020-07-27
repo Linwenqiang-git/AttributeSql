@@ -6,9 +6,9 @@ using System.Data.SqlClient;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AttributeSqlDLL.Common.ExceptionExtension;
 using AttributeSqlDLL.Common.Model;
 using AttributeSqlDLL.Common.SqlExtendMethod;
-using AttributeSqlDLL.SqlServer.ExceptionExtension;
 
 namespace AttributeSqlDLL.SqlServer.Repository.DbContextExtensions
 {

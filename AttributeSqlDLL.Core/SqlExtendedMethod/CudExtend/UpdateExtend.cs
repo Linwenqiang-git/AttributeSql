@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using AttributeSqlDLL.Core.ExceptionExtension;
+using AttributeSqlDLL.Common.ExceptionExtension;
 using AttributeSqlDLL.Core.Model;
 using AttributeSqlDLL.Core.SqlAttribute.CudAttr;
 

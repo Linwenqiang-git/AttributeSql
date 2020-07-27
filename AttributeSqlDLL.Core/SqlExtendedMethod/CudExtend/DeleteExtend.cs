@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using AttributeSqlDLL.Core.ExceptionExtension;
+using AttributeSqlDLL.Common.ExceptionExtension;
 using AttributeSqlDLL.Core.Model;
 
 namespace AttributeSqlDLL.Core.SqlExtendedMethod.CudExtend

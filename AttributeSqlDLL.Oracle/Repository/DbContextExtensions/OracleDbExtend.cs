@@ -6,8 +6,8 @@ using System.Data.OracleClient;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AttributeSqlDLL.Common.ExceptionExtension;
 using AttributeSqlDLL.Common.SqlExtendMethod;
-using AttributeSqlDLL.Oracle.ExceptionExtension;
 
 namespace AttributeSqlDLL.Oracle.Repository.DbContextExtensions
 {

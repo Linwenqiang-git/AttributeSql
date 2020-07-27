@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Threading.Tasks;
-using AttributeSqlDLL.Core.ExceptionExtension;
+using AttributeSqlDLL.Common.ExceptionExtension;
 using AttributeSqlDLL.Core.IService;
 using AttributeSqlDLL.Core.Model;
 using AttributeSqlDLL.Core.Repository;
