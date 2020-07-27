@@ -38,11 +38,9 @@ namespace AttributeSql.Controllers
             string sql = client.DebugQuerySql<OrderSearchResultDto,OrderPageSearch>(pageSearch);
             try
             {
-                //result = await client.GetSpecifyResultDto<OrderPageSearch, OrderSearchResultDto>(pageSearch);
-                result = await client.ExecQuerySql<demo>("select 1");
-                result = await client.ExecQuerySql<demo>("select 1");
+                result = await client.GetSpecifyResultDto<OrderPageSearch, OrderSearchResultDto>(pageSearch);                
                 //若需要遍历查询结果
-                //var list = ((AttrPageResult<OrderSearchResultDto>)result.Result).Rows.ToList();
+                var list = ((AttrPageResult<OrderSearchResultDto>)result.Result).Rows.ToList();
 
             }
             catch (Exception ex)
