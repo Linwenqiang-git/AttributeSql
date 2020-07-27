@@ -12,19 +12,22 @@ namespace AttributeSqlDLL.Core.ServiceDI
         public static DbOption UseMysql(this DbOption option, string dbConnString)
         {
             option.dbType = DbType.DbEnum.Mysql;
-            option.dbConnection = new MySqlConnection(dbConnString);            
+            option.dbConnection = new MySqlConnection(dbConnString);
+            option.dbConnStr = dbConnString;
             return option;
         }
         public static DbOption UseSqlServer(this DbOption option, string dbConnString)
         {
             option.dbType = DbType.DbEnum.SqlServer;
             option.dbConnection = new SqlConnection(dbConnString);
+            option.dbConnStr = dbConnString;
             return option;
         }
         public static DbOption UseOracle(this DbOption option, string dbConnString)
         {
             option.dbType = DbType.DbEnum.Oracle;
             option.dbConnection = new OracleConnection(dbConnString);
+            option.dbConnStr = dbConnString;
             return option;
         }
     }

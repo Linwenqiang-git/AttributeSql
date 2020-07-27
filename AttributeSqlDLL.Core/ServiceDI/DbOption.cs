@@ -12,6 +12,10 @@ namespace AttributeSqlDLL.Core.ServiceDI
         /// </summary>
         public IDbConnection dbConnection { get; set; }
         /// <summary>
+        /// 数据库连接字符串
+        /// </summary>
+        public string dbConnStr { get; set; }
+        /// <summary>
         /// 连接数据库类型
         /// </summary>
         public DbEnum dbType { get; set; }

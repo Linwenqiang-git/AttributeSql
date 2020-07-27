@@ -1,5 +1,6 @@
 ﻿using System.Data.Common;
 using System.Data.SqlClient;
+using AttributeSqlDLL.Common.Model;
 using AttributeSqlDLL.Common.SqlExtendMethod;
 using AttributeSqlDLL.Core.ExceptionExtension;
 using AttributeSqlDLL.Mysql.Repository.DbContextExtensions;
@@ -15,6 +16,7 @@ namespace AttributeSqlDLL.Core.ServiceDI
         public static IServiceCollection AddDbConnection([NotNull] this IServiceCollection service, [NotNull] DbOption dbOption)
         {           
             service.AddTransient(c => dbOption.dbConnection as DbConnection);
+            
             if (dbOption.dbType == DbType.DbEnum.Mysql)
             {
                 service.AddTransient<IDbExtend, MySqlDbExtend>();
@@ -22,6 +24,12 @@ namespace AttributeSqlDLL.Core.ServiceDI
             else if (dbOption.dbType == DbType.DbEnum.SqlServer)
             {
                 service.AddTransient<IDbExtend, SqlServerDbExtend>();
+                //sqlserve 在第二次获取上下文对象时,连接字符串为空(原因未知),需要重新为对象赋值
+                DbContextModel dbContext = new DbContextModel()
+                {
+                    connStr = dbOption.dbConnStr
+                };
+                service.AddTransient(c => dbContext);
             }
             else if (dbOption.dbType == DbType.DbEnum.Oracle)
             {

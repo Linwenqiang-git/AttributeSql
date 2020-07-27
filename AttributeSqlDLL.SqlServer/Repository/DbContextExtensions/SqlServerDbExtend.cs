@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AttributeSqlDLL.Common.Model;
 using AttributeSqlDLL.Common.SqlExtendMethod;
 using AttributeSqlDLL.SqlServer.ExceptionExtension;
 
@@ -13,12 +14,31 @@ namespace AttributeSqlDLL.SqlServer.Repository.DbContextExtensions
 {
     public class SqlServerDbExtend : IDbExtend
     {
-        public SqlServerDbExtend() { }
+        private string ConnStr { get; set; }
+        public SqlServerDbExtend(DbContextModel dbContext) 
+        {
+            ConnStr = dbContext.connStr;
+        }
 
         #region  内部使用
+        private void BuildConn(ref DbConnection conn)
+        {
+            if (conn == null || string.IsNullOrEmpty(conn.ConnectionString))
+            {
+                try
+                {
+                    conn = new SqlConnection(ConnStr);
+                }
+                catch (Exception ex)
+                {
+                    throw new AttrSqlException($"实例化数据库上下文出错:{ex.Message}");
+                }
+            }
+        }
         private async Task CommonExecute<TParamter>(DbConnection conn, string sql, Func<SqlCommand, Task> func, TParamter parameters = null, DbTransaction tran = null)
             where TParamter : class
         {
+            BuildConn(ref conn);
             DbCommand cmd = conn.CreateCommand(sql, parameters);
             try
             {
@@ -54,7 +74,8 @@ namespace AttributeSqlDLL.SqlServer.Repository.DbContextExtensions
         {
             try
             {
-                DbCommand cmd = conn.CreateCommand(sql, parameters);
+                BuildConn(ref conn);
+                DbCommand cmd = conn?.CreateCommand(sql, parameters);
                 DataSet ds = new DataSet();
                 SqlCommand sqlCommand = cmd as SqlCommand;
                 SqlDataAdapter adapter = new SqlDataAdapter(sqlCommand);

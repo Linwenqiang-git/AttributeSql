@@ -14,6 +14,10 @@ namespace AttributeSql.Controllers
     [ApiController]
     public class DemoController : ControllerBase
     {
+        private class demo : AttrBaseResult
+        {
+            public int count { get; set; }
+        }
         private IAttrSqlClient client { get; set; }
         public DemoController(IAttrSqlClient _client)
         {
@@ -34,9 +38,11 @@ namespace AttributeSql.Controllers
             string sql = client.DebugQuerySql<OrderSearchResultDto,OrderPageSearch>(pageSearch);
             try
             {
-                result = await client.GetSpecifyResultDto<OrderPageSearch, OrderSearchResultDto>(pageSearch);
+                //result = await client.GetSpecifyResultDto<OrderPageSearch, OrderSearchResultDto>(pageSearch);
+                result = await client.ExecQuerySql<demo>("select 1");
+                result = await client.ExecQuerySql<demo>("select 1");
                 //若需要遍历查询结果
-                var list = ((AttrPageResult<OrderSearchResultDto>)result.Result).Rows.ToList();
+                //var list = ((AttrPageResult<OrderSearchResultDto>)result.Result).Rows.ToList();
 
             }
             catch (Exception ex)
