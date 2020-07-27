@@ -10,6 +10,9 @@ using AttributeSqlDLL.Core.SqlAttribute.Where;
 
 namespace AttributeSql.Model
 {
+    /// <summary>
+    /// where部分
+    /// </summary>
     [DefaultOrderBy("C02_CustomerId", "desc", "p")]
     public class OrderPageSearch : AttrPageSearch
     {
@@ -56,6 +59,9 @@ namespace AttributeSql.Model
         [DbFieldName("dbfieldname_PayStatus")]
         public long? PayStatus { get; set; }        
     }
+    /// <summary>
+    /// select部分
+    /// </summary>
     [MainTable("R01_Order", "p")]
     [LeftTable("R02_OrderPay", "R01_OrderId", "R01_OrderId", "o")]
     public class OrderSearchResultDto : AttrBaseResult

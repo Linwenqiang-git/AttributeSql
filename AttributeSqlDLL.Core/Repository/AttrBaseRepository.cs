@@ -15,7 +15,7 @@ using AttributeSqlDLL.Common.ExceptionExtension;
 
 namespace AttributeSqlDLL.Core.Repository
 {
-    public class AttrBaseRepository //: IDisposable
+    public class AttrBaseRepository : IDisposable
     {
         /// <summary>
         /// 当前访问上下文
@@ -686,17 +686,17 @@ namespace AttributeSqlDLL.Core.Repository
         }
         #endregion
 
-        //public void Dispose()
-        //{
-        //    try
-        //    {
-        //        Tran?.Dispose();
-        //        Context?.Dispose();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception("AttrSql 连接释放出错！", ex);
-        //    }
-        //}
+        public void Dispose()
+        {
+            try
+            {
+                Tran?.Dispose();
+                Context?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("AttrSql 连接释放出错！", ex);
+            }
+        }
     }
 }
