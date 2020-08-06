@@ -222,6 +222,9 @@ SELECT
 FROM
 	R01_Order p
 	LEFT JOIN R02_OrderPay o ON o.R01_OrderId = p.R01_OrderId 
+WHERE
+	1 = 1 
+	AND FIND_IN_SET( p.dbfieldname_CustomerId, @Customer ) 
 ORDER BY
 	p.C02_CustomerId DESC
 ``` 
