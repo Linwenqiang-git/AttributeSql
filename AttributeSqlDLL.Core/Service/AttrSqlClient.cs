@@ -532,6 +532,24 @@ namespace AttributeSqlDLL.Core.Service
             }, ErrorMsg);
         }
         /// <summary>
+        /// 根据Dto模型字段特性更新指定表
+        /// </summary>
+        /// <typeparam name="TDto"></typeparam>
+        /// <param name="dto"></param>
+        /// <param name="ErrorMsg"></param>
+        /// <param name="IgnorIntDefault"></param>
+        /// <returns></returns>
+        public async Task<AttrResultModel> UpdateAsync<TDto>(TDto dto, string ErrorMsg = "", bool IgnorIntDefault = true) where TDto : AttrBaseModel, new()
+        {
+            var rm = AttrResultModel.Success();
+            return await TryCatch(async () =>
+            {
+                // 执行更新
+                rm.Result = await Repo.UpdateDtoAttributeField(dto, IgnorIntDefault);
+                return rm;
+            }, ErrorMsg);
+        }
+        /// <summary>
         /// 执行指定的更新语句
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>

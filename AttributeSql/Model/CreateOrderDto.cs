@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AttributeSqlDLL.Core.Model;
+using AttributeSqlDLL.Core.SqlAttribute.CudAttr;
 
 namespace AttributeSql.Model
 {
@@ -32,5 +33,20 @@ namespace AttributeSql.Model
         public long? R01_IsValid { get; set; } = 1;
         public long? R01_CreateId { get; set; }
         public string R01_CreateBy { get; set; }
+    }
+    [UpdateTable("tableName")]
+    public class OrderUpdate : AttrBaseModel
+    {
+        /// <summary>
+        /// 第一个true表示为更新条件
+        /// </summary>
+        [DbFiledMapping("DbfieldName1", true)]
+        public string R01_OrderNo { get; set; }
+        [DbFiledMapping("DbfieldName2")]
+        public long? C02_CustomerId { get; set; }
+        [DbFiledMapping("DbfieldName3")]
+        public long? P01_ProductId { get; set; }
+        [DbFiledMapping("DbfieldName4")]
+        public long? P02_ProductFlowId { get; set; }
     }
 }

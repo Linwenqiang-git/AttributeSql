@@ -259,6 +259,16 @@ namespace AttributeSqlDLL.Core.IService
         Task<AttrResultModel> UpdateAsync<TEntity>(TEntity entity, string ErrorMsg = "", string PrimaryKey = "", bool IgnorIntDefault = true)
                     where TEntity : AttrEntityBase, new();
         /// <summary>
+        /// 根据Dto模型字段特性更新指定表
+        /// </summary>
+        /// <typeparam name="TDto"></typeparam>
+        /// <param name="dto"></param>
+        /// <param name="ErrorMsg"></param>
+        /// <param name="IgnorIntDefault"></param>
+        /// <returns></returns>
+        Task<AttrResultModel> UpdateAsync<TDto>(TDto dto, string ErrorMsg = "", bool IgnorIntDefault = true)
+                    where TDto : AttrBaseModel, new();
+        /// <summary>
         /// 执行指定的更新语句
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>

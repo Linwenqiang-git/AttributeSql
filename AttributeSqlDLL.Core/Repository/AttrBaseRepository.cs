@@ -553,6 +553,29 @@ namespace AttributeSqlDLL.Core.Repository
             return result;
         }
         /// <summary>
+        /// 根据Dto模型字段特性更新指定表
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dto"></param>
+        /// <param name="IgnorIntDefault"></param>
+        /// <returns></returns>
+        public async virtual Task<int> UpdateDtoAttributeField<T>(T dto, bool IgnorIntDefault = true)
+            where T : AttrBaseModel
+        {
+            string sql = dto.UpdateFieldByDtoAttribute<T>(IgnorIntDefault);
+            int result = 0;
+            if (string.IsNullOrEmpty(sql))
+            {
+                throw new AttrSqlException("请完善需要编辑的信息！");
+            }
+            await this.TryCatch(async () =>
+            {
+                result = await DbExtend.ExecuteNonQuery(Context,sql, dto, Tran);
+                return sql;
+            });
+            return result;
+        }
+        /// <summary>
         /// 执行指定的更新语句
         /// </summary>
         /// <param name="entity"></param>

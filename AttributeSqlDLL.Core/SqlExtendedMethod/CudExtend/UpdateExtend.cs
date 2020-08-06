@@ -152,7 +152,7 @@ namespace AttrSqlDbLite.Core.SqlExtendedMethod
                         continue;
                     if (objvalue is string && string.IsNullOrEmpty((string)objvalue))
                         isnull = true;
-                    else if (objvalue is int && (int)objvalue == 0)
+                    else if ((objvalue is int && (int)objvalue == 0) || (objvalue is long && (long)objvalue == 0) || (objvalue is byte && (byte)objvalue == 0))
                     {
                         if (IngnorIntDefault)
                             isnull = true;
@@ -191,6 +191,82 @@ namespace AttrSqlDbLite.Core.SqlExtendedMethod
                     sql.Append(" AND ");
             }
             return sql.ToString();
-        }       
+        }
+        /// <summary>
+        /// 根据Dto模型特性配置生成sql
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <param name="IngnorIntDefault"></param>
+        /// <returns></returns>
+        public static string UpdateFieldByDtoAttribute<T>(this AttrBaseModel dto, bool IngnorIntDefault = true) where T : AttrBaseModel
+        {
+            StringBuilder UpdateField = new StringBuilder();
+            StringBuilder WhereField = new StringBuilder();
+            object[] Mainobj = typeof(T).GetCustomAttributes(typeof(UpdateTableAttribute), true);
+            if (Mainobj == null || Mainobj.Length != 1)
+            {
+                throw new AttrSqlException("未定义更新的表，请检查Dto特性配置!");
+            }
+            UpdateTableAttribute mainTable = Mainobj[0] as UpdateTableAttribute;
+            UpdateField.Append($"Update {mainTable.GetUpdateTableName()} SET ");
+            WhereField.Append($" Where 1=1 ");
+            foreach (var prop in dto.GetType().GetProperties())
+            {
+                if (prop.IsDefined(typeof(DbFiledMappingAttribute), true))
+                {
+                    DbFiledMappingAttribute dbFiledMappingAttribute = prop.GetCustomAttributes(typeof(DbFiledMappingAttribute), true)[0] as DbFiledMappingAttribute;
+                    bool isnull = false;
+                    if (!dbFiledMappingAttribute.GetIsAllowEmpty())
+                    {
+                        //判断当前属性是否有值(主要针对string、int和数组类型)
+                        object objvalue = prop.GetValue(dto, null);
+                        if (objvalue == null)
+                            continue;
+                        if (objvalue is string && string.IsNullOrEmpty((string)objvalue))
+                            isnull = true;
+                        else if ((objvalue is int && (int)objvalue == 0) || (objvalue is long && (long)objvalue == 0) || (objvalue is byte && (byte)objvalue == 0))
+                        {
+                            if (IngnorIntDefault)
+                                isnull = true;
+                        }
+                        else if (objvalue is DateTime && (DateTime)objvalue == default(DateTime))
+                        {
+                            isnull = true;
+                        }
+                        else if (objvalue is Array)
+                        {
+                            Array array = (Array)objvalue;
+                            if (array == null || array.Length == 0)
+                                isnull = true;
+                        }
+                    }
+                    //对有值的进行操作
+                    if (!isnull)
+                    {
+                        if (dbFiledMappingAttribute.GetIsCondition())
+                        {
+                            WhereField.Append($" And {dbFiledMappingAttribute.GetDbFieldName()}=@{prop.Name} ");
+                        }
+                        else
+                        {
+                            UpdateField.Append($" {dbFiledMappingAttribute.GetDbFieldName()}=@{prop.Name},");
+                        }
+                    }
+                }
+            }
+            if (UpdateField.ToString() == $"Update {mainTable.GetUpdateTableName()} SET ")
+            {
+                throw new AttrSqlException("未定义更新字段，请检查Dto特性配置!");
+            }
+            else
+            {
+                UpdateField.Remove(UpdateField.Length - 1, 1);
+            }
+            if (WhereField.ToString() != $" Where 1=1 ")
+            {
+                UpdateField.Append(WhereField.ToString());
+            }
+            return UpdateField.ToString();
+        }
     }
 }

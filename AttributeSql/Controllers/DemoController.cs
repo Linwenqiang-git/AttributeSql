@@ -17,7 +17,7 @@ namespace AttributeSql.Controllers
         private class demo : AttrBaseResult
         {
             public int count { get; set; }
-        }
+        }        
         private IAttrSqlClient client { get; set; }
         public DemoController(IAttrSqlClient _client)
         {
@@ -30,7 +30,7 @@ namespace AttributeSql.Controllers
         /// <returns></returns>
         [HttpPost]
         public async Task<AttrResultModel> OrderQuery([FromBody] OrderPageSearch pageSearch)
-        {
+        {                                                                   
             //pageSearch.Index = 1;
             //pageSearch.Size = 10;
             //对于查询而言,可不创建实体,可以直接通过DebugQuerySql来获取最终生成的sql文本
@@ -99,6 +99,22 @@ namespace AttributeSql.Controllers
             var result = await client.UpdateHasValueFieldAsync<CreateOrderDto, R01_Order>(orderDto,"更新出错", "R01_OrderId");
             result = await client.UpdateAsync<CreateOrderDto, R01_Order>(orderDto, "更新出错", "R01_OrderId");
             result = await client.ExecUpdateSql<R01_Order>(null,"Update R01_Order set R01_OrderNo = 'test' where R01_OrderId = 1","更新出错");
+            OrderUpdate orderUpdate = new OrderUpdate()
+            {
+                C02_CustomerId = 1,
+                P01_ProductId = 1,
+                P02_ProductFlowId = 1,
+                R01_OrderNo = "11"
+            };
+            //生成的sql
+            /*
+                Update  tableName
+                set  DbfieldName2 = @C02_CustomerId,
+                    DbfieldName3 = @P01_ProductId,
+                    DbfieldName4 = @P02_ProductFlowId
+                Where  DbfieldName1 = @R01_OrderNo 
+             */
+            result = await client.UpdateAsync(orderUpdate);
             return result;                     
         }
         /// <summary>
