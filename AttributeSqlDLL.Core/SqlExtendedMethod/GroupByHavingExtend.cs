@@ -8,26 +8,43 @@ namespace AttributeSqlDLL.Core.SqlExtendedMethod
     {
         internal static string GroupByHaving(this AttrBaseResult model)
         {
-            StringBuilder builder = new StringBuilder();
+            StringBuilder groupbyBuilder = new StringBuilder();
+            StringBuilder havingBuilder = new StringBuilder();
             //拿到所有标记了该特性的字段
-            builder.Append($" Group by ");
+            groupbyBuilder.Append($" Group By ");
+            havingBuilder.Append($" Having ");
             foreach (var prop in model.GetType().GetProperties())
             {
                 if (prop.IsDefined(typeof(GroupByAttribute), true))
                 {
                     GroupByAttribute groupBy = prop.GetCustomAttributes(typeof(GroupByAttribute), true)[0] as GroupByAttribute;
-                    builder.Append($"{groupBy.GetGroupByField()},");
+                    groupbyBuilder.Append($"{groupBy.GetGroupByField()},");
+                }
+                if (prop.IsDefined(typeof(HavingAttribute), true))
+                {
+                    HavingAttribute having = prop.GetCustomAttributes(typeof(HavingAttribute), true)[0] as HavingAttribute;
+                    if (!string.IsNullOrEmpty(having.GetHavingCondition()))
+                        havingBuilder.Append($" {having.GetHavingCondition()} And");
                 }
             }
-            if (builder.ToString() == " Group by ")
+            if (groupbyBuilder.ToString() == " Group By ")
             {
-                builder.Clear();
+                groupbyBuilder.Clear();
                 return string.Empty;
             }
             else
-                builder.Remove(builder.Length - 1, 1);
+                groupbyBuilder.Remove(groupbyBuilder.Length - 1, 1);
+            if (havingBuilder.ToString() == " Having ")
+            {
+                havingBuilder.Clear();
+            }
+            else
+            {
+                havingBuilder.Remove(havingBuilder.Length - 3, 3);  //移除最后一个And
+                groupbyBuilder.Append(havingBuilder.ToString());
+            }
             //后面继续完善Having部分
-            return builder.ToString();
+            return groupbyBuilder.ToString();
         }
     }
 }

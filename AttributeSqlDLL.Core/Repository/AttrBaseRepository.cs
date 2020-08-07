@@ -75,33 +75,36 @@ namespace AttributeSqlDLL.Core.Repository
             //当前堆栈信息
             StackTrace st = new StackTrace();
             select = join = groupByHaving = string.Empty;
-            var sts = st.GetFrames().Select(s => s.GetMethod()).ToList().Where(s => s.DeclaringType == null ?
-                    false : s.DeclaringType.FullName.ToLower().Contains("controller") &&
-                    !s.DeclaringType.Name.ToLower().Contains("controller"))
-                    .Select(s => s.DeclaringType.Name).ToList();
-            if (sts?.Count() > 0)
+            var sts = st.GetFrames()
+                     .Select(s => s.GetMethod()).ToList()
+                     .Where(s => s.DeclaringType == null ? false : s.DeclaringType.FullName.ToLower().Contains("controller") &&
+                            !s.DeclaringType.Name.ToLower().Contains("controller"))
+                     .Select(s => s.DeclaringType.FullName
+                                   .Replace("__", "").Replace("<", "").Replace(">", "")
+                                   + "__" + s.DeclaringType.Name.Replace("__", "").Replace("<", "").Replace(">", ""))
+                     .ToList();
+            if (sts?.Count() > 0 && SqlCache.ContainsKey(sts[0]))
             {
-                if (!SqlCache.ContainsKey(sts[0]))
+                var cacheModel = SqlCache[sts[0]];
+                select = cacheModel.Select;//获取查询的字段
+                join = cacheModel.Join;//获取连接的表
+                groupByHaving = cacheModel.GroupByHaving;
+                SqlCache[sts[0]].CallNum += 1;
+            }
+            else
+            {
+                TResultDto dto = new TResultDto();
+                select = dto.Select();//获取查询的字段
+                join = dto.Join<TResultDto>();//获取连接的表
+                groupByHaving = dto.GroupByHaving();
+                AttrSqlCacheModel model = new AttrSqlCacheModel()
                 {
-                    TResultDto dto = new TResultDto();
-                    select = dto.Select();//获取查询的字段
-                    join = dto.Join<TResultDto>();//获取连接的表
-                    groupByHaving = dto.GroupByHaving();
-                    AttrSqlCacheModel model = new AttrSqlCacheModel()
-                    {
-                        Select = select,
-                        Join = join,
-                        GroupByHaving = groupByHaving
-                    };
-                    SqlCache.Add(sts[0], model);
-                }
-                else
-                {
-                    var cacheModel = SqlCache[sts[0]];
-                    select = cacheModel.Select;//获取查询的字段
-                    join = cacheModel.Join;//获取连接的表
-                    groupByHaving = cacheModel.GroupByHaving;
-                }
+                    Select = select,
+                    Join = join,
+                    GroupByHaving = groupByHaving,
+                    CallNum = 1
+                };
+                SqlCache.Add(sts[0], model);
             }
         }
         #endregion
