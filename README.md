@@ -9,6 +9,11 @@ Support Db：Mysql、Sqlserver、Oracle
 * sql查询部分自动缓存，只要服务不重启，同一接口的查询从缓存读取sql，效率高；
 * select字段或者where部分字段的添加或删除便捷，只需要修改Dto模型即可，对表结构变化以及查询多样化兼容性好；
 * 配合Swagger文档使用，方便文档查阅；
+## New Function Description
+* Add demo
+* Add oracle Database Support
+* sqlserve Repair of vulnerabilities
+* Add Having Attribute Support
 ## Demo
 ### demo version core3.1
 服务层ConfigureServices简单一句话即可完成参数注入：
