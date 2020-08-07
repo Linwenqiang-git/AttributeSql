@@ -13,7 +13,7 @@ Support Db：Mysql、Sqlserver、Oracle
 * Add demo
 * Add oracle Database Support
 * sqlserve Repair of vulnerabilities
-* Add Having Attribute Support
+* Add Having Attribute Support And Sql Cache
 ## Demo
 ### demo version core3.1
 服务层ConfigureServices简单一句话即可完成参数注入：
