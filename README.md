@@ -1,4 +1,4 @@
-# AttributeSql 特性sql
+# AttributeSql
 ## Summary
 c#开发，基于.net core 依赖注入的方式添加服务,方便快捷；  
 特性sql,基于`model`上添加`特性`的方式，通过特定的扩展方式将特性的配置转换成sql语句，便于查询的扩展以及查询条件的动态绑定；  
@@ -13,7 +13,7 @@ Support Db：Mysql、Sqlserver、Oracle
 * Add demo
 * Add oracle Database Support
 * sqlserve Repair of vulnerabilities
-* Add Having Attribute Support
+* Add Having Attribute Support And Sql Cache
 ## Demo
 ### demo version core3.1
 服务层ConfigureServices简单一句话即可完成参数注入：
