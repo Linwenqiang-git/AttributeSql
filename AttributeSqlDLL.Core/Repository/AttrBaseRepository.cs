@@ -286,14 +286,15 @@ namespace AttributeSqlDLL.Core.Repository
             var page = new AttrPageResult<TResultDto>(pageSearch.Index, pageSearch.Size);
             await TryCatch(async () =>
             {
-                page.Rows = await DbExtend.SqlQuery<TResultDto, TPageSearch>(Context,$"{sql}", pageSearch, Tran);
+                var queryTask = DbExtend.SqlQuery<TResultDto, TPageSearch>(Context,$"{sql}", pageSearch, Tran);
+                Task<int> countTask = null;
                 //如果有分页，统计当前查询共有多少条数据
                 if (!string.IsNullOrEmpty(Limit))
                 {
                     string Countsql = $"SELECT COUNT(1) as rownum {join} {where} {groupByHaving}";
                     try
                     {
-                        page.Total = await DbExtend.SqlCountQuery(Context,Countsql, pageSearch);
+                        countTask = DbExtend.SqlCountQuery(Context,Countsql, pageSearch);
                     }
                     catch (AttrSqlException ex)
                     {
@@ -301,10 +302,13 @@ namespace AttributeSqlDLL.Core.Repository
                         {
                             //去掉limit
                             Countsql = $"{select} {join} {where} {groupByHaving}";
-                            page.Total = await DbExtend.SqlRowsQuery(Context,Countsql, pageSearch);
+                            countTask = DbExtend.SqlRowsQuery(Context,Countsql, pageSearch);
                         }
                     }
                 }
+                page.Rows = await queryTask;
+                if (countTask != null)
+                    page.Total = await countTask;
                 return sql.ToString();
             });
             return page;
