@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Text;
+using AttributeSqlDLL.Common.ExceptionExtension;
 using AttributeSqlDLL.Core.Model;
+using AttributeSqlDLL.Core.SqlAttribute.CudAttr;
 
 namespace AttributeSqlDLL.Core.SqlExtendedMethod.CudExtend
 {
@@ -88,6 +90,42 @@ namespace AttributeSqlDLL.Core.SqlExtendedMethod.CudExtend
                 }
             }                       
             return insertSql.ToString();
+        }
+
+        /// <summary>
+        /// 新增Dto模型
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static string InsertDtoModel(this AttrBaseModel model)
+        {
+            StringBuilder sql = new StringBuilder();
+            StringBuilder values = new StringBuilder();
+            object[] Mainobj = model.GetType().GetCustomAttributes(typeof(InsertTableAttribute), true);
+            if (Mainobj == null || Mainobj.Length != 1)
+            {
+                throw new AttrSqlException("未定义新增表，请检查Dto特性配置!");
+            }
+            InsertTableAttribute mainTable = Mainobj[0] as InsertTableAttribute;
+            sql.Append($"INSERT INTO {mainTable.GetInsertTableName()}");
+            sql.Append("(");
+            foreach (var prop in model.GetType().GetProperties())
+            {
+                if (prop.IsDefined(typeof(DbFiledMappingAttribute), true))
+                {
+                    DbFiledMappingAttribute dbFiledMappingAttribute = prop.GetCustomAttributes(typeof(DbFiledMappingAttribute), true)[0] as DbFiledMappingAttribute;
+                    sql.Append($"`{dbFiledMappingAttribute.GetDbFieldName()}`,");
+                    values.Append($"@{dbFiledMappingAttribute.GetDbFieldName()},");
+                }
+            }
+            sql.Remove(sql.Length - 1, 1);
+            sql.Append(")");
+            sql.Append("VALUES");
+            sql.Append("(");
+            sql.Append($"{values.ToString()}");
+            sql.Remove(sql.Length - 1, 1);
+            sql.Append(")");
+            return sql.ToString();
         }
     }
 }

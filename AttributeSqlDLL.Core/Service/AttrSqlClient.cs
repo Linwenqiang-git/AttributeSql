@@ -291,6 +291,33 @@ namespace AttributeSqlDLL.Core.Service
             }, ErrorMsg, true);
         }
         /// <summary>
+        /// 通过Dto新增数据并返回自增主键
+        /// </summary>
+        /// <typeparam name="TDto"></typeparam>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<AttrResultModel> InsertDtoModelAsync<TDto>(TDto model, string ErrorMsg = "")
+           where TDto : AttrBaseModel
+        {
+            var rm = AttrResultModel.Success();
+            return await TryCatch(async () =>
+            {
+                //校验名称是否重复
+                if (await Repo.CheckFieldRepeat(model, 0))
+                {
+                    // 执行添加
+                    var key = await Repo.Insert(model);
+                    if (key <= 0)
+                    {
+                        rm.Code = ResultCode.UnknownError;
+                        rm.Msg = "创建数据失败!";
+                    }
+                    rm.Result = key;
+                }
+                return rm;
+            }, ErrorMsg, true);
+        }
+        /// <summary>
         /// 新增实体，并返回主键
         /// </summary>
         /// <typeparam name="TDto"></typeparam>

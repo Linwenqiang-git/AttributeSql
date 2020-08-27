@@ -6,27 +6,27 @@ using AttributeSqlDLL.Common.ExceptionExtension;
 namespace AttributeSqlDLL.Core.SqlAttribute.CudAttr
 {
     /// <summary>
-    /// 主表
+    /// 表名
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class UpdateTableAttribute : Attribute
+    public class InsertTableAttribute : Attribute
     {
-        private string updateTableName;
-        public UpdateTableAttribute(string _updateTableName)
+        private string insertTableName;
+        public InsertTableAttribute(string _insertTableName)
         {
-            if (string.IsNullOrEmpty(_updateTableName))
+            if (string.IsNullOrEmpty(_insertTableName))
             {
                 throw new AttrSqlException("表名不能为空，请检查Dto特性配置!");
             }
-            updateTableName = _updateTableName;
+            insertTableName = _insertTableName;
         }
         /// <summary>
         /// 获取更新表名称
         /// </summary>
         /// <returns></returns>
-        public string GetUpdateTableName()
+        public string GetInsertTableName()
         {
-            return updateTableName;
+            return insertTableName;
         }
     }
 }

@@ -153,6 +153,14 @@ namespace AttributeSqlDLL.Core.IService
         Task<AttrResultModel> InsertEntityAsync<TEntity>(TEntity entity)
             where TEntity : AttrEntityBase, new();
         /// <summary>
+        /// 通过Dto新增数据并返回自增主键
+        /// </summary>
+        /// <typeparam name="TDto"></typeparam>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<AttrResultModel> InsertDtoModelAsync<TDto>(TDto model, string ErrorMsg = "")
+            where TDto : AttrBaseModel;
+        /// <summary>
         /// 新增实体并返回自增的主键
         /// 需要配置Dto模型
         /// </summary>

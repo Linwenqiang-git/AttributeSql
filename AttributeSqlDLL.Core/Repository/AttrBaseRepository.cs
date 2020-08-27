@@ -83,6 +83,8 @@ namespace AttributeSqlDLL.Core.Repository
                                    .Replace("__", "").Replace("<", "").Replace(">", "")
                                    + "__" + s.DeclaringType.Name.Replace("__", "").Replace("<", "").Replace(">", ""))
                      .ToList();
+            if (SqlCache == null)
+                SqlCache = new Dictionary<string, AttrSqlCacheModel>();
             if (sts?.Count() > 0 && SqlCache.ContainsKey(sts[0]))
             {
                 var cacheModel = SqlCache[sts[0]];
@@ -413,6 +415,22 @@ namespace AttributeSqlDLL.Core.Repository
                 return sql;
             });
             return result;
+        }
+        /// <summary>
+        /// 新增Dto模型返回主键
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async virtual Task<long> Insert(AttrBaseModel model)
+        {
+            long newIncreaseKet = 0;
+            await this.TryCatch(async () =>
+            {
+                string sql = model.InsertDtoModel();
+                newIncreaseKet = await DbExtend.ExecuteNonQueryByKey(Context,sql, model, Tran);
+                return sql;
+            });
+            return newIncreaseKet;
         }
         /// <summary>
         /// 新增返回自增主键

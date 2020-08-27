@@ -49,4 +49,20 @@ namespace AttributeSql.Model
         [DbFiledMapping("DbfieldName4")]
         public long? P02_ProductFlowId { get; set; }
     }
+
+    [InsertTable("tableName")]
+    public class InsertDto : AttrBaseModel
+    {
+        /// <summary>
+        /// 第一个true表示为更新条件
+        /// </summary>
+        [DbFiledMapping("DbfieldName1")]
+        public string R01_OrderNo { get; set; }
+        [DbFiledMapping("DbfieldName2")]
+        public long? C02_CustomerId { get; set; }
+        [DbFiledMapping("DbfieldName3")]
+        public long? P01_ProductId { get; set; }
+        [DbFiledMapping("DbfieldName4")]
+        public long? P02_ProductFlowId { get; set; }
+    }
 }

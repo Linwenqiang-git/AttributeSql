@@ -80,7 +80,17 @@ namespace AttributeSql.Controllers
                         R02_CreateId = (long)orderDto.R01_CreateId,
                         R02_CreateBy = orderDto.R01_CreateBy
                     };
+                    //新增并返回主键
                     serverResult = await client.InsertEntityAsync(orderPay);
+                    InsertDto dto = new InsertDto()
+                    {
+                        R01_OrderNo = "insert",
+                        C02_CustomerId = 1,
+                        P01_ProductId = 1,
+                        P02_ProductFlowId = 1,
+                    };
+                    //通过Dto新增数据
+                    await client.InsertDtoModelAsync(dto);
                 }
                 //最终会根据执行的状态来判断回滚还是提交
                 return serverResult;
