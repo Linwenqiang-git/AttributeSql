@@ -78,8 +78,16 @@ namespace AttributeSqlDLL.Core.SqlExtendedMethod.CudExtend
                     else
                     {
                         if (value == null)
-                            value = "null";
-                        insertSql.Append($"{value},");
+                            insertSql.Append($"NULL,");
+                        else
+                        {
+                            //时间类型的要单独处理
+                            if (prop.PropertyType.FullName.ToLower().Contains("datetime"))
+                                insertSql.Append($"'{value}',");
+                            else
+                                insertSql.Append($"{value},");
+                        }
+
                     }
                 }
                 insertSql.Remove(insertSql.Length - 1, 1);
