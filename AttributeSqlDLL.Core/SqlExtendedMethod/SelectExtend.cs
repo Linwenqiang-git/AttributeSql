@@ -18,6 +18,11 @@ namespace AttributeSqlDLL.Core.SqlExtendedMethod
             builder.Append("SELECT ");
             foreach (var prop in model.GetType().GetProperties())
             {
+                //如果字段标记非查询属性，则直接跳过
+                if (prop.IsDefined(typeof(NonSelectAttribute), true))
+                {
+                    continue;
+                }
                 //若该属性没有标记字段，则直接使用该字段
                 if (prop.GetCustomAttributes(true).Length == 0)
                 {
