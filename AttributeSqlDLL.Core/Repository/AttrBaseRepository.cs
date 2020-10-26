@@ -458,8 +458,7 @@ namespace AttributeSqlDLL.Core.Repository
         {
             int result = 0;
             if (entities?.Count() > 0)
-            {
-                string sql = entities[0].InsertEntity();
+            {              
                 await this.TryCatch(async () =>
                 {
                     //默认事务新增
@@ -469,6 +468,7 @@ namespace AttributeSqlDLL.Core.Repository
                         {
                             foreach (var item in entities)
                             {
+                                string sql = item.InsertEntity();
                                 result += await DbExtend.ExecuteNonQuery(Context,sql.ToString(), item, Tran);
                             }
                             if (result == entities.Length)
@@ -480,9 +480,10 @@ namespace AttributeSqlDLL.Core.Repository
                     else
                         foreach (var item in entities)
                         {
+                            string sql = item.InsertEntity();
                             result += await DbExtend.ExecuteNonQuery(Context,sql.ToString(), item, Tran);
                         }
-                    return sql.ToString();
+                    return "";
                 });
             }
             return result;
