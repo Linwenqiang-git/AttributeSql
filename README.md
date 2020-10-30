@@ -74,7 +74,21 @@ public class OrderPageSearch : AttrPageSearch
     [OperationCode("=")]
     [TableByName("o")]
     [DbFieldName("dbfieldname_PayStatus")]
-    public long? PayStatus { get; set; }        
+    public long? PayStatus { get; set; }
+    /// <summary>
+    /// field7
+    /// </summary>
+    [OperationCode(">=")]
+    [TableByName("o")]
+    [DbFieldName("dbfieldname_createTime",true)]
+    public string StartTime { get; set; }   
+    /// <summary>
+    /// field8
+    /// </summary>
+    [OperationCode("<=")]
+    [TableByName("o")]
+    [DbFieldName("dbfieldname_createTime",true)]
+    public string EndTime { get; set; }  
 }
 ``` 
 #### select部分
@@ -229,7 +243,9 @@ FROM
 	LEFT JOIN R02_OrderPay o ON o.R01_OrderId = p.R01_OrderId 
 WHERE
 	1 = 1 
-	AND FIND_IN_SET( p.dbfieldname_CustomerId, @Customer ) 
+	AND FIND_IN_SET( p.dbfieldname_CustomerId, @Customer )
+	AND dbfieldname_createTime >='2020-10-30 00:00:00' 
+	AND dbfieldname_createTime <='2020-10-30 23:59:59'
 ORDER BY
 	p.C02_CustomerId DESC
 ``` 
