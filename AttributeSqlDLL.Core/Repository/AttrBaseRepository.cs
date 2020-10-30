@@ -12,6 +12,7 @@ using AttrSqlDbLite.Core.SqlExtendedMethod;
 using AttributeSqlDLL.Common.SqlExtendMethod;
 using System.Diagnostics;
 using AttributeSqlDLL.Common.ExceptionExtension;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace AttributeSqlDLL.Core.Repository
 {
@@ -25,7 +26,7 @@ namespace AttributeSqlDLL.Core.Repository
         /// <summary>
         /// sql缓存
         /// </summary>
-        private static Dictionary<string, AttrSqlCacheModel> SqlCache = new Dictionary<string, AttrSqlCacheModel>();
+        private IMemoryCache _memoryCache;
         /// <summary>
         /// 当前上下文创建的事务
         /// </summary>
@@ -34,10 +35,11 @@ namespace AttributeSqlDLL.Core.Repository
         /// 构造函数
         /// </summary>
         /// <param name="conn"></param>
-        public AttrBaseRepository(DbConnection conn, IDbExtend dbExtend)
+        public AttrBaseRepository(DbConnection conn, IDbExtend dbExtend, IMemoryCache memoryCache)
         {
             Context = conn;
             DbExtend = dbExtend;
+            _memoryCache = memoryCache;
         }
         #region 内部使用
         private async Task<bool> TryCatch(Func<Task<string>> action)
@@ -83,15 +85,13 @@ namespace AttributeSqlDLL.Core.Repository
                                    .Replace("__", "").Replace("<", "").Replace(">", "")
                                    + "__" + s.DeclaringType.Name.Replace("__", "").Replace("<", "").Replace(">", ""))
                      .ToList();
-            if (SqlCache == null)
-                SqlCache = new Dictionary<string, AttrSqlCacheModel>();
-            if (sts?.Count() > 0 && SqlCache.ContainsKey(sts[0]))
+            AttrSqlCacheModel value = null;
+            if (_memoryCache.TryGetValue(sts[0], out value))
             {
-                var cacheModel = SqlCache[sts[0]];
-                select = cacheModel.Select;//获取查询的字段
-                join = cacheModel.Join;//获取连接的表
-                groupByHaving = cacheModel.GroupByHaving;
-                SqlCache[sts[0]].CallNum += 1;
+                select = value.Select;//获取查询的字段
+                join = value.Join;//获取连接的表
+                groupByHaving = value.GroupByHaving;
+                value.CallNum += 1;
             }
             else
             {
@@ -106,7 +106,11 @@ namespace AttributeSqlDLL.Core.Repository
                     GroupByHaving = groupByHaving,
                     CallNum = 1
                 };
-                SqlCache.Add(sts[0], model);
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                // Keep in cache for this time, reset time if accessed.
+                .SetSlidingExpiration(TimeSpan.FromHours(8))
+                .SetPriority(CacheItemPriority.Normal);
+                _memoryCache.Set(sts[0], model, cacheEntryOptions);
             }
         }
         #endregion

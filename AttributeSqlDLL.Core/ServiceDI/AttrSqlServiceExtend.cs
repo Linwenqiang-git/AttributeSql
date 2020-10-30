@@ -5,7 +5,7 @@ using AttributeSqlDLL.Core.Repository;
 using AttributeSqlDLL.Core.Service;
 using AttributeSqlDLL.Core.ServiceDI;
 using AutoMapper;
-
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AttributeSqlDLL.Core.ServiceDI
@@ -19,6 +19,8 @@ namespace AttributeSqlDLL.Core.ServiceDI
         /// <param name="dbConnString">数据库连接字符串</param>
         public static IServiceCollection AddAttributeSqlService(this IServiceCollection services, Action<DbOption> dbOption, ServiceLifetime serviceLifetime = ServiceLifetime.Transient)
         {
+            //添加缓存机制
+            services.AddSingleton<IMemoryCache>(factory => new MemoryCache(new MemoryCacheOptions()));
             //模型转换成实体需要AutuMapper做映射
             services.AddAutoMapper(typeof(AttrSqlServiceExtend));
 
