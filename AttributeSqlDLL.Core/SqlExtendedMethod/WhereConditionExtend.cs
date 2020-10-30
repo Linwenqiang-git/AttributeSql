@@ -295,5 +295,39 @@ namespace AttrSqlDbLite.Core.SqlExtendedMethod
             return builder.ToString();
         }
         #endregion
+
+        #region  where时间类型参数值转换
+        public static TPageSearch WhereValueConvert<TPageSearch>(this TPageSearch pageSearch) where TPageSearch : AttrPageSearch
+        {
+            if (pageSearch != null)
+                foreach (var prop in pageSearch.GetType().GetProperties())
+                {
+                    if (prop.IsDefined(typeof(DbFieldNameAttribute), true))
+                    {
+                        DbFieldNameAttribute fieldName = prop.GetCustomAttributes(typeof(DbFieldNameAttribute), true)[0] as DbFieldNameAttribute;
+                        //时间类型字段
+                        if (fieldName.DatetimeField())
+                        {
+                            //判断当前属性是否有值(主要针对string)
+                            object objvalue = prop.GetValue(pageSearch, null);
+                            if (objvalue is string && !string.IsNullOrEmpty((string)objvalue))
+                            {
+                                string TimeSuffix = fieldName.GetTimeSuffix();
+                                if (string.IsNullOrEmpty(TimeSuffix))
+                                {
+                                    if (prop.Name.ToLower().Contains("start"))
+                                        TimeSuffix = " 00:00:00";
+                                    else if (prop.Name.ToLower().Contains("end"))
+                                        TimeSuffix = " 23:59:59";
+                                }
+                                prop.SetValue(pageSearch, (string)objvalue + TimeSuffix);
+                            }
+                        }
+                    }
+                }
+            return pageSearch;
+        }
+
+        #endregion
     }
 }

@@ -245,6 +245,7 @@ namespace AttributeSqlDLL.Core.Repository
                 join = dto.Join<TResultDto>();//获取连接的表
                 groupByHaving = dto.GroupByHaving(); //获取分组部分
             }
+            pageSearch = pageSearch?.WhereValueConvert();
             string where = pageSearch.ParaWhere(IngnorIntDefault);//获取参数化查询where条件      
             if (whereSql != null)
             {
