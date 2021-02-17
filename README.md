@@ -186,6 +186,11 @@ public class OrderSearchResultDto : AttrBaseResult
     [TableByName("p")]
     [DbFieldName("R01_Account")]
     public string Account { get; set; }
+    /// <summary>
+    /// 对标记NonSelect特性的字段，将不参与select查询，用于查询结果处理之后输出给前端，比如需要聚合查询，返回前端数组的情况，这样做可避免继承
+    /// </summary>
+    [NonSelect]    
+    public List<string> filld20 { get; set; }
 }
 ``` 
 #### 服务层调用
@@ -261,6 +266,57 @@ Task<AttrResultModel> SoftDeleteAsync<TEntity>(TEntity entity, string softDelete
 ```c#
 //更新实体 按照Dto模型中有值的部分就行更新,没有值的部分将忽略,适用于表单提交类更新
 Task<AttrResultModel> UpdateHasValueFieldAsync<TDto, TEntity>(TDto DtoModel, string ErrorMsg = "", string PrimaryKey = "", bool IgnorIntDefault = true, bool UpdateByKey = true) where TDto : AttrBaseModel where TEntity : AttrEntityBase, new();
+//直接根据Dto模型更新实体，不需要映射转换（建议使用）
+Task<AttrResultModel> UpdateAsync<TDto>(TDto dto, string ErrorMsg, bool IgnorIntDefault = true)
+                    where TDto : AttrBaseModel, new();
+//Dto模型配置如下，该模型可通过继承，将更新和新增相同的部分放到一个类中，不同的地方单独继承
+    [InsertTable("T06_CourseChapterInfo")]
+    [UpdateTable("T06_CourseChapterInfo")]
+    public class CourseChapterBase : AttrBaseModel
+    {
+        /// <summary>
+        /// 字段注释--方便SwaggerUI展示
+        /// </summary>    
+        [DbFiledMapping("T06_ParentId")]
+        public int? ParentId { get; set; }
+        /// <summary>
+        /// 字段注释--方便SwaggerUI展示
+        /// </summary>
+        [Required(ErrorMessage = "所属课程不能为空")]
+        [DbFiledMapping("T04_CourseId")]
+        public int? CourseId { get; set; }
+        /// <summary>
+        /// 字段注释--方便SwaggerUI展示
+        /// </summary>
+        [Required(ErrorMessage = "分类名称不能为空")]
+        [DbFiledMapping("T06_ChapterName")]
+        public string ChapterName { get; set; }
+        /// <summary>
+        /// 字段注释--方便SwaggerUI展示
+        /// </summary>
+        [DbFiledMapping("T06_Number")]
+        public int? Num { get; set; }
+        /// <summary>
+        /// 字段注释--方便SwaggerUI展示
+        /// </summary>
+        [DbFiledMapping("T06_UnlockingDays")]
+        public int? UnlockingDays { get; set; }
+        /// <summary>
+        /// 字段注释--方便SwaggerUI展示
+        /// </summary>
+        [DbFiledMapping("T06_Type")]
+        public int? Type { get; set; }
+        /// <summary>
+        /// 字段注释--方便SwaggerUI展示
+        /// </summary>
+        [DbFiledMapping("T06_Address")]
+        public string Address { get; set; }
+        /// <summary>
+        /// 字段注释--方便SwaggerUI展示
+        /// </summary>
+        [DbFiledMapping("T06_Remark")]
+        public string Remark { get; set; }
+    }
 ```
 #### insert
 ```c#
