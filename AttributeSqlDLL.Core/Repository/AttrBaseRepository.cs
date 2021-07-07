@@ -746,6 +746,8 @@ namespace AttributeSqlDLL.Core.Repository
             {
                 Tran?.Dispose();
                 Context?.Dispose();
+                // 设置对象的阻止终结器代码                
+                GC.SuppressFinalize(this);
             }
             catch (Exception ex)
             {
