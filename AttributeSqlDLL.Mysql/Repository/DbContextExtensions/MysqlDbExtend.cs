@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using AttributeSqlDLL.Common.ExceptionExtension;
 using AttributeSqlDLL.Common.SqlExtendMethod;
@@ -12,6 +13,12 @@ namespace AttributeSqlDLL.Mysql.Repository.DbContextExtensions
 {
     public class MySqlDbExtend : IDbExtend
     {
+        /// <summary>
+        /// 添加信号量处理
+        /// 防止在多线程访问的情况下
+        /// DataReader没有释放的问题
+        /// </summary>
+        private SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1);
         public MySqlDbExtend() { }
 
         #region  内部使用
@@ -54,25 +61,36 @@ namespace AttributeSqlDLL.Mysql.Repository.DbContextExtensions
         {
             try
             {
-                DbCommand cmd = conn.CreateCommand(sql, parameters);
-                DataSet ds = new DataSet();
-                //暂时写死，后续根据连接情况设置多数据库连接                
-                MySqlCommand mysqlCommand = cmd as MySqlCommand;
-                MySqlDataAdapter adapter = new MySqlDataAdapter(mysqlCommand);
-                if (tran != null)
+                await semaphoreSlim.WaitAsync();
+                using (DbCommand cmd = conn.CreateCommand(sql, parameters))
                 {
-                    await adapter.FillAsync(ds);
-                    return ds.Tables[0];
-                }
-                using (conn)
-                {
-                    await adapter.FillAsync(ds);
-                    return ds.Tables[0];
+                    using (DataSet ds = new DataSet())
+                    {
+                        //暂时写死，后续根据连接情况设置多数据库连接                
+                        MySqlCommand mysqlCommand = cmd as MySqlCommand;
+                        using (MySqlDataAdapter adapter = new MySqlDataAdapter(mysqlCommand))
+                        {
+                            if (tran != null)
+                            {
+                                await adapter.FillAsync(ds);
+                                return ds.Tables[0];
+                            }
+                            using (conn)
+                            {
+                                await adapter.FillAsync(ds);
+                                return ds.Tables[0];
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
                 throw new AttrSqlException(ex.Message);
+            }
+            finally
+            {
+                semaphoreSlim.Release();
             }
         }
         /// <summary>
