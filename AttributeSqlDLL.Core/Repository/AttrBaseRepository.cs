@@ -21,7 +21,7 @@ namespace AttributeSqlDLL.Core.Repository
         /// <summary>
         /// 当前访问上下文
         /// </summary>
-        private DbConnection Context { get; set; }
+        private IDbConnection Context { get; set; }
         private IDbExtend DbExtend { get; set; }
         /// <summary>
         /// sql缓存
@@ -30,7 +30,7 @@ namespace AttributeSqlDLL.Core.Repository
         /// <summary>
         /// 当前上下文创建的事务
         /// </summary>
-        private DbTransaction Tran { get; set; } = null;
+        private IDbTransaction Tran { get; set; } = null;
         /// <summary>
         /// 构造函数
         /// </summary>
