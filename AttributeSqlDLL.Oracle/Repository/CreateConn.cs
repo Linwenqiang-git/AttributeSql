@@ -12,49 +12,45 @@ namespace AttributeSqlDLL.Oracle.Repository
     /// </summary>
     public static class CreateConn
     {
-        public static DbCommand CreateCommand(this DbConnection conn, string sql)
+        public static IDbCommand CreateCommand(this IDbConnection conn, string sql)
         {
             if (conn.State != ConnectionState.Open)
                 conn.Open();
-            DbCommand cmd = conn.CreateCommand();
+            IDbCommand cmd = conn.CreateCommand();
             cmd.CommandText = sql;
             return cmd;
         }
-        public static DbCommand CreateCommand<TParamter>(this DbConnection conn, string sql, TParamter parameters = null)
+        public static IDbCommand CreateCommand<TParamter>(this IDbConnection conn, string sql, TParamter parameters = null)
             where TParamter : class
         {
             if (conn.State != ConnectionState.Open)
                 conn.Open();
-            DbCommand cmd = conn.CreateCommand();
+            IDbCommand cmd = conn.CreateCommand();
             cmd.CommandText = sql;
             CombineParams(ref cmd, parameters);
             return cmd;
 
         }
-        public static void CombineParams<TParamter>(ref DbCommand command, TParamter parameters) where TParamter : class
+        public static void CombineParams<TParamter>(ref IDbCommand command, TParamter parameters) where TParamter : class
         {
             if (parameters != null)
-            {
-                int length = parameters.GetType().GetProperties().Length;
-                OracleParameter[] param = new OracleParameter[length];
-                int cursor = 0;
+            {               
                 foreach (var item in parameters.GetType().GetProperties())
                 {
-                    param[cursor] = new OracleParameter();
-                    param[cursor].ParameterName = $"@{item.Name}";
-                    param[cursor].Value = item.GetValue(parameters, null);
+                    var oracleParameter = new OracleParameter();
+                    oracleParameter.ParameterName = $"@{item.Name}";
+                    oracleParameter.Value = item.GetValue(parameters, null);
                     //参数类型是list的，需要转换成string
-                    if (param[cursor].Value?.GetType() == typeof(List<int>))
-                        param[cursor].Value = ((List<int>)param[cursor].Value).ToContainString();
-                    else if (param[cursor].Value?.GetType() == typeof(List<byte>))
-                        param[cursor].Value = ((List<byte>)param[cursor].Value).ToContainString();
-                    else if (param[cursor].Value?.GetType() == typeof(List<long>))
-                        param[cursor].Value = ((List<long>)param[cursor].Value).ToContainString();
-                    else if (param[cursor].Value?.GetType() == typeof(List<string>))
-                        param[cursor].Value = ((List<string>)param[cursor].Value).ToContainString();
-                    ++cursor;
-                }
-                command.Parameters.AddRange(param);
+                    if (oracleParameter.Value?.GetType() == typeof(List<int>))
+                        oracleParameter.Value = ((List<int>)oracleParameter.Value).ToContainString();
+                    else if (oracleParameter.Value?.GetType() == typeof(List<byte>))
+                        oracleParameter.Value = ((List<byte>)oracleParameter.Value).ToContainString();
+                    else if (oracleParameter.Value?.GetType() == typeof(List<long>))
+                        oracleParameter.Value = ((List<long>)oracleParameter.Value).ToContainString();
+                    else if (oracleParameter.Value?.GetType() == typeof(List<string>))
+                        oracleParameter.Value = ((List<string>)oracleParameter.Value).ToContainString();
+                    command.Parameters.Add(oracleParameter);
+                }                
             }
         }
         public static string ToContainString<T>(this List<T> list)

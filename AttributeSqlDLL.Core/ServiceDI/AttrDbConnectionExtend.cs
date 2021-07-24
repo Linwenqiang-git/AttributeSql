@@ -15,7 +15,7 @@ namespace AttributeSqlDLL.Core.ServiceDI
     {
         public static IServiceCollection AddDbConnection([NotNull] this IServiceCollection service, [NotNull] DbOption dbOption)
         {           
-            service.AddTransient(c => dbOption.dbConnection as DbConnection);
+            service.AddScoped(c => dbOption.dbConnection as DbConnection);
             
             if (dbOption.dbType == DbType.DbEnum.Mysql)
             {
