@@ -12,6 +12,7 @@ namespace AttributeSqlDLL.Core.SqlAttribute.JoinTable
         private string mainTableField;
         private string joinField;
         private string mainTableName;
+        private string[] otherJoinsWhere;
         /// <summary>
         /// 初始化
         /// </summary>
@@ -20,13 +21,15 @@ namespace AttributeSqlDLL.Core.SqlAttribute.JoinTable
         /// <param name="_joinField">内连接表字段</param>
         /// <param name="_byName">内连接表别名</param>
         /// <param name="_mainTableName">内连接住表别名</param>
-        public InnerTableAttribute(string _InnerTableName, string _mainTableField, string _joinField, string _byName = "", string _mainTableName = "")
+        /// <param name="_otherJoinsWhere">其他连接条件，表别名需指定：A.a = B.a </param>
+        public InnerTableAttribute(string _InnerTableName, string _mainTableField, string _joinField, string _byName = "", string _mainTableName = "", string[] _otherJoinsWhere = null)
         {
             InnerTableName = _InnerTableName;
             byName = _byName;
             mainTableField = _mainTableField;
             joinField = _joinField;
             mainTableName = _mainTableName;
+            otherJoinsWhere = _otherJoinsWhere;
         }
         public string GetInnerTableName()
         {
@@ -71,6 +74,14 @@ namespace AttributeSqlDLL.Core.SqlAttribute.JoinTable
         public string GetMainTableByName()
         {
             return mainTableName;
+        }
+        /// <summary>
+        /// 返回其他连接条件
+        /// </summary>
+        /// <returns></returns>
+        public string[] GetOtherJoinsWhere()
+        {
+            return otherJoinsWhere;
         }
     }
 }

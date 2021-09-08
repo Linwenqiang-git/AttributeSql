@@ -42,6 +42,14 @@ namespace AttributeSqlDLL.Core.SqlExtendedMethod
                     {
                         join.Append($"{leftTable.GetMainTableField()} ");
                     }
+                    //拼接其他join条件
+                    if (leftTable.GetOtherJoinsWhere()?.Length > 0)
+                    {
+                        foreach (var joinWhere in leftTable.GetOtherJoinsWhere())
+                        {
+                            join.Append($" AND {joinWhere} ");
+                        }
+                    }
                 }
                 else if (table.GetType() == typeof(RightTableAttribute))
                 {
@@ -58,6 +66,14 @@ namespace AttributeSqlDLL.Core.SqlExtendedMethod
                     else
                     {
                         join.Append($"{rightTable.GetMainTableField()} ");
+                    }
+                    //拼接其他join条件
+                    if (rightTable.GetOtherJoinsWhere()?.Length > 0)
+                    {
+                        foreach (var joinWhere in rightTable.GetOtherJoinsWhere())
+                        {
+                            join.Append($" AND {joinWhere} ");
+                        }
                     }
                 }
                 else if (table.GetType() == typeof(InnerTableAttribute))
@@ -76,6 +92,14 @@ namespace AttributeSqlDLL.Core.SqlExtendedMethod
                     {
                         join.Append($"{innerTable.GetMainTableField()} ");
                     }
+                    //拼接其他join条件
+                    if (innerTable.GetOtherJoinsWhere()?.Length > 0)
+                    {
+                        foreach (var joinWhere in innerTable.GetOtherJoinsWhere())
+                        {
+                            join.Append($" AND {joinWhere} ");
+                        }
+                    }
                 }
                 else if (table.GetType() == typeof(SublistAttribute))
                 {
@@ -93,6 +117,14 @@ namespace AttributeSqlDLL.Core.SqlExtendedMethod
                     else
                     {
                         join.Append($"{suiblist.GetMainTableField()} ");
+                    }
+                    //拼接其他join条件
+                    if (suiblist.GetOtherJoinsWhere()?.Length > 0)
+                    {
+                        foreach (var joinWhere in suiblist.GetOtherJoinsWhere())
+                        {
+                            join.Append($" AND {joinWhere} ");
+                        }
                     }
                 }
             }

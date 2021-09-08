@@ -14,6 +14,7 @@ namespace AttributeSqlDLL.Core.SqlAttribute.JoinTable
         private string mainTableField;
         private string joinField;
         private string mainTableName;
+        private string[] otherJoinsWhere;
         private List<string> IncidenceRelationCollection = new List<string>() { "INNER", "OUT", "LEFT", "RIGHT" };
         /// <summary>
         /// 初始化
@@ -24,7 +25,8 @@ namespace AttributeSqlDLL.Core.SqlAttribute.JoinTable
         /// <param name="_joinField">内连接表字段</param>
         /// <param name="_byName">内连接表别名</param>
         /// <param name="_mainTableName">内连接主表别名</param>
-        public SublistAttribute(string _Sublist, string _IncidenceRelation, string _mainTableField, string _joinField, string _byName = "", string _mainTableName = "")
+        /// <param name="_otherJoinsWhere">其他连接条件，表别名需指定：A.a = B.a </param>
+        public SublistAttribute(string _Sublist, string _IncidenceRelation, string _mainTableField, string _joinField, string _byName = "", string _mainTableName = "", string[] _otherJoinsWhere = null)
         {
             SublistSql = _Sublist;
             IncidenceRelation = _IncidenceRelation;
@@ -32,6 +34,7 @@ namespace AttributeSqlDLL.Core.SqlAttribute.JoinTable
             mainTableField = _mainTableField;
             joinField = _joinField;
             mainTableName = _mainTableName;
+            otherJoinsWhere = _otherJoinsWhere;
         }
         public string GetTableSql()
         {
@@ -84,6 +87,14 @@ namespace AttributeSqlDLL.Core.SqlAttribute.JoinTable
         public string GetMainTableByName()
         {
             return mainTableName;
+        }
+        /// <summary>
+        /// 返回其他连接条件
+        /// </summary>
+        /// <returns></returns>
+        public string[] GetOtherJoinsWhere()
+        {
+            return otherJoinsWhere;
         }
     }
 }

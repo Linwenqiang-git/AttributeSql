@@ -12,6 +12,7 @@ namespace AttributeSqlDLL.Core.SqlAttribute.JoinTable
         private string mainTableField;
         private string joinField;
         private string mainTableName;
+        private string[] otherJoinsWhere;
         /// <summary>
         /// 
         /// </summary>
@@ -20,13 +21,15 @@ namespace AttributeSqlDLL.Core.SqlAttribute.JoinTable
         /// <param name="_joinField">右连接表字段</param>
         /// <param name="_byName">右连接表别名</param>
         /// <param name="_mainTableName">连接主表别名(默认MainTable特性标记的为主表,也可以自己指定)</param>
-        public RightTableAttribute(string _RightTableName, string _mainTableField, string _joinField, string _byName = "", string _mainTableName = "")
+        /// <param name="_otherJoinsWhere">其他连接条件，表别名需指定：A.a = B.a </param>
+        public RightTableAttribute(string _RightTableName, string _mainTableField, string _joinField, string _byName = "", string _mainTableName = "", string[] _otherJoinsWhere = null)
         {
             RightTableName = _RightTableName;
             byName = _byName;
             mainTableField = _mainTableField;
             joinField = _joinField;
             mainTableName = _mainTableName;
+            otherJoinsWhere = _otherJoinsWhere;
         }
         public string GetRightTableName()
         {
@@ -61,6 +64,14 @@ namespace AttributeSqlDLL.Core.SqlAttribute.JoinTable
         public string GetMainTableByName()
         {
             return mainTableName;
+        }
+        /// <summary>
+        /// 返回其他连接条件
+        /// </summary>
+        /// <returns></returns>
+        public string[] GetOtherJoinsWhere()
+        {
+            return otherJoinsWhere;
         }
     }
 }
