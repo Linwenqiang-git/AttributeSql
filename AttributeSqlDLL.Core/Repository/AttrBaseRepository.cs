@@ -299,6 +299,9 @@ namespace AttributeSqlDLL.Core.Repository
                 if (!string.IsNullOrEmpty(Limit))
                 {
                     string Countsql = $"SELECT COUNT(1) as rownum {join} {where} {groupByHaving}";
+                    //如果有having，需要select部分
+                    if (groupByHaving.ToLower().Contains("having"))
+                        Countsql = $"SELECT COUNT(1) as rownum FROM ({select} {join} {where} {groupByHaving}) a";
                     try
                     {
                         countTask = DbExtend.SqlCountQuery(Context,Countsql, pageSearch);
