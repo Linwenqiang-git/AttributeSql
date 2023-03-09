@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AttributeSqlDLL.Core.Model;
-using AttributeSqlDLL.Core.SqlAttribute.JoinTable;
-using AttributeSqlDLL.Core.SqlAttribute.OrderBy;
-using AttributeSqlDLL.Core.SqlAttribute.Select;
-using AttributeSqlDLL.Core.SqlAttribute.Where;
+using AttributeSql.Core.Models;
+using AttributeSql.Core.SqlAttribute.JoinTable;
+using AttributeSql.Core.SqlAttribute.OrderBy;
+using AttributeSql.Core.SqlAttribute.Select;
+using AttributeSql.Core.SqlAttribute.Where;
 
 namespace AttributeSql.Model
 {

@@ -2,26 +2,32 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using AttributeSql.Core.Models;
+using AttributeSql.Core.Services;
+using AttributeSql.Demo.DbContext;
 using AttributeSql.Entity;
 using AttributeSql.Model;
-using AttributeSqlDLL.Core.IService;
-using AttributeSqlDLL.Core.Model;
 using Microsoft.AspNetCore.Mvc;
 
+using UFX.SCM.Cloud.CmsCenter.Domain.AggregatesModel.ContentManage;
+
+using Volo.Abp.Application.Services;
+
 namespace AttributeSql.Controllers
-{
-    [Route("api/[controller]/[action]")]
-    [ApiController]
-    public class DemoController : ControllerBase
-    {
-        private class demo : AttrBaseResult
-        {
-            public int count { get; set; }
-        }        
-        private IAttrSqlClient client { get; set; }
-        public DemoController(IAttrSqlClient _client)
+{    
+    public class DemoController : ApplicationService
+    {           
+        private IAttrSqlService<AttributeSqlDemoDbContext> client { get; set; }
+        public DemoController(IAttrSqlService<AttributeSqlDemoDbContext> _client)
         {
             client = _client;
+        }
+        [HttpGet]
+        public async Task<AttrResultModel> query()
+        {
+            var result = await client.ExecQuerySql<CM_Article>("select * from cm_article");
+            return result;
         }
         /// <summary>
         /// 多表关联查询demo
@@ -58,44 +64,39 @@ namespace AttributeSql.Controllers
         [HttpPost]
         public async Task<AttrResultModel> InsertOrder([FromBody] CreateOrderDto orderDto)
         {
-            //事务新增,如果任一操作失败,都会回滚
-            var result = await client.TransactionRun(async () =>
+            //模型与实体的关系需要在UserProfile建立映射
+            var serverResult = await client.InsertAsync<CreateOrderDto, R01_Order>(orderDto, "新增出错");
+            //建议在执行下一次操作之前判断上一个执行的状态是否是成功
+            if (serverResult.Code == 0)
             {
-                //模型与实体的关系需要在UserProfile建立映射
-                var serverResult = await client.InsertReturnKey<CreateOrderDto, R01_Order>(orderDto, "新增出错");
-                //建议在执行下一次操作之前判断上一个执行的状态是否是成功
-                if (serverResult.Code == 0)
+                R02_OrderPay orderPay = new R02_OrderPay()
                 {
-                    R02_OrderPay orderPay = new R02_OrderPay()
-                    {
-                        R02_OrderPayNo = "编号",
-                        R01_OrderId = (int)serverResult.Result,
-                        R01_OrderNo = orderDto.R01_OrderNo,
-                        P02_ProductFlowId = orderDto.P02_ProductFlowId,
-                        R02_Title = orderDto.Title,
-                        R02_Body = orderDto.Body,
-                        R02_Amount = orderDto.Amount,
-                        R02_PayStatus = 1,
-                        R02_IsValid = 1,
-                        R02_CreateId = (long)orderDto.R01_CreateId,
-                        R02_CreateBy = orderDto.R01_CreateBy
-                    };
-                    //新增并返回主键
-                    serverResult = await client.InsertEntityAsync(orderPay);
-                    InsertDto dto = new InsertDto()
-                    {
-                        R01_OrderNo = "insert",
-                        C02_CustomerId = 1,
-                        P01_ProductId = 1,
-                        P02_ProductFlowId = 1,
-                    };
-                    //通过Dto新增数据
-                    await client.InsertDtoModelAsync(dto);
-                }
-                //最终会根据执行的状态来判断回滚还是提交
-                return serverResult;
-            });
-            return result;
+                    R02_OrderPayNo = "编号",
+                    R01_OrderId = (int)serverResult.Result,
+                    R01_OrderNo = orderDto.R01_OrderNo,
+                    P02_ProductFlowId = orderDto.P02_ProductFlowId,
+                    R02_Title = orderDto.Title,
+                    R02_Body = orderDto.Body,
+                    R02_Amount = orderDto.Amount,
+                    R02_PayStatus = 1,
+                    R02_IsValid = 1,
+                    R02_CreateId = (long)orderDto.R01_CreateId,
+                    R02_CreateBy = orderDto.R01_CreateBy
+                };
+                //新增并返回主键
+                serverResult = await client.InsertEntityAsync(orderPay);
+                InsertDto dto = new InsertDto()
+                {
+                    R01_OrderNo = "insert",
+                    C02_CustomerId = 1,
+                    P01_ProductId = 1,
+                    P02_ProductFlowId = 1,
+                };
+                //通过Dto新增数据
+                await client.InsertAsync<InsertDto,R01_Order>(dto);
+            }
+            //最终会根据执行的状态来判断回滚还是提交
+            return serverResult;
         }
         /// <summary>
         /// 更新操作
@@ -135,15 +136,11 @@ namespace AttributeSql.Controllers
         [HttpPost]
         public async Task<AttrResultModel> DeleteOrder([FromBody] CreateOrderDto orderDto)
         {
-            var result = await client.TransactionRun(async () =>
-            {
-                //直接删除
-                var serverResult = await client.DeleteAsync<CreateOrderDto, R01_Order>(orderDto,new string[] { "R01_OrderNo" }, "删除出错");
-                //软删除
-                serverResult = await client.SoftDeleteAsync<CreateOrderDto, R01_Order>(orderDto,"R01_IsValid", 2, "R01_OrderId");
-                return serverResult;
-            });
-            return result;
+            //直接删除
+            var serverResult = await client.DeleteAsync<CreateOrderDto, R01_Order>(orderDto, new string[] { "R01_OrderNo" }, "删除出错");
+            //软删除
+            serverResult = await client.SoftDeleteAsync<CreateOrderDto, R01_Order>(orderDto, "R01_IsValid", 2, "R01_OrderId");
+            return serverResult;
         }
     }
 }

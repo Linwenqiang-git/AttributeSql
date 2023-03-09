@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AttributeSql.Base\AttributeSql.Base.csproj" />
+    <ProjectReference Include="..\AttributeSql.MySql\AttributeSql.MySql.csproj" />
+    <ProjectReference Include="..\AttributeSql.Oracle\AttributeSql.Oracle.csproj" />
+    <ProjectReference Include="..\AttributeSql.PgSql\AttributeSql.PgSql.csproj" />
+    <ProjectReference Include="..\AttributeSql.SqlServer\AttributeSql.SqlServer.csproj" />
+  </ItemGroup>
+
+</Project>

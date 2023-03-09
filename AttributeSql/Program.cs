@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -15,14 +16,17 @@ namespace AttributeSql
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+            AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            CreateHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder CreateWebHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults((webBuilder) =>
-            {
-                webBuilder.UseStartup<Startup>();
-            }); 
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                }).UseAutofac(); 
     }
 }

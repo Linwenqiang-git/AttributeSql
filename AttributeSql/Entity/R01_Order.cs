@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AttributeSqlDLL.Core.Model;
+using AttributeSql.Core.Models;
 
 namespace AttributeSql.Entity
 {

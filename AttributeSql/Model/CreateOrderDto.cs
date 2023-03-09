@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AttributeSqlDLL.Core.Model;
-using AttributeSqlDLL.Core.SqlAttribute.CudAttr;
+using AttributeSql.Core.Models;
+using AttributeSql.Core.SqlAttribute.CudAttr;
 
 namespace AttributeSql.Model
 {
