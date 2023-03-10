@@ -9,6 +9,16 @@
     }
   },
   "profiles": {
+    "AttributeSql.Demo": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:44307"
+    },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,

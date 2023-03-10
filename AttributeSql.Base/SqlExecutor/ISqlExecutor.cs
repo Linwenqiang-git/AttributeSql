@@ -17,7 +17,7 @@ namespace AttributeSql.Base.SqlExecutor
     /// Sql执行器
     /// </summary>
     /// <typeparam name="TDbContext"></typeparam>
-    public interface ISqlExecutor<TDbContext> : IPaginationExtend where TDbContext : IEfCoreDbContext
+    public interface ISqlExecutor<TDbContext> : IPaginationExtend, IParameterBuildExtend, IRelationBuildExtend where TDbContext : IEfCoreDbContext
     {
         #region Db Context
         Task<TDbContext> GetDbContextAsync();

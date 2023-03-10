@@ -1,4 +1,7 @@
-﻿using System;
+﻿using AttributeSql.Base.Enums;
+using AttributeSql.Core.Extensions;
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,19 +13,22 @@ namespace AttributeSql.Core.SqlAttribute.Where
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class OperationCodeAttribute : Attribute
     {
-        private string optioncode = "=";
-        public OperationCodeAttribute() { }
-        public OperationCodeAttribute(string optioncode)
+        private OperatorEnum _operatorEnum;
+        public OperationCodeAttribute()
         {
-            this.optioncode = optioncode;
+            _operatorEnum = OperatorEnum.Equal;
         }
-        public string GetOption()
+        public OperationCodeAttribute(OperatorEnum operatorEnum)
         {
-            return optioncode;
+            this._operatorEnum = operatorEnum;
         }
-    }
-    public enum OperateCode
-    { 
-        
-    }
+        public OperatorEnum GetOperation()
+        {
+            return _operatorEnum;
+        }
+        public string GetOperationDescription()
+        {
+            return _operatorEnum.GetDescription();
+        }
+    }    
 }

@@ -3,9 +3,9 @@ using AttributeSql.Base.Exceptions;
 using AttributeSql.Core.Models;
 using AttributeSql.Core.SqlAttribute.JoinTable;
 
-namespace AttributeSql.Core.SqlAttributeExtensions
+namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
 {
-    internal static class JoinTableExtend
+    internal static class JoinTableExtension
     {
         /// <summary>
         /// 获取连接的表

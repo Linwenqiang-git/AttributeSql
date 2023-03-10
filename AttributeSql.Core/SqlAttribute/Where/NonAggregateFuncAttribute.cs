@@ -1,4 +1,8 @@
-﻿using System;
+﻿using AttributeSql.Base.Enums;
+using AttributeSql.Core.Enums;
+using AttributeSql.Core.Extensions;
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -18,14 +22,14 @@ namespace AttributeSql.Core.SqlAttribute.Where
         /// <param name="values">字段值</param>
         /// <param name="value"></param>
         /// <param name="optioncode">操作符</param>
-        public NonAggregateFuncAttribute(string FuncName, string[] fields = null, string[] values = null, string value = null, string optioncode = "=")
+        public NonAggregateFuncAttribute(NonAggregateFunctionEnum funcName, string[] fields = null, string[] values = null, string value = null, OperatorEnum optioncode = OperatorEnum.Equal)
         {
             try
             {
-                switch (FuncName.ToUpper())
+                switch (funcName)
                 {
-                    case "CONCAT"://字符串连接函数
-                        funcoperate.Append($" {FuncName}");
+                    case NonAggregateFunctionEnum.Concat:
+                        funcoperate.Append($" {funcName.GetDescription()}");
                         for (int i = 0; i < fields.Length; i++)
                         {
                             if (i < fields.Length - 1)
@@ -34,7 +38,7 @@ namespace AttributeSql.Core.SqlAttribute.Where
                                 funcoperate.Append($" {fields[i]} ");
                         }
                         funcoperate.Append(optioncode);
-                        if (optioncode.ToUpper() == "IN" || optioncode.ToUpper() == "NOT IN")
+                        if (optioncode == OperatorEnum.In || optioncode == OperatorEnum.NotIn)
                         {
                             funcoperate.Append(" (");
                             for (int i = 0; i < values.Length; i++)
@@ -46,7 +50,7 @@ namespace AttributeSql.Core.SqlAttribute.Where
                             }
                             funcoperate.Append(" )");
                         }
-                        else if (optioncode.ToUpper() == "=")
+                        else if (optioncode == OperatorEnum.Equal)
                         {
                             funcoperate.Append($" '{value}'");
                         }

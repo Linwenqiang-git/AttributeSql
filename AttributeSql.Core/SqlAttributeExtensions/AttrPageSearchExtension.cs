@@ -1,13 +1,55 @@
-﻿using System;
-using System.Text;
-using AttributeSql.Base.Exceptions;
+﻿using AttributeSql.Base.Exceptions;
 using AttributeSql.Core.Models;
 using AttributeSql.Core.SqlAttribute.OrderBy;
+using AttributeSql.Core.SqlAttribute.Select;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace AttributeSql.Core.SqlAttributeExtensions
 {
-    internal static class DefaultOrderByExtend
+    internal static class AttrPageSearchExtension
     {
+        /// <summary>
+        /// 时间字段搜索扩展为一天
+        /// </summary>
+        /// <typeparam name="TPageSearch"></typeparam>
+        /// <param name="pageSearch"></param>
+        /// <returns></returns>
+        public static TPageSearch TimeConvert<TPageSearch>(this TPageSearch pageSearch) where TPageSearch : AttrPageSearch
+        {
+            if (pageSearch == null)
+                return default;
+            foreach (var prop in pageSearch.GetType().GetProperties())
+            {
+                if (prop.IsDefined(typeof(DbFieldNameAttribute), true))
+                {
+                    DbFieldNameAttribute? fieldName = prop.GetCustomAttributes(typeof(DbFieldNameAttribute), true)[0] as DbFieldNameAttribute;
+                    //时间类型字段
+                    if (fieldName != null && fieldName.DatetimeField())
+                    {
+                        //判断当前属性是否有值(主要针对string)
+                        object? objvalue = prop?.GetValue(pageSearch, null);
+                        if (objvalue != null && objvalue is string && !string.IsNullOrEmpty((string)objvalue))
+                        {
+                            string TimeSuffix = fieldName.GetTimeSuffix();
+                            if (string.IsNullOrEmpty(TimeSuffix))
+                            {
+                                if (prop.Name.ToLower().Contains("start"))
+                                    TimeSuffix = " 00:00:00";
+                                else if (prop.Name.ToLower().Contains("end"))
+                                    TimeSuffix = " 23:59:59";
+                            }
+                            prop.SetValue(pageSearch, (string)objvalue + TimeSuffix);
+                        }
+                    }
+                }
+            }
+            return pageSearch;
+        }
         /// <summary>
         /// 获取该查询默认的排序方法
         /// 目前只支持单一默认字段的排序
@@ -49,7 +91,7 @@ namespace AttributeSql.Core.SqlAttributeExtensions
             orderby.Append(" ");
             if (orderby.ToString() == "ORDER BY ")
             {
-                return string.Empty;    
+                return string.Empty;
             }
             return orderby.ToString();
         }

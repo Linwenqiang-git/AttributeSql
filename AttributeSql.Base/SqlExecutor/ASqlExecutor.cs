@@ -13,6 +13,9 @@ using AttributeSql.Base.Helper;
 using System.Security.Cryptography;
 using AttributeSql.Base.PersonalizedSqls;
 using Volo.Abp.DependencyInjection;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using AttributeSql.Base.Enums;
 
 namespace AttributeSql.Base.SqlExecutor
 {
@@ -77,11 +80,10 @@ namespace AttributeSql.Base.SqlExecutor
             await using var reader = await command.ExecuteReaderAsync();
             if (reader == null || reader.HasRows == false)
                 return default;
-            //返回结果
-            var resultList = new List<T>();
-            //读取一行
-            while (await reader.ReadAsync())
-                resultList.Add(ExpressionToGeneric<T>.ToClass(reader));
+            //返回结果          
+            var dt = new DataTable();
+            dt.Load(reader: reader);
+            var resultList = DtToEnumerable.ToEnumerable<T>(dt);
             return resultList;
         }
         /// <summary>
@@ -93,7 +95,7 @@ namespace AttributeSql.Base.SqlExecutor
         /// <param name="parameters"></param>
         /// <param name="tran"></param>
         /// <returns></returns>
-        public async ValueTask<int> QueryCountBySqlAsync(string sql, int timeout, object[] parameters)            
+        public async ValueTask<int> QueryCountBySqlAsync(string sql, int timeout, object[] parameters)
         {
             var _context = await GetDbContextAsync();
             var dbConnection = _context.Database.GetDbConnection();
@@ -193,12 +195,33 @@ namespace AttributeSql.Base.SqlExecutor
         /// <param name="Size"></param>
         /// <returns></returns>
         public abstract string PaginationSql(int? Offset, int? Size);
+        /// <summary>
+        /// 参数化构建
+        /// </summary>
+        /// <typeparam name="TParameter"></typeparam>
+        /// <typeparam name="TModel"></typeparam>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public abstract DbParameter[] BuildParameter<TModel>(TModel model) where TModel : class;
         #endregion
 
         public void Dispose()
         {
             
         }
-
+        /// <summary>
+        /// 通用查询关系构建
+        /// </summary>
+        /// <param name="propertyInfo"></param>
+        /// <param name="tableField"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        public abstract StringBuilder GeneralQueryRelationBuild([NotNull] object obj, [NotNull] PropertyInfo propertyInfo, string tableField, OperatorEnum option);
+        /// <summary>
+        /// 高级查询关系构建
+        /// </summary>
+        /// <param name="propertyInfo"></param>
+        /// <param name="tableField"></param>
+        /// <returns></returns>
+        public abstract StringBuilder AdvanceQueryRelationBuild([NotNull] object obj, [NotNull] PropertyInfo propertyInfo, string tableField, OperatorEnum option);
     }
 }

@@ -6,7 +6,7 @@ using AttributeSql.Core.SqlAttribute.CudAttr;
 
 namespace AttributeSql.Core.SqlAttributeExtensions
 {
-    internal static class InsertExtend
+    internal static class InsertExtension
     {
         internal static string InsertEntity(this AttrEntityBase entity)
         {

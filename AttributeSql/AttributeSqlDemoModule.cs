@@ -8,7 +8,11 @@ using AttributeSql.Demo.DbContext;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.PlatformAbstractions;
+using Microsoft.OpenApi.Models;
 
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 
@@ -55,11 +59,12 @@ namespace AttributeSql
             Configure<AbpDbContextOptions>(options =>
             {
                 options.UseNpgsql();
-            });            
-            //context.Services.AddTransient(typeof(AttributeSqlDemoDbContext));
-            
-            context.Services.UsePgsql();
+            });
+            //根据自己的数据库添加对应的执行器
+            context.Services.AddPgsqlExecutorService();
+            //注入特性sql服务
             context.Services.AddTransient(typeof(IAttrSqlService<>), typeof(AttrSqlService<>));
+            ConfigureSwaggerServices(context.Services);
         }
         public override void OnApplicationInitialization(ApplicationInitializationContext context)
         {
@@ -77,7 +82,56 @@ namespace AttributeSql
             {
                 endpoints.MapControllers();
             });
-            
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "SCM CmsCenter API");
+            });
+
+        }
+        private void ConfigureSwaggerServices(IServiceCollection service)
+        {
+            service.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "SCM CmsCenter API", Version = "v0.1" });
+                options.DocInclusionPredicate((doc, description) => true);
+                options.CustomSchemaIds(type => type.FullName);
+                foreach (var item in XmlCommentsFilePath)
+                {
+                    options.IncludeXmlComments(item, true);
+                }
+                options.SchemaFilter<EnumSchemaFilter>();
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Scheme = "Bearer",
+                    Description = "Specify the authorization token.",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                        {
+                            new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference {Type = ReferenceType.SecurityScheme, Id = "Bearer"}
+                            },
+                            new string[] { }
+                        },
+                });
+            });
+        }
+        private List<string> XmlCommentsFilePath
+        {
+            get
+            {
+                var basePath = PlatformServices.Default.Application.ApplicationBasePath;
+                DirectoryInfo d = new DirectoryInfo(basePath);
+                FileInfo[] files = d.GetFiles("*.xml");
+                var xmls = files.Select(a => Path.Combine(basePath, a.FullName)).ToList();
+                return xmls;
+            }
         }
     }
 }

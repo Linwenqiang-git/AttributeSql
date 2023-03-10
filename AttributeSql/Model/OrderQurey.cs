@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using AttributeSql.Base.Enums;
 using AttributeSql.Core.Models;
 using AttributeSql.Core.SqlAttribute.JoinTable;
 using AttributeSql.Core.SqlAttribute.OrderBy;
@@ -19,42 +21,42 @@ namespace AttributeSql.Model
         /// <summary>
         /// field1
         /// </summary>
-        [OperationCode("in")]
+        [OperationCode(OperatorEnum.In)]
         [TableByName("p")]
         [DbFieldName("dbfieldname_CustomerId")]
         public List<long> Customer { get; set; }
         /// <summary>
         /// field2
         /// </summary>        
-        [OperationCode("=")]
+        [OperationCode(OperatorEnum.Equal)]
         [TableByName("p")]
         [DbFieldName("dbfieldname_ProductId")]
         public long? ProductId { get; set; }
         /// <summary>
         /// field3
         /// </summary>
-        [OperationCode("=")]
+        [OperationCode(OperatorEnum.Equal)]
         [TableByName("o")]
         [DbFieldName("dbfieldname_ProductFlowId")]
         public long? ProductFlowId { get; set; }
         /// <summary>
         /// field4
         /// </summary>
-        [OperationCode(">=")]
+        [OperationCode(OperatorEnum.GreaterOrEqual)]
         [TableByName("o")]
         [DbFieldName("dbfieldname_FinishTime")]
         public DateTime? PayTimeStart { get; set; }
         /// <summary>
         /// field5
         /// </summary>
-        [OperationCode("<=")]
+        [OperationCode(OperatorEnum.LessOrEqual)]
         [TableByName("o")]
         [DbFieldName("dbfieldname_FinishTime")]
         public DateTime? PayTimeEnd { get; set; }
         /// <summary>
         /// field6
         /// </summary>
-        [OperationCode("=")]
+        [OperationCode(OperatorEnum.Equal)]
         [TableByName("o")]
         [DbFieldName("dbfieldname_PayStatus")]
         public long? PayStatus { get; set; }        

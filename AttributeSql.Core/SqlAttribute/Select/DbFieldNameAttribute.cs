@@ -1,4 +1,6 @@
-﻿using System;
+﻿using AttributeSql.Core.Extensions;
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -19,11 +21,11 @@ namespace AttributeSql.Core.SqlAttribute.Select
         /// <param name="_DbFieldName">字段名称</param>
         /// <param name="_IsDatetime">是否是时间类型字段</param>
         /// <param name="TimeSuffix">时间类型尾缀</param>
-        public DbFieldNameAttribute(string _DbFieldName, bool _IsDatetime = false, string _TimeSuffix = "")
+        public DbFieldNameAttribute(string dbFieldName, bool isDatetime = false, string timeSuffix = "")
         {
-            DbFieldName = _DbFieldName;
-            IsDatetime = _IsDatetime;
-            TimeSuffix = _TimeSuffix;
+            DbFieldName = dbFieldName;
+            IsDatetime = isDatetime;
+            TimeSuffix = timeSuffix;
         }
         public string GetDbFieldName()
         {

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AttributeSql.Base.PersonalizedSqls
 {
-    public partial interface IPaginationExtend
+    public interface IPaginationExtend
     {
         /// <summary>
         /// 分页sql

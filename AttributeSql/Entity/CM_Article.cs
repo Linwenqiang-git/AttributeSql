@@ -1,9 +1,16 @@
-﻿using AttributeSql.Core.Models;
+﻿using AttributeSql.Base.Enums;
+using AttributeSql.Core.Extensions;
+using AttributeSql.Core.Models;
+using AttributeSql.Base.Models.AdvancedSearchModels;
+using AttributeSql.Core.SqlAttribute.JoinTable;
+using AttributeSql.Core.SqlAttribute.Select;
+using AttributeSql.Core.SqlAttribute.Where;
 
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,21 +19,9 @@ using Volo.Abp.Domain.Entities;
 
 namespace UFX.SCM.Cloud.CmsCenter.Domain.AggregatesModel.ContentManage
 {
-    /// <summary>
-    /// 文章
-    /// </summary>
+    [MainTable("cm_article")]
     public class CM_Article : AttrBaseResult
     {
-        #region 构造函数
-        public CM_Article()
-        {
-            IsRecycle = false;
-            IsPublish = false;
-            Content = string.Empty;
-            PublishTime = null;
-            PublishMan = null;            
-        }
-        #endregion
 
         #region 属性        
         /// <summary>
@@ -73,38 +68,18 @@ namespace UFX.SCM.Cloud.CmsCenter.Domain.AggregatesModel.ContentManage
 
         public virtual DateTime? SyncDateTime { get; set; }
         #endregion        
-
-        #region 行为
-        /// <summary>
-        /// 发布文章
-        /// </summary>
-        public void PublishArtical(string publishMan)
-        {
-            this.IsPublish = true;
-            this.PublishTime = DateTime.Now;
-            this.PublishMan = publishMan;
-        }
-        /// <summary>
-        /// 撤销文章
-        /// </summary>
-        public void RescindArtical()
-        {
-            this.IsPublish = false;
-            this.PublishTime = null;
-            this.PublishMan = null;
-        }
-        /// <summary>
-        /// 设置排序
-        /// </summary>
-        /// <param name="sort"></param>
-        public void SetSort(int? sort)
-        {
-            if (sort == null)
-            {
-                return;
-            }
-            this.Sort = (int)sort;
-        }
-        #endregion
     }
+    public class CM_Article_Search : AttrPageSearch
+    {
+        /// <summary>
+        /// 文章标题
+        /// </summary>
+        [DbFieldName("ArticleTitle")]
+        public StringField ArticleTitle { get; set; }
+        /// <summary>
+        /// 是否发布
+        /// </summary>
+        [OperationCode(OperatorEnum.Equal)]
+        public bool IsPublish { get; set; }
+    }    
 }

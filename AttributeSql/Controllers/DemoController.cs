@@ -23,10 +23,10 @@ namespace AttributeSql.Controllers
         {
             client = _client;
         }
-        [HttpGet]
-        public async Task<AttrResultModel> query()
+        [HttpPost]
+        public async Task<AttrResultModel> query(CM_Article_Search search)
         {
-            var result = await client.ExecQuerySql<CM_Article>("select * from cm_article");
+            var result = await client.GetSpecifyResultDto<CM_Article_Search,CM_Article>(search);
             return result;
         }
         /// <summary>

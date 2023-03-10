@@ -5,7 +5,7 @@ using AttributeSql.Core.Models;
 
 namespace AttributeSql.Core.SqlAttributeExtensions
 {
-    internal static class DeleteExtend
+    internal static class DeleteExtension
     {
         /// <summary>
         /// 根据主键删除实体

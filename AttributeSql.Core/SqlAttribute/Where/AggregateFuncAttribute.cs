@@ -1,4 +1,7 @@
-﻿using System;
+﻿using AttributeSql.Core.Enums;
+using AttributeSql.Core.Extensions;
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,14 +12,18 @@ namespace AttributeSql.Core.SqlAttribute.Where
     /// </summary>
     public class AggregateFuncAttribute : Attribute
     {
-        private string funcoperate;
-        public AggregateFuncAttribute(string FuncName)
+        private AggregateFunctionEnum _aggregateFunc;
+        public AggregateFuncAttribute(AggregateFunctionEnum aggregate)
         {
-            funcoperate = FuncName;
+            _aggregateFunc = aggregate;
         }
-        public string GetFuncoperate()
+        /// <summary>
+        /// 获取聚合方法
+        /// </summary>
+        /// <returns></returns>
+        public string GetAggregateFunc()
         {
-            return funcoperate;
+            return _aggregateFunc.GetDescription();
         }
     }
 }

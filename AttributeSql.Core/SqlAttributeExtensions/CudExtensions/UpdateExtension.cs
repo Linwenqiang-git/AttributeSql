@@ -7,7 +7,7 @@ using AttributeSql.Core.SqlAttribute.CudAttr;
 
 namespace AttrSqlDbLite.Core.SqlAttributeExtensions
 {
-    internal static class UpdateExtend
+    internal static class UpdateExtension
     {
         /// <summary>
         /// 根据主键更新

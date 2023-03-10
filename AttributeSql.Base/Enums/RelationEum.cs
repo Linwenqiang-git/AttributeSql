@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AttributeSql.Core.Enums
+namespace AttributeSql.Base.Enums
 {
-    public enum OperatorEums
+    public enum RelationEume
     {
         Or = 1,
         And

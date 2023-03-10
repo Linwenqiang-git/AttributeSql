@@ -1,5 +1,6 @@
 ﻿using AttributeSql.Base.SqlExecutor;
 
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 
 using System;
@@ -16,8 +17,5 @@ namespace AttributeSql.Base
     [DependsOn(typeof(AbpEntityFrameworkCoreModule))]
     public class AttributeSqlBaseModule : AbpModule
     {
-        public override void ConfigureServices(ServiceConfigurationContext context)
-        {            
-        }
     }
 }

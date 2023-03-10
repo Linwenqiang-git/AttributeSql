@@ -3,9 +3,9 @@ using AttributeSql.Core.Models;
 using AttributeSql.Core.SqlAttribute.JoinTable;
 using AttributeSql.Core.SqlAttribute.Select;
 
-namespace AttributeSql.Core.SqlAttributeExtensions
+namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
 {
-    internal static class SelectExtend
+    internal static class SelectExtension
     {
         /// <summary>
         /// 获取查询字段

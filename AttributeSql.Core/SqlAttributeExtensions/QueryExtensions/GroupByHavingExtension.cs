@@ -2,9 +2,9 @@
 using AttributeSql.Core.Models;
 using AttributeSql.Core.SqlAttribute.GroupHaving;
 
-namespace AttributeSql.Core.SqlAttributeExtensions
+namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
 {
-    internal static class GroupByHavingExtend
+    internal static class GroupByHavingExtension
     {
         internal static string GroupByHaving(this AttrBaseResult model)
         {

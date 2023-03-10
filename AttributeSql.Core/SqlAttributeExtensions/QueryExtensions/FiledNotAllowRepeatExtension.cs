@@ -4,9 +4,9 @@ using AttributeSql.Base.Exceptions;
 using AttributeSql.Core.Models;
 using AttributeSql.Core.SqlAttribute.Validator;
 
-namespace AttributeSql.Core.SqlAttributeExtensions
+namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
 {
-    internal static class FiledNotAllowRepeatExtend
+    internal static class FiledNotAllowRepeatExtension
     {
         /// <summary>
         /// 校验指定字段的值是否重复
@@ -40,12 +40,12 @@ namespace AttributeSql.Core.SqlAttributeExtensions
                     {
                         throw new AttrSqlException("未设置NotAllowRepeatAttribute特性的表名称，请检查特性标记！");
                     }
-                   
+
                     var FieldNames = table.GetDbFieldNames();
                     if (FieldNames == null || FieldNames.Length == 0)
                     {
                         builder.Append($"SELECT {table.GetPrimaryKey()} FROM {table.GetTableName()} ");
-                        builder.Append($"WHERE ({table.GetDbFieldName()}=@{prop.Name} ");                            
+                        builder.Append($"WHERE ({table.GetDbFieldName()}=@{prop.Name} ");
                     }
                     else
                     {
@@ -72,7 +72,7 @@ namespace AttributeSql.Core.SqlAttributeExtensions
                     if (!string.IsNullOrEmpty(SoftDeleteField))
                         builder.Append($" AND {SoftDeleteField} = {SoftDeleteFieldValue}");
                     checkSqlCollect.Add(builder.ToString());
-                    SoftDeleteField = string.Empty;                    
+                    SoftDeleteField = string.Empty;
                     builder.Clear();
                 }
             }
@@ -84,7 +84,7 @@ namespace AttributeSql.Core.SqlAttributeExtensions
         /// <param name="model"></param>
         /// <param name="checkSqltag"></param>
         /// <returns></returns>
-        internal static string NotAllowKeySql(this AttrBaseModel model,int checkSqltag = 1)
+        internal static string NotAllowKeySql(this AttrBaseModel model, int checkSqltag = 1)
         {
             string SoftDeleteField = string.Empty;
             long SoftDeleteFieldValue = 1;
@@ -98,7 +98,7 @@ namespace AttributeSql.Core.SqlAttributeExtensions
                     continue;
                 }
                 else
-                {                    
+                {
                     //找到要检查的特性
                     if (++attrNum == checkSqltag)
                     {
@@ -147,7 +147,7 @@ namespace AttributeSql.Core.SqlAttributeExtensions
                             builder.Append($" AND {SoftDeleteField} = {SoftDeleteFieldValue}");
                         break;
                     }
-                    
+
                 }
             }
             return builder.ToString();
@@ -158,7 +158,7 @@ namespace AttributeSql.Core.SqlAttributeExtensions
         /// <param name="model"></param>
         /// <param name="num">表示第几个不允许为空的属性</param>
         /// <returns></returns>
-        internal static string GetErrorMsg(this AttrBaseModel model,int num = 1)
+        internal static string GetErrorMsg(this AttrBaseModel model, int num = 1)
         {
             int flag = 1;
             StringBuilder builder = new StringBuilder();

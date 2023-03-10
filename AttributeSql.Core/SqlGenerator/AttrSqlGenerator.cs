@@ -15,6 +15,7 @@ using AttributeSql.Base;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.DependencyInjection;
 using AttrSqlDbLite.Core.SqlAttributeExtensions;
+using AttributeSql.Core.SqlAttributeExtensions.QueryExtensions;
 
 namespace AttributeSql.Core.Repository
 {
@@ -116,14 +117,14 @@ namespace AttributeSql.Core.Repository
         #endregion
 
         #region Debug sql
-        internal string DebugQuerySql<TResultDto, TPageSearch>(TPageSearch pageSearch,bool IngnorIntDefault = true,Func<string> whereSql = null)
+        internal string DebugQuerySql<TResultDto, TPageSearch>(TPageSearch pageSearch,bool ingnorIntDefault = true,Func<string> whereSql = null)
             where TPageSearch : AttrPageSearch
             where TResultDto : AttrBaseResult, new()
         {
             TResultDto dto = new TResultDto();            
             string select = dto.Select();//获取查询的字段
             string join = dto.Join<TResultDto>();//获取连接的表
-            string where = pageSearch.ParaWhere(IngnorIntDefault);//获取参数化查询where条件      
+            string where = pageSearch.Where(_sqlExecutor,ingnorIntDefault);//获取参数化查询where条件      
             if (whereSql != null)
             {
                 if (string.IsNullOrEmpty(where))
@@ -183,7 +184,7 @@ namespace AttributeSql.Core.Repository
         /// <param name="tableName"></param>
         /// <param name="IngnorIntDefault">int类型的默认值是否忽略,默认忽略</param>
         /// <returns></returns>
-        internal async Task<AttrPageResult<TEntity>> GetAll<TPageSearch, TEntity>(TPageSearch pageSearch, string tableName = "", bool IngnorIntDefault = true)
+        internal async Task<AttrPageResult<TEntity>> GetAll<TPageSearch, TEntity>(TPageSearch pageSearch, string tableName = "", bool ingnorIntDefault = true)
             where TPageSearch : AttrPageSearch
             where TEntity : AttrEntityBase, new()
         {
@@ -193,7 +194,7 @@ namespace AttributeSql.Core.Repository
             }
             var page = new AttrPageResult<TEntity>(pageSearch.Index, pageSearch.Size);
 
-            string where = pageSearch.ParaWhere(IngnorIntDefault);//获取参数化查询where条件
+            string where = pageSearch.Where(_sqlExecutor,ingnorIntDefault);//获取参数化查询where条件
 
             string sort = string.Empty;
 
@@ -223,8 +224,8 @@ namespace AttributeSql.Core.Repository
         /// <param name="IngnorIntDefault"></param>
         /// <param name="usingCache">是否启用sql缓存(默认启用)</param>
         /// <returns></returns>
-        internal async Task<AttrPageResult<TResultDto>> GetSpecifyResultDto<TResultDto, TPageSearch>(TPageSearch pageSearch,
-                                                    bool IngnorIntDefault = true,
+        internal async Task<AttrPageResult<TResultDto>> GetSpecifyResultDto<TResultDto, TPageSearch>(TPageSearch? pageSearch,
+                                                    bool ingnorIntDefault = true,
                                                     Func<string> whereSql = null,
                                                     bool usingCache = true)
             where TResultDto : AttrBaseResult, new()
@@ -243,8 +244,8 @@ namespace AttributeSql.Core.Repository
                 join = dto.Join<TResultDto>();//获取连接的表
                 groupByHaving = dto.GroupByHaving(); //获取分组部分
             }
-            pageSearch = pageSearch?.WhereValueConvert();
-            string where = pageSearch.ParaWhere(IngnorIntDefault);//获取参数化查询where条件      
+            pageSearch = pageSearch?.TimeConvert();
+            string? where = pageSearch?.Where(_sqlExecutor,ingnorIntDefault);//获取参数化查询where条件      
             if (whereSql != null)
             {
                 if (string.IsNullOrEmpty(where))
@@ -258,7 +259,7 @@ namespace AttributeSql.Core.Repository
             }            
             //排序规则
             string sort = string.Empty;
-            if (!string.IsNullOrEmpty(pageSearch.SortField))
+            if (!string.IsNullOrEmpty(pageSearch?.SortField))
             {
                 if (pageSearch.SortWay.ToUpper().Trim() == "ASC" || pageSearch.SortWay.ToUpper().Trim() == "DESC")
                     sort = $" Order by {pageSearch.SortField} {pageSearch.SortWay} ";
@@ -269,11 +270,11 @@ namespace AttributeSql.Core.Repository
             }
             else
             {
-                sort = $" {pageSearch.DefaultSort()}";
+                sort = $" {pageSearch?.DefaultSort()}";
             }
             //分页规则
             string Limit = string.Empty;
-            if (pageSearch.Index != null && pageSearch.Size != null)
+            if (pageSearch?.Index != null && pageSearch.Size != null)
             {
                 if (pageSearch.Index < 1 || pageSearch.Size < 1)
                 {                    
@@ -291,15 +292,16 @@ namespace AttributeSql.Core.Repository
             var page = new AttrPageResult<TResultDto>(pageSearch.Index, pageSearch.Size);
             await TryCatch(async () =>
             {
-                var queryTask = _sqlExecutor.QueryListBySqlAsync<TResultDto>($"{sql}", pageSearch);
+                var parameters = _sqlExecutor.BuildParameter(pageSearch);
+                page.Rows = await _sqlExecutor.QueryListBySqlAsync<TResultDto>($"{sql}", parameters);
                 int count = 0;
                 //如果有分页，统计当前查询共有多少条数据
                 if (!string.IsNullOrEmpty(Limit))
                 {
-                    string countsql = $"SELECT COUNT(1) as rownum {join} {where} {groupByHaving}";
+                    string countsql = $"SELECT COUNT(*) as rownum {join} {where} {groupByHaving}";
                     try
                     {
-                        count = await _sqlExecutor.QueryCountBySqlAsync(countsql, pageSearch);
+                        count = await _sqlExecutor.QueryCountBySqlAsync(countsql, parameters);
                     }
                     catch (AttrSqlException ex)
                     {
@@ -307,11 +309,10 @@ namespace AttributeSql.Core.Repository
                         {
                             //去掉limit
                             countsql = $"{select} {join} {where} {groupByHaving}";
-                            count = await _sqlExecutor.QueryCountBySqlAsync(countsql, pageSearch);
+                            count = await _sqlExecutor.QueryCountBySqlAsync(countsql, parameters);
                         }
                     }
                 }
-                page.Rows = await queryTask;
                 page.Total = count;
                 return sql.ToString();
             });
