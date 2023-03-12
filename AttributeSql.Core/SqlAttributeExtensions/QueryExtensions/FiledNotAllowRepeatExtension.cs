@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+
+using AttributeSql.Base.Enums;
 using AttributeSql.Base.Exceptions;
+using AttributeSql.Base.Extensions;
 using AttributeSql.Core.Models;
 using AttributeSql.Core.SqlAttribute.Validator;
 
@@ -44,18 +47,18 @@ namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
                     var FieldNames = table.GetDbFieldNames();
                     if (FieldNames == null || FieldNames.Length == 0)
                     {
-                        builder.Append($"SELECT {table.GetPrimaryKey()} FROM {table.GetTableName()} ");
-                        builder.Append($"WHERE ({table.GetDbFieldName()}=@{prop.Name} ");
+                        builder.Append($"{SqlKeyWordEnum.Select.GetDescription()} {table.GetPrimaryKey()} {SqlKeyWordEnum.From.GetDescription()} {table.GetTableName()} ");
+                        builder.Append($"{SqlKeyWordEnum.Where.GetDescription()} ({table.GetDbFieldName()}=@{prop.Name} ");
                     }
                     else
                     {
-                        builder.Append($"SELECT {table.GetPrimaryKey()} FROM {table.GetTableName()} ");
-                        builder.Append($"WHERE (");
+                        builder.Append($"{SqlKeyWordEnum.Select.GetDescription()} {table.GetPrimaryKey()} {SqlKeyWordEnum.From.GetDescription()} {table.GetTableName()} ");
+                        builder.Append($"{SqlKeyWordEnum.Where.GetDescription()} {SymbolEnum.LeftBrackets.GetDescription()}");
 
                         for (int i = 0; i < FieldNames.Length; i++)
                         {
                             if (i + 1 != FieldNames.Length)
-                                builder.Append($"{FieldNames[i]} = @{FieldNames[i]} AND ");
+                                builder.Append($"{FieldNames[i]} = @{FieldNames[i]} {RelationEume.And.GetDescription()} ");
                             else
                                 builder.Append($"{FieldNames[i]} = @{FieldNames[i]} ");
                         }
@@ -67,10 +70,10 @@ namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
                         SoftDeleteFieldValue = table.GetSoftDeleteFieldValue();
                     }
                     //补上where条件的括号以及软删除字段  
-                    if (builder.ToString().Contains("WHERE"))
-                        builder.Append($" )");
+                    if (builder.ToString().Contains(SqlKeyWordEnum.Where.GetDescription()))
+                        builder.Append($" {SymbolEnum.RightBrackets.GetDescription()}");
                     if (!string.IsNullOrEmpty(SoftDeleteField))
-                        builder.Append($" AND {SoftDeleteField} = {SoftDeleteFieldValue}");
+                        builder.Append($" {RelationEume.And.GetDescription()} {SoftDeleteField} = {SoftDeleteFieldValue}");
                     checkSqlCollect.Add(builder.ToString());
                     SoftDeleteField = string.Empty;
                     builder.Clear();
@@ -116,19 +119,19 @@ namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
                         var FieldNames = table.GetDbFieldNames();
                         if (FieldNames == null || FieldNames.Length == 0)
                         {
-                            builder.Append($"SELECT {table.GetPrimaryKey()} FROM {table.GetTableName()} ");
-                            builder.Append($"WHERE ({table.GetPrimaryKey()}=@{table.GetPrimaryKey()} ");
-                            builder.Append($"AND {table.GetDbFieldName()}=@{prop.Name} ");
+                            builder.Append($"{SqlKeyWordEnum.Select.GetDescription()} {table.GetPrimaryKey()} {SqlKeyWordEnum.From.GetDescription()} {table.GetTableName()} ");
+                            builder.Append($"{SqlKeyWordEnum.Where.GetDescription()} {SymbolEnum.LeftBrackets.GetDescription()}{table.GetPrimaryKey()}=@{table.GetPrimaryKey()} ");
+                            builder.Append($"{RelationEume.And.GetDescription()} {table.GetDbFieldName()}=@{prop.Name} ");
                         }
                         else
                         {
-                            builder.Append($"SELECT {table.GetPrimaryKey()} FROM {table.GetTableName()} ");
-                            builder.Append($"WHERE ({table.GetPrimaryKey()}=@{table.GetPrimaryKey()} AND ");
+                            builder.Append($"{SqlKeyWordEnum.Select.GetDescription()} {table.GetPrimaryKey()} {SqlKeyWordEnum.From.GetDescription()} {table.GetTableName()} ");
+                            builder.Append($"{SqlKeyWordEnum.Where.GetDescription()} ({table.GetPrimaryKey()}=@{table.GetPrimaryKey()} {RelationEume.And.GetDescription()} ");
 
                             for (int i = 0; i < FieldNames.Length; i++)
                             {
                                 if (i + 1 != FieldNames.Length)
-                                    builder.Append($"{FieldNames[i]} = @{FieldNames[i]} AND ");
+                                    builder.Append($"{FieldNames[i]} = @{FieldNames[i]} {RelationEume.And.GetDescription()} ");
                                 else
                                     builder.Append($"{FieldNames[i]} = @{FieldNames[i]} ");
                             }
@@ -141,10 +144,10 @@ namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
                             SoftDeleteFieldValue = table.GetSoftDeleteFieldValue();
                         }
                         //补上where条件的括号以及软删除字段
-                        if (builder.ToString().Contains("WHERE"))
-                            builder.Append($" )");
+                        if (builder.ToString().Contains(SqlKeyWordEnum.Where.GetDescription()))
+                            builder.Append($" {SymbolEnum.RightBrackets.GetDescription()}");
                         if (!string.IsNullOrEmpty(SoftDeleteField))
-                            builder.Append($" AND {SoftDeleteField} = {SoftDeleteFieldValue}");
+                            builder.Append($" {RelationEume.And.GetDescription()} {SoftDeleteField} {OperatorEnum.Equal.GetDescription()} {SoftDeleteFieldValue}");
                         break;
                     }
 

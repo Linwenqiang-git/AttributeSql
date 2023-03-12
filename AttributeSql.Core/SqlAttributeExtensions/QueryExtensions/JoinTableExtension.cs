@@ -1,5 +1,8 @@
 ﻿using System.Text;
+
+using AttributeSql.Base.Enums;
 using AttributeSql.Base.Exceptions;
+using AttributeSql.Base.Extensions;
 using AttributeSql.Core.Models;
 using AttributeSql.Core.SqlAttribute.JoinTable;
 
@@ -22,14 +25,16 @@ namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
                 throw new AttrSqlException("未定义主表或定义多个主表，请检查Dto特性配置!");
             }
             MainTableAttribute mainTable = Mainobj[0] as MainTableAttribute;
-            join.Append($"FROM {mainTable.GetMainTableName()} {mainTable.GetMainTableByName()} ");
+            join.Append($"{SqlKeyWordEnum.From.GetDescription()} {mainTable.GetMainTableName()} {mainTable.GetMainTableByName()} ");
             object[] AllTableObj = typeof(T).GetCustomAttributes(true);
             foreach (var table in AllTableObj)
             {
                 if (table.GetType() == typeof(LeftTableAttribute))
                 {
                     LeftTableAttribute leftTable = table as LeftTableAttribute;
-                    join.Append($"LEFT JOIN {leftTable.GetLeftTableName()} {leftTable.GetLeftTableByName()} ON {leftTable.GetConnectField()} ");
+                    join.Append($"{SqlKeyWordEnum.Left_Join.GetDescription()} " +
+                                $"{leftTable.GetLeftTableName()} {leftTable.GetLeftTableByName()} " +
+                                $"{SqlKeyWordEnum.On.GetDescription()} {leftTable.GetConnectField()} ");
                     if (!string.IsNullOrEmpty(leftTable.GetMainTableByName()))
                     {
                         join.Append($"{leftTable.GetMainTableByName()}.{leftTable.GetMainTableField()} ");
@@ -46,7 +51,7 @@ namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
                 else if (table.GetType() == typeof(RightTableAttribute))
                 {
                     RightTableAttribute rightTable = table as RightTableAttribute;
-                    join.Append($"RIGHT JOIN {rightTable.GetRightTableName()} {rightTable.GetRightTableByName()} ON {rightTable.GetConnectField()} ");
+                    join.Append($"{SqlKeyWordEnum.Right_Join.GetDescription()} {rightTable.GetRightTableName()} {rightTable.GetRightTableByName()} {SqlKeyWordEnum.On.GetDescription()} {rightTable.GetConnectField()} ");
                     if (!string.IsNullOrEmpty(rightTable.GetMainTableByName()))
                     {
                         join.Append($"{rightTable.GetMainTableByName()}.{rightTable.GetMainTableField()} ");
@@ -63,7 +68,7 @@ namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
                 else if (table.GetType() == typeof(InnerTableAttribute))
                 {
                     InnerTableAttribute innerTable = table as InnerTableAttribute;
-                    join.Append($"INNER JOIN {innerTable.GetInnerTableName()} {innerTable.GetInnerTableByName()} ON {innerTable.GetConnectField()}");
+                    join.Append($"{SqlKeyWordEnum.Inner_Join.GetDescription()} {innerTable.GetInnerTableName()} {innerTable.GetInnerTableByName()} {SqlKeyWordEnum.On.GetDescription()} {innerTable.GetConnectField()}");
                     if (!string.IsNullOrEmpty(innerTable.GetMainTableByName()))
                     {
                         join.Append($"{innerTable.GetMainTableByName()}.{innerTable.GetMainTableField()} ");
@@ -81,7 +86,7 @@ namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
                 {
                     SublistAttribute suiblist = table as SublistAttribute;
                     string IncidenceRelation = suiblist.GetIncidenceRelation();
-                    join.Append($"{IncidenceRelation} JOIN ({suiblist.GetTableSql()}) {suiblist.GetInnerTableByName()} ON {suiblist.GetConnectField()}");
+                    join.Append($"{IncidenceRelation} {SqlKeyWordEnum.Join.GetDescription()} ({suiblist.GetTableSql()}) {suiblist.GetInnerTableByName()} {SqlKeyWordEnum.On.GetDescription()} {suiblist.GetConnectField()}");
                     if (!string.IsNullOrEmpty(suiblist.GetMainTableByName()))
                     {
                         join.Append($"{suiblist.GetMainTableByName()}.{suiblist.GetMainTableField()} ");

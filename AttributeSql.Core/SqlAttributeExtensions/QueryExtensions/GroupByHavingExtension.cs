@@ -1,4 +1,7 @@
 ﻿using System.Text;
+
+using AttributeSql.Base.Enums;
+using AttributeSql.Base.Extensions;
 using AttributeSql.Core.Models;
 using AttributeSql.Core.SqlAttribute.GroupHaving;
 
@@ -11,8 +14,8 @@ namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
             StringBuilder groupbyBuilder = new StringBuilder();
             StringBuilder havingBuilder = new StringBuilder();
             //拿到所有标记了该特性的字段
-            groupbyBuilder.Append($" Group By ");
-            havingBuilder.Append($" Having ");
+            groupbyBuilder.Append($" {SqlKeyWordEnum.Group_By.GetDescription()} ");
+            havingBuilder.Append($" {SqlKeyWordEnum.Having.GetDescription()} ");
             foreach (var prop in model.GetType().GetProperties())
             {
                 if (prop.IsDefined(typeof(GroupByAttribute), true))
@@ -24,17 +27,17 @@ namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
                 {
                     HavingAttribute having = prop.GetCustomAttributes(typeof(HavingAttribute), true)[0] as HavingAttribute;
                     if (!string.IsNullOrEmpty(having.GetHavingCondition()))
-                        havingBuilder.Append($" {having.GetHavingCondition()} And");
+                        havingBuilder.Append($" {having.GetHavingCondition()} {RelationEume.And.GetDescription()}");
                 }
             }
-            if (groupbyBuilder.ToString() == " Group By ")
+            if (groupbyBuilder.ToString() == $" {SqlKeyWordEnum.Group_By.GetDescription()} ")
             {
                 groupbyBuilder.Clear();
                 return string.Empty;
             }
             else
                 groupbyBuilder.Remove(groupbyBuilder.Length - 1, 1);
-            if (havingBuilder.ToString() == " Having ")
+            if (havingBuilder.ToString() == $" {SqlKeyWordEnum.Having.GetDescription()} ")
             {
                 havingBuilder.Clear();
             }

@@ -178,6 +178,5 @@ namespace AttributeSql.PgSql.SpecialSqlGenerator
             return builder;
         }
         #endregion
-
     }
 }

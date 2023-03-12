@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Text;
+
+using AttributeSql.Base.Enums;
 using AttributeSql.Base.Exceptions;
+using AttributeSql.Base.Extensions;
 using AttributeSql.Core.Models;
 
 namespace AttributeSql.Core.SqlAttributeExtensions
@@ -15,7 +18,7 @@ namespace AttributeSql.Core.SqlAttributeExtensions
         internal static string DeleteByKey(this AttrEntityBase entity,string PrimaryFiled = null)
         {
             StringBuilder sql = new StringBuilder();
-            sql.Append($"Delete FROM {entity.GetType().Name} Where ");
+            sql.Append($"{SqlKeyWordEnum.Delete.GetDescription()} {SqlKeyWordEnum.From.GetDescription()} {entity.GetType().Name} {SqlKeyWordEnum.Where.GetDescription()} ");
             if (string.IsNullOrEmpty(PrimaryFiled))
             {
                 foreach (var prop in entity.GetType().GetProperties())
@@ -33,7 +36,7 @@ namespace AttributeSql.Core.SqlAttributeExtensions
             }
             if (string.IsNullOrEmpty(PrimaryFiled))
                 throw new AttrSqlException("删除实体失败:未找到主键字段，请配置要删除的主键字段");
-            sql.Append($"{PrimaryFiled}=@{PrimaryFiled}");
+            sql.Append($"{PrimaryFiled}{OperatorEnum.Equal.GetDescription()}@{PrimaryFiled}");
             return sql.ToString();
         }
         /// <summary>
@@ -46,12 +49,12 @@ namespace AttributeSql.Core.SqlAttributeExtensions
             if (condition == null || condition.Length == 0)
                 throw new AttrSqlException("未设置删除条件！");
             StringBuilder sql = new StringBuilder();
-            sql.Append($"Delete FROM {entity.GetType().Name} Where ");
+            sql.Append($"{SqlKeyWordEnum.Delete.GetDescription()} {SqlKeyWordEnum.From.GetDescription()} {entity.GetType().Name} {SqlKeyWordEnum.Where.GetDescription()} ");
             for (int i = 0; i < condition.Length; i++)
             {
-                sql.Append($"{condition[i]} = @{condition[i]}");
+                sql.Append($"{condition[i]} {OperatorEnum.Equal.GetDescription()} @{condition[i]}");
                 if (i < condition.Length - 1)
-                    sql.Append(" AND ");
+                    sql.Append($" {RelationEume.And.GetDescription()} ");
             }
             return sql.ToString();
         }
@@ -68,7 +71,7 @@ namespace AttributeSql.Core.SqlAttributeExtensions
             if (string.IsNullOrEmpty(softDeleteField))
                 throw new AttrSqlException("未设置软删除字段！");
             StringBuilder sql = new StringBuilder();
-            sql.Append($"Update {entity.GetType().Name} SET {softDeleteField}={value}, ");
+            sql.Append($"{SqlKeyWordEnum.Update.GetDescription()} {entity.GetType().Name} {SqlKeyWordEnum.Set.GetDescription()} {softDeleteField}{OperatorEnum.Equal.GetDescription()}{value}, ");
             string Primary = PrimaryKey;
             foreach (var prop in entity.GetType().GetProperties())
             {
@@ -118,10 +121,10 @@ namespace AttributeSql.Core.SqlAttributeExtensions
                 //对有值的进行操作
                 if (!isnull)
                 {
-                    sql.Append($"{prop.Name} = @{prop.Name},");
+                    sql.Append($"{prop.Name} {OperatorEnum.Equal.GetDescription()} @{prop.Name},");
                 }
             }
-            if (sql.ToString() == $"Update {entity.GetType().Name} SET ")
+            if (sql.ToString() == $"{SqlKeyWordEnum.Update.GetDescription()} {entity.GetType().Name} {SqlKeyWordEnum.Set.GetDescription()} ")
             {
                 return string.Empty;
             }
@@ -130,7 +133,7 @@ namespace AttributeSql.Core.SqlAttributeExtensions
             {
                 throw new AttrSqlException($"未找到{entity.GetType().Name}表包含ID的主键字段,更新失败！");
             }
-            sql.Append($" Where {Primary} = @{Primary}");
+            sql.Append($" {SqlKeyWordEnum.Where.GetDescription()} {Primary} {OperatorEnum.Equal.GetDescription()} @{Primary}");
             return sql.ToString();
         }
     }

@@ -12,6 +12,7 @@ namespace AttributeSql.Core.SqlAttribute.Select
     [AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
     public class DbFieldNameAttribute : Attribute
     {
+        private string _tableByName;
         private string _dbFieldName;
         private string _timeSuffix;
         private bool _isDatetime;
@@ -27,9 +28,18 @@ namespace AttributeSql.Core.SqlAttribute.Select
             _isDatetime = isDatetime;
             _timeSuffix = timeSuffix;
         }
+        public DbFieldNameAttribute(string tableByName,string dbFieldName, bool isDatetime = false, string timeSuffix = "")
+        { 
+            _tableByName = tableByName;
+            _dbFieldName = dbFieldName;
+            _isDatetime = isDatetime;
+            _timeSuffix = timeSuffix;
+        }
         public string GetDbFieldName()
         {
-            return _dbFieldName;
+            if(string.IsNullOrEmpty(_tableByName))
+                return _dbFieldName;
+            return $"{_tableByName}.{_dbFieldName}";
         }
         public string GetTimeSuffix()
         {

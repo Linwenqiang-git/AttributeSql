@@ -1,4 +1,6 @@
-﻿using AttributeSql.Base.SpecialSqlGenerators;
+﻿using AttributeSql.Base.Enums;
+using AttributeSql.Base.Extensions;
+using AttributeSql.Base.SpecialSqlGenerators;
 using AttributeSql.Core.Models;
 using AttributeSql.Core.SqlGenerators.ConditionGenerator;
 
@@ -8,7 +10,7 @@ namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
 {
     internal static class WhereExtension
     {
-        internal static string whereBase = " WHERE 1=1";
+        internal static string whereBase = $" {SqlKeyWordEnum.Where.GetDescription()} 1=1";
         #region 参数化where条件
         /// <summary>
         /// 参数化where条件,只针对标记特性且有值的字段生效
@@ -46,7 +48,7 @@ namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
         /// <returns></returns>
         internal static string ExtraWhere(this string paraWhere, Func<AttrPageSearch, string> func, AttrPageSearch model)
         {
-            string ExtraWhere = func.Invoke(model) != string.Empty ? $"  AND {func.Invoke(model)}" : func.Invoke(model);
+            string ExtraWhere = func.Invoke(model) != string.Empty ? $"  {RelationEume.And.GetDescription()} {func.Invoke(model)}" : func.Invoke(model);
             return paraWhere + ExtraWhere;
         }
     }

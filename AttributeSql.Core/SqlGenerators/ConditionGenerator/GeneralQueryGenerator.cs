@@ -68,38 +68,19 @@ namespace AttributeSql.Core.SqlGenerators.ConditionGenerator
         /// <returns></returns>
         public virtual string BuildOperatorLeft([NotNull] PropertyInfo propertyInfo)
         {
-            string fieldCondition = propertyInfo.Name;
-            if (propertyInfo.IsDefined(typeof(TableByNameAttribute), true))
-            {
-                fieldCondition = BuildTableAliasWithField(propertyInfo);
-            }
-            else if (propertyInfo.IsDefined(typeof(DbFieldNameAttribute), true))
+            string fieldCondition = string.Empty;
+            if (propertyInfo.IsDefined(typeof(DbFieldNameAttribute), true))
             {
                 fieldCondition = BuildOnlyField(propertyInfo);
             }
+            else
+            {
+                fieldCondition = propertyInfo.Name;
+            }
             return AddAggregateToFields(propertyInfo, fieldCondition);
-        }
+        }        
         /// <summary>
         /// 构建 [表别名.字段] 格式
-        /// </summary>
-        /// <param name="propertyInfo"></param>
-        /// <param name="isAppendAnd"></param>
-        /// <returns></returns>
-        private string BuildTableAliasWithField([NotNull] PropertyInfo propertyInfo)
-        {
-            TableByNameAttribute? byName = propertyInfo.GetCustomAttributes(typeof(TableByNameAttribute), true)[0] as TableByNameAttribute;
-            string fieldCondition = $" {byName?.GetName()}.";
-            if (propertyInfo.IsDefined(typeof(DbFieldNameAttribute), true))
-            {
-                DbFieldNameAttribute? fieldName = propertyInfo.GetCustomAttributes(typeof(DbFieldNameAttribute), true)[0] as DbFieldNameAttribute;
-                fieldCondition += fieldName?.GetDbFieldName();
-            }
-            else
-                fieldCondition += $"{propertyInfo.Name}";
-            return fieldCondition;
-        }
-        /// <summary>
-        /// 构建 [字段] 格式
         /// </summary>
         /// <param name="propertyInfo"></param>
         /// <param name="isAppendAnd"></param>

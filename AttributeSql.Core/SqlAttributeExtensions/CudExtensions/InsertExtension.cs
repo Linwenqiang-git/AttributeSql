@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Text;
+
+using AttributeSql.Base.Enums;
 using AttributeSql.Base.Exceptions;
+using AttributeSql.Base.Extensions;
 using AttributeSql.Core.Models;
 using AttributeSql.Core.SqlAttribute.CudAttr;
 
@@ -11,22 +14,22 @@ namespace AttributeSql.Core.SqlAttributeExtensions
         internal static string InsertEntity(this AttrEntityBase entity)
         {
             StringBuilder sql = new StringBuilder();
-            sql.Append($"INSERT INTO {entity.GetType().Name}");
-            sql.Append("(");
+            sql.Append($"{SqlKeyWordEnum.Insert_Into.GetDescription()} {entity.GetType().Name}");
+            sql.Append(SymbolEnum.LeftBrackets.GetDescription());
             foreach (var prop in entity.GetType().GetProperties())
             {
                 sql.Append($"`{prop.Name}`,");
             }
             sql.Remove(sql.Length - 1, 1);
-            sql.Append(")");
-            sql.Append("VALUES");
-            sql.Append("(");
+            sql.Append(SymbolEnum.RightBrackets.GetDescription());
+            sql.Append(SqlKeyWordEnum.Values.GetDescription());
+            sql.Append(SymbolEnum.LeftBrackets.GetDescription());
             foreach (var prop in entity.GetType().GetProperties())
             {
                 sql.Append($"@{prop.Name},");
             }
             sql.Remove(sql.Length - 1, 1);
-            sql.Append(")");
+            sql.Append(SymbolEnum.RightBrackets.GetDescription());
             return sql.ToString();
         }
         /// <summary>
@@ -37,10 +40,11 @@ namespace AttributeSql.Core.SqlAttributeExtensions
         internal static string BatchInsertEntity(this AttrEntityBase[] entities)
         {
             StringBuilder insertSql = new StringBuilder();
-            insertSql.Append($"INSERT INTO {entities[0].GetType().Name}");
-            insertSql.Append("(");
+            insertSql.Append($"{SqlKeyWordEnum.Insert_Into.GetDescription()} {entities[0].GetType().Name}");
+            insertSql.Append(SymbolEnum.LeftBrackets.GetDescription());
             foreach (var prop in entities[0].GetType().GetProperties())
             {
+                //todo：根据不同的字段情况进行修改
                 if (prop.Name.ToLower().Contains("modifyid") || 
                     prop.Name.ToLower().Contains("modifyby") || 
                     prop.Name.ToLower().Contains("modifytime") ||
@@ -51,12 +55,12 @@ namespace AttributeSql.Core.SqlAttributeExtensions
                 insertSql.Append($"`{prop.Name}`,");
             }
             insertSql.Remove(insertSql.Length - 1, 1);
-            insertSql.Append(")");
-            insertSql.Append("VALUES");
+            insertSql.Append(SymbolEnum.RightBrackets.GetDescription());
+            insertSql.Append(SqlKeyWordEnum.Values.GetDescription());
             
             for (int i = 0; i < entities.Length; i++)
             {
-                insertSql.Append("(");
+                insertSql.Append(SymbolEnum.LeftBrackets.GetDescription());
                 foreach (var prop in entities[0].GetType().GetProperties())
                 {
                     if (prop.Name.ToLower().Contains("modifyid") ||
@@ -71,14 +75,14 @@ namespace AttributeSql.Core.SqlAttributeExtensions
                     if (type.ToLower() == "string" || type.ToLower() == "datetime")
                     {
                         if (value == null)
-                            insertSql.Append($"NULL,");
+                            insertSql.Append($"{SqlKeyWordEnum.Null.GetDescription()},");
                         else
                             insertSql.Append($"'{value}',");
                     }
                     else
                     {
                         if (value == null)
-                            insertSql.Append($"NULL,");
+                            insertSql.Append($"{SqlKeyWordEnum.Null.GetDescription()},");
                         else
                         {
                             //时间类型的要单独处理
@@ -91,7 +95,7 @@ namespace AttributeSql.Core.SqlAttributeExtensions
                     }
                 }
                 insertSql.Remove(insertSql.Length - 1, 1);
-                insertSql.Append(")");
+                insertSql.Append(SymbolEnum.RightBrackets.GetDescription());
                 if (i + 1 < entities.Length)
                 {
                     insertSql.Append(",");
@@ -115,8 +119,8 @@ namespace AttributeSql.Core.SqlAttributeExtensions
                 throw new AttrSqlException("未定义新增表，请检查Dto特性配置!");
             }
             InsertTableAttribute mainTable = Mainobj[0] as InsertTableAttribute;
-            sql.Append($"INSERT INTO {mainTable.GetInsertTableName()}");
-            sql.Append("(");
+            sql.Append($"{SqlKeyWordEnum.Insert_Into.GetDescription()} {mainTable.GetInsertTableName()}");
+            sql.Append(SymbolEnum.LeftBrackets.GetDescription());
             foreach (var prop in model.GetType().GetProperties())
             {
                 if (prop.IsDefined(typeof(DbFiledMappingAttribute), true))
@@ -127,12 +131,12 @@ namespace AttributeSql.Core.SqlAttributeExtensions
                 }
             }
             sql.Remove(sql.Length - 1, 1);
-            sql.Append(")");
-            sql.Append("VALUES");
-            sql.Append("(");
+            sql.Append(SymbolEnum.RightBrackets.GetDescription());
+            sql.Append(SqlKeyWordEnum.Values.GetDescription());
+            sql.Append(SymbolEnum.LeftBrackets.GetDescription());
             sql.Append($"{values.ToString()}");
             sql.Remove(sql.Length - 1, 1);
-            sql.Append(")");
+            sql.Append(SymbolEnum.RightBrackets.GetDescription());
             return sql.ToString();
         }
     }

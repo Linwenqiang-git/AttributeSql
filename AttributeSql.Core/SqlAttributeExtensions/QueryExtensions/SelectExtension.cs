@@ -1,4 +1,7 @@
 ﻿using System.Text;
+
+using AttributeSql.Base.Enums;
+using AttributeSql.Base.Extensions;
 using AttributeSql.Core.Models;
 using AttributeSql.Core.SqlAttribute.JoinTable;
 using AttributeSql.Core.SqlAttribute.Select;
@@ -15,7 +18,7 @@ namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
         internal static string Select(this AttrBaseResult model)
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append("SELECT ");
+            builder.Append($"{SqlKeyWordEnum.Select.GetDescription()} ");
             foreach (var prop in model.GetType().GetProperties())
             {
                 //如果字段标记非查询属性，则直接跳过
@@ -33,7 +36,7 @@ namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
                 if (prop.IsDefined(typeof(NonAggregateFuncFieldAttribute), true))
                 {
                     NonAggregateFuncFieldAttribute funcFieldAttribute = prop.GetCustomAttributes(typeof(NonAggregateFuncFieldAttribute), true)[0] as NonAggregateFuncFieldAttribute;
-                    builder.Append($"{funcFieldAttribute.GetNonAggregateFuncField()} AS ");
+                    builder.Append($"{funcFieldAttribute.GetNonAggregateFuncField()} {SqlKeyWordEnum.As.GetDescription()} ");
                     builder.Append($"{prop.Name},");
                     continue;
                 }
@@ -41,7 +44,7 @@ namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
                 if (prop.IsDefined(typeof(AggregateFuncFieldAttribute), true))
                 {
                     AggregateFuncFieldAttribute funcFieldAttribute = prop.GetCustomAttributes(typeof(AggregateFuncFieldAttribute), true)[0] as AggregateFuncFieldAttribute;
-                    builder.Append($"{funcFieldAttribute.GetAggregateFuncField()} AS ");
+                    builder.Append($"{funcFieldAttribute.GetAggregateFuncField()} {SqlKeyWordEnum.As.GetDescription()} ");
                     builder.Append($"{prop.Name},");
                     continue;
                 }
@@ -49,19 +52,13 @@ namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
                 if (prop.IsDefined(typeof(OperationAttribute), true))
                 {
                     OperationAttribute operation = prop.GetCustomAttributes(typeof(OperationAttribute), true)[0] as OperationAttribute;
-                    builder.Append($"{operation.GetExpression()} AS {prop.Name},");
+                    builder.Append($"{operation.GetExpression()} {SqlKeyWordEnum.As.GetDescription()} {prop.Name},");
                     continue;
-                }
-                //表别名.字段名 AS 字段别名
-                if (prop.IsDefined(typeof(TableByNameAttribute), true))
-                {
-                    TableByNameAttribute byName = prop.GetCustomAttributes(typeof(TableByNameAttribute), true)[0] as TableByNameAttribute;
-                    builder.Append($"{byName.GetName()}.");
-                }
+                }                
                 if (prop.IsDefined(typeof(DbFieldNameAttribute), true))
                 {
                     DbFieldNameAttribute fieldName = prop.GetCustomAttributes(typeof(DbFieldNameAttribute), true)[0] as DbFieldNameAttribute;
-                    builder.Append($"{fieldName.GetDbFieldName()} AS ");
+                    builder.Append($"{fieldName.GetDbFieldName()} {SqlKeyWordEnum.As.GetDescription()} ");
                     builder.Append($"{prop.Name},");
                 }
                 else

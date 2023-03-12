@@ -35,6 +35,8 @@ namespace AttributeSql.Core.SqlAttribute.Select
             {
                 switch (_funcName)
                 {
+                    case AggregateFunctionEnum.Max:
+                    case AggregateFunctionEnum.Min:
                     case AggregateFunctionEnum.Sum:
                     case AggregateFunctionEnum.Count:
                         if (!string.IsNullOrEmpty(_tableName))

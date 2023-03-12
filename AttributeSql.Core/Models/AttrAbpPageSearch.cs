@@ -15,7 +15,7 @@ namespace AttributeSql.Core.Models
         /// <summary>
         /// 仅显示正常数据
         /// </summary>
-        [DbFieldName("isdeleted")]
+        [DbFieldName("a","isdeleted")]
         [OperationCode(OperatorEnum.Equal)]
         public bool? Isdeleted { get; set; } = false;
     }

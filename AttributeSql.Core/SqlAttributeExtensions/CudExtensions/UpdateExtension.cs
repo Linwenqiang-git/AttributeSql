@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+
+using AttributeSql.Base.Enums;
 using AttributeSql.Base.Exceptions;
+using AttributeSql.Base.Extensions;
 using AttributeSql.Core.Models;
 using AttributeSql.Core.SqlAttribute.CudAttr;
 
@@ -18,7 +21,7 @@ namespace AttrSqlDbLite.Core.SqlAttributeExtensions
         internal static string UpdateField(this AttrEntityBase entity, string PrimaryKey = "")
         {
             StringBuilder sql = new StringBuilder();
-            sql.Append($"Update {entity.GetType().Name} SET ");
+            sql.Append($"{SqlKeyWordEnum.Update.GetDescription()} {entity.GetType().Name} {SqlKeyWordEnum.Set.GetDescription()} ");
             string Primary = PrimaryKey;
             foreach (var prop in entity.GetType().GetProperties())
             {
@@ -34,9 +37,9 @@ namespace AttrSqlDbLite.Core.SqlAttributeExtensions
                 }
                 if (prop.Name.ToUpper() == PrimaryKey.ToUpper())
                     continue;
-                sql.Append($"{prop.Name} = @{prop.Name},");
+                sql.Append($"{prop.Name} {OperatorEnum.Equal.GetDescription()} @{prop.Name},");
             }
-            if (sql.ToString() == $"Update {entity.GetType().Name} SET ")
+            if (sql.ToString() == $"{SqlKeyWordEnum.Update.GetDescription()} {entity.GetType().Name} {SqlKeyWordEnum.Set.GetDescription()} ")
             {
                 return string.Empty;
             }
@@ -45,7 +48,7 @@ namespace AttrSqlDbLite.Core.SqlAttributeExtensions
             {
                 throw new AttrSqlException($"未找到{entity.GetType().Name}表包含ID的主键字段,更新失败！");
             }
-            sql.Append($" Where {Primary} = @{Primary}");
+            sql.Append($" {SqlKeyWordEnum.Where.GetDescription()} {Primary} {OperatorEnum.Equal.GetDescription()} @{Primary}");
             return sql.ToString();
         }
         /// <summary>
@@ -57,7 +60,7 @@ namespace AttrSqlDbLite.Core.SqlAttributeExtensions
         internal static string GetUpdateField(this AttrEntityBase entity, string PrimaryKey = "", bool IngnorIntDefault = true)
         {
             StringBuilder sql = new StringBuilder();
-            sql.Append($"Update {entity.GetType().Name} SET ");
+            sql.Append($"{SqlKeyWordEnum.Update.GetDescription()} {entity.GetType().Name} {SqlKeyWordEnum.Set.GetDescription()} ");
             string Primary = PrimaryKey;
             foreach (var prop in entity.GetType().GetProperties())
             {
@@ -107,7 +110,7 @@ namespace AttrSqlDbLite.Core.SqlAttributeExtensions
                     sql.Append($"{prop.Name} = @{prop.Name},");
                 }
             }
-            if (sql.ToString() == $"Update {entity.GetType().Name} SET ")
+            if (sql.ToString() == $"{SqlKeyWordEnum.Update.GetDescription()} {entity.GetType().Name} {SqlKeyWordEnum.Set.GetDescription()} ")
             {
                 return string.Empty;
             }
@@ -116,7 +119,7 @@ namespace AttrSqlDbLite.Core.SqlAttributeExtensions
             {
                 throw new AttrSqlException($"未找到{entity.GetType().Name}表包含ID的主键字段,更新失败！");
             }
-            sql.Append($" Where {Primary} = @{Primary}");
+            sql.Append($" {SqlKeyWordEnum.Where.GetDescription()} {Primary} {OperatorEnum.Equal.GetDescription()} @{Primary}");
             return sql.ToString();
         }
 
@@ -129,7 +132,7 @@ namespace AttrSqlDbLite.Core.SqlAttributeExtensions
         internal static string UpdateFieldByEntityCondition(this AttrBaseModel dto, AttrEntityBase entity, bool IngnorIntDefault = true)
         {
             StringBuilder sql = new StringBuilder();
-            sql.Append($"Update {entity.GetType().Name} SET ");
+            sql.Append($"{SqlKeyWordEnum.Update.GetDescription()} {entity.GetType().Name} {SqlKeyWordEnum.Set.GetDescription()} ");
             List<string> condition = new List<string>();
             foreach (var prop in dto.GetType().GetProperties())
             {
@@ -170,11 +173,11 @@ namespace AttrSqlDbLite.Core.SqlAttributeExtensions
                     //对有值的进行操作
                     if (!isnull)
                     {
-                        sql.Append($"{prop.Name} = @{prop.Name},");
+                        sql.Append($"{prop.Name} {OperatorEnum.Equal.GetDescription()} @{prop.Name},");
                     }
                 }
             }
-            if (sql.ToString() == $"Update {entity.GetType().Name} SET ")
+            if (sql.ToString() == $"{SqlKeyWordEnum.Update.GetDescription()} {entity.GetType().Name} {SqlKeyWordEnum.Set.GetDescription()} ")
             {
                 return string.Empty;
             }
@@ -183,12 +186,12 @@ namespace AttrSqlDbLite.Core.SqlAttributeExtensions
             {
                 throw new AttrSqlException($"未找到{entity.GetType().Name}表的更新条件,更新失败！");
             }
-            sql.Append(" WHERE ");
+            sql.Append($" {SqlKeyWordEnum.Where.GetDescription()} ");
             for (var i = 0; i < condition.Count; i++)
             {
-                sql.Append($"{condition[i]} = @{condition[i]}");
+                sql.Append($"{condition[i]} {OperatorEnum.Equal.GetDescription()} @{condition[i]}");
                 if (i + 1 < condition.Count)
-                    sql.Append(" AND ");
+                    sql.Append($" {RelationEume.And.GetDescription()} ");
             }
             return sql.ToString();
         }
@@ -208,8 +211,8 @@ namespace AttrSqlDbLite.Core.SqlAttributeExtensions
                 throw new AttrSqlException("未定义更新的表，请检查Dto特性配置!");
             }
             UpdateTableAttribute mainTable = Mainobj[0] as UpdateTableAttribute;
-            UpdateField.Append($"Update {mainTable.GetUpdateTableName()} SET ");
-            WhereField.Append($" Where 1=1 ");
+            UpdateField.Append($"{SqlKeyWordEnum.Update.GetDescription()} {mainTable.GetUpdateTableName()} {SqlKeyWordEnum.Set.GetDescription()} ");
+            WhereField.Append($" {SqlKeyWordEnum.Where.GetDescription()} 1=1 ");
             foreach (var prop in dto.GetType().GetProperties())
             {
                 if (prop.IsDefined(typeof(DbFiledMappingAttribute), true))
@@ -245,16 +248,16 @@ namespace AttrSqlDbLite.Core.SqlAttributeExtensions
                     {
                         if (dbFiledMappingAttribute.GetIsCondition())
                         {
-                            WhereField.Append($" And {dbFiledMappingAttribute.GetDbFieldName()}=@{prop.Name} ");
+                            WhereField.Append($" {RelationEume.And.GetDescription()} {dbFiledMappingAttribute.GetDbFieldName()}{OperatorEnum.Equal.GetDescription()}@{prop.Name} ");
                         }
                         else
                         {
-                            UpdateField.Append($" {dbFiledMappingAttribute.GetDbFieldName()}=@{prop.Name},");
+                            UpdateField.Append($" {dbFiledMappingAttribute.GetDbFieldName()}{OperatorEnum.Equal.GetDescription()}@{prop.Name},");
                         }
                     }
                 }
             }
-            if (UpdateField.ToString() == $"Update {mainTable.GetUpdateTableName()} SET ")
+            if (UpdateField.ToString() == $"{SqlKeyWordEnum.Update.GetDescription()} {mainTable.GetUpdateTableName()} {SqlKeyWordEnum.Set.GetDescription()} ")
             {
                 throw new AttrSqlException("未定义更新字段，请检查Dto特性配置!");
             }
@@ -262,7 +265,7 @@ namespace AttrSqlDbLite.Core.SqlAttributeExtensions
             {
                 UpdateField.Remove(UpdateField.Length - 1, 1);
             }
-            if (WhereField.ToString() != $" Where 1=1 ")
+            if (WhereField.ToString() != $" {SqlKeyWordEnum.Where.GetDescription()} 1=1 ")
             {
                 UpdateField.Append(WhereField.ToString());
             }

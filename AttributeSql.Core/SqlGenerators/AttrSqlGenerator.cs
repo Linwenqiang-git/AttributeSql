@@ -17,6 +17,9 @@ using Volo.Abp.DependencyInjection;
 using AttrSqlDbLite.Core.SqlAttributeExtensions;
 using AttributeSql.Core.SqlAttributeExtensions.QueryExtensions;
 using AttributeSql.Base.SpecialSqlGenerators;
+using AttributeSql.Base.Enums;
+using AttributeSql.Base.Extensions;
+using AttributeSql.Core.Enums;
 
 namespace AttributeSql.Core.SqlGenerators
 {
@@ -135,11 +138,11 @@ namespace AttributeSql.Core.SqlGenerators
             {
                 if (string.IsNullOrEmpty(where))
                 {
-                    where += $" Where {whereSql.Invoke()}";
+                    where += $" {SqlKeyWordEnum.Where.GetDescription()} {whereSql.Invoke()}";
                 }
                 else
                 {
-                    where += $" and {whereSql.Invoke()}";
+                    where += $" {RelationEume.And.GetDescription()} {whereSql.Invoke()}";
                 }
             }
             string groupByHaving = dto.GroupByHaving(); //获取分组部分
@@ -148,8 +151,8 @@ namespace AttributeSql.Core.SqlGenerators
             string sort = string.Empty;
             if (!string.IsNullOrEmpty(pageSearch.SortField))
             {
-                if (pageSearch.SortWay.ToUpper().Trim() == "ASC" || pageSearch.SortWay.ToUpper().Trim() == "DESC")
-                    sort = $" Order by {pageSearch.SortField} {pageSearch.SortWay} ";
+                if (pageSearch.SortWay.ToUpper().Trim() == SqlKeyWordEnum.Asc.GetDescription() || pageSearch.SortWay.ToUpper().Trim() == SqlKeyWordEnum.Desc.GetDescription())
+                    sort = $" {SqlKeyWordEnum.Order_By.GetDescription()} {pageSearch.SortField} {pageSearch.SortWay} ";
                 else
                 {
                     throw new AttrSqlException("Unrecognized sort order");
@@ -206,7 +209,7 @@ namespace AttributeSql.Core.SqlGenerators
 
             if (!string.IsNullOrEmpty(pageSearch.SortField))
             {
-                sort = $" Order by {pageSearch.SortField} {pageSearch.SortWay}";
+                sort = $" {SqlKeyWordEnum.Order_By.GetDescription()} {pageSearch.SortField} {pageSearch.SortWay}";
             }
             else
             {
@@ -214,8 +217,8 @@ namespace AttributeSql.Core.SqlGenerators
             }
             await this.TryCatch(async () =>
             {
-                page.Rows = await _sqlExecutor.QueryListBySqlAsync<TEntity>($"select * from {tableName} {where} {sort}", pageSearch);
-                return $"select * from {tableName} {where} {sort}";
+                page.Rows = await _sqlExecutor.QueryListBySqlAsync<TEntity>($"{SqlKeyWordEnum.Select.GetDescription()} * {SqlKeyWordEnum.From.GetDescription()} {tableName} {where} {sort}", pageSearch);
+                return $"{SqlKeyWordEnum.Select.GetDescription()} * {SqlKeyWordEnum.From.GetDescription()} {tableName} {where} {sort}";
             });
             return page;
         }
@@ -256,23 +259,21 @@ namespace AttributeSql.Core.SqlGenerators
             {
                 if (string.IsNullOrEmpty(where))
                 {
-                    where += $" Where {whereSql.Invoke()}";
+                    where += $" {SqlKeyWordEnum.Where.GetDescription()} {whereSql.Invoke()}";
                 }
                 else
                 {
-                    where += $" and {whereSql.Invoke()}";
+                    where += $" {RelationEume.And.GetDescription()} {whereSql.Invoke()}";
                 }
             }            
             //排序规则
             string sort = string.Empty;
             if (!string.IsNullOrEmpty(pageSearch?.SortField))
             {
-                if (pageSearch.SortWay.ToUpper().Trim() == "ASC" || pageSearch.SortWay.ToUpper().Trim() == "DESC")
-                    sort = $" Order by {pageSearch.SortField} {pageSearch.SortWay} ";
-                else
-                {
-                    throw new AttrSqlException("无法识别的排序方式！");
-                }
+                if (pageSearch.SortWay.ToUpper().Trim() != SqlKeyWordEnum.Asc.GetDescription().ToUpper() && 
+                    pageSearch.SortWay.ToUpper().Trim() != SqlKeyWordEnum.Desc.GetDescription().ToUpper())
+                    throw new AttrSqlException($"[{pageSearch.SortWay}]无法识别的排序方式！");
+                sort = $" {SqlKeyWordEnum.Order_By.GetDescription()} {pageSearch.SortField} {pageSearch.SortWay} ";               
             }
             else
             {
@@ -304,7 +305,7 @@ namespace AttributeSql.Core.SqlGenerators
                 //如果有分页，统计当前查询共有多少条数据
                 if (!string.IsNullOrEmpty(Limit))
                 {
-                    string countsql = $"SELECT COUNT(*) as rownum {join} {where} {groupByHaving}";
+                    string countsql = $"{SqlKeyWordEnum.Select.GetDescription()} {AggregateFunctionEnum.Count.GetDescription()}(*) {SqlKeyWordEnum.As.GetDescription()} rownum {join} {where} {groupByHaving}";
                     try
                     {
                         count = await _sqlExecutor.QueryCountBySqlAsync(countsql, parameters);
