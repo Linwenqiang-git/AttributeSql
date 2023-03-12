@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AttributeSql.Core.Models;
 using AttributeSql.Core.Services;
 using AttributeSql.Demo.DbContext;
+using AttributeSql.Demo.Dtos;
 using AttributeSql.Entity;
 using AttributeSql.Model;
 using Microsoft.AspNetCore.Mvc;
@@ -24,9 +25,9 @@ namespace AttributeSql.Controllers
             client = _client;
         }
         [HttpPost]
-        public async Task<AttrResultModel> query(CM_Article_Search search)
+        public async Task<AttrResultModel> query(ArticlePageSearch search)
         {
-            var result = await client.GetSpecifyResultDto<CM_Article_Search,CM_Article>(search);
+            var result = await client.GetSpecifyResultDto<ArticlePageSearch, ArticleResult>(search);
             return result;
         }
         /// <summary>

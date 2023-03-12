@@ -69,20 +69,5 @@ namespace UFX.SCM.Cloud.CmsCenter.Domain.AggregatesModel.ContentManage
         public virtual DateTime? SyncDateTime { get; set; }
         #endregion        
     }
-    public class CM_Article_Search : AttrPageSearch
-    {
-        [DbFieldName("ArticleTitle")]
-        [OperationCode(OperatorEnum.In)]
-        public List<string> ArticleTitles { get; set; }
-        /// <summary>
-        /// 文章标题
-        /// </summary>
-        [DbFieldName("ArticleTitle")]
-        public AdvString ArticleTitle { get; set; }
-        /// <summary>
-        /// 是否发布
-        /// </summary>
-        [OperationCode(OperatorEnum.Equal)]
-        public bool IsPublish { get; set; }
-    }    
+    
 }
