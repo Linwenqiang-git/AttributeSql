@@ -10,14 +10,14 @@ namespace AttributeSql.Core.SqlAttribute.JoinTable
     [AttributeUsage(AttributeTargets.Property)]
     public class TableByNameAttribute : Attribute
     {
-        private string ByName;
-        public TableByNameAttribute(string ByName)
+        private string _byName;
+        public TableByNameAttribute(string byName)
         {
-            this.ByName = ByName;
+            _byName = byName;
         }
         public string GetName()
         {
-            return ByName;
+            return _byName;
         }
     }
 }

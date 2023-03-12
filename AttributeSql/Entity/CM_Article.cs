@@ -71,11 +71,14 @@ namespace UFX.SCM.Cloud.CmsCenter.Domain.AggregatesModel.ContentManage
     }
     public class CM_Article_Search : AttrPageSearch
     {
+        [DbFieldName("ArticleTitle")]
+        [OperationCode(OperatorEnum.In)]
+        public List<string> ArticleTitles { get; set; }
         /// <summary>
         /// 文章标题
         /// </summary>
         [DbFieldName("ArticleTitle")]
-        public StringField ArticleTitle { get; set; }
+        public AdvString ArticleTitle { get; set; }
         /// <summary>
         /// 是否发布
         /// </summary>

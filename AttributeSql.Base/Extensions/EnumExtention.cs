@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AttributeSql.Core.Extensions
+namespace AttributeSql.Base.Extensions
 {
     public static class EnumExtension
     {

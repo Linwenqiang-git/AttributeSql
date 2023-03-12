@@ -11,14 +11,14 @@ namespace AttributeSql.Core.SqlAttribute.CudAttr
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class UpdateTableAttribute : Attribute
     {
-        private string updateTableName;
-        public UpdateTableAttribute(string _updateTableName)
+        private string _updateTableName;
+        public UpdateTableAttribute(string updateTableName)
         {
             if (string.IsNullOrEmpty(_updateTableName))
             {
                 throw new AttrSqlException("表名不能为空，请检查Dto特性配置!");
             }
-            updateTableName = _updateTableName;
+            _updateTableName = updateTableName;
         }
         /// <summary>
         /// 获取更新表名称
@@ -26,7 +26,7 @@ namespace AttributeSql.Core.SqlAttribute.CudAttr
         /// <returns></returns>
         public string GetUpdateTableName()
         {
-            return updateTableName;
+            return _updateTableName;
         }
     }
 }

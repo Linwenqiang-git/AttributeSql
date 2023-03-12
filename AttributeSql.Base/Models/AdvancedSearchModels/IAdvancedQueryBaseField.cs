@@ -17,7 +17,10 @@ namespace AttributeSql.Base.Models.AdvancedSearchModels
         /// <summary>
         /// 操作符，Values多个值时该字段无效，只能使用In或者Not In        
         /// </summary>
-        public OperatorEnum? Operator { get; set; }
-        public List<T> Values { get; set; }
+        public OperatorEnum Operator { get; set; }
+        /// <summary>
+        /// 字段值
+        /// </summary>
+        public IEnumerable<T> Values { get; set; }
     }
 }

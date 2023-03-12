@@ -1,4 +1,8 @@
-﻿using System;
+﻿using AttributeSql.Base.Exceptions;
+using AttributeSql.Base.Extensions;
+using AttributeSql.Core.Enums;
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,33 +14,33 @@ namespace AttributeSql.Core.SqlAttribute.Select
     [AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
     public class AggregateFuncFieldAttribute : FunctionAttribute
     {
-        private string FuncName;//函数名称
-        private string TableName;//表名
-        private string FieldName;//字段名
+        private AggregateFunctionEnum _funcName;//函数名称
+        private string _tableName;//表名
+        private string _fieldName;//字段名
 
-        public AggregateFuncFieldAttribute(string _FuncName, string _FieldName, string _TableName = "")
-        {
-            FuncName = _FuncName;
-            TableName = _TableName;
-            FieldName = _FieldName;
+        public AggregateFuncFieldAttribute(AggregateFunctionEnum funcName, string fieldName, string tableName = "")
+        { 
+            _funcName = funcName;
+            _tableName = tableName;
+            _fieldName = fieldName;
         }
-        public AggregateFuncFieldAttribute(string _FuncName)
+        public AggregateFuncFieldAttribute(AggregateFunctionEnum funcName)
         {
-            FuncName = _FuncName;
+            _funcName = funcName;
         }
         public string GetAggregateFuncField()
         {
             StringBuilder sql = new StringBuilder();
             try
             {
-                switch (FuncName.ToUpper())
+                switch (_funcName)
                 {
-                    case "SUM":
-                    case "COUNT":
-                        if (!string.IsNullOrEmpty(TableName))
-                            sql.Append($"{FuncName}({TableName}.{FieldName})");
+                    case AggregateFunctionEnum.Sum:
+                    case AggregateFunctionEnum.Count:
+                        if (!string.IsNullOrEmpty(_tableName))
+                            sql.Append($"{_funcName.GetDescription()}({_tableName}.{_fieldName})");
                         else
-                            sql.Append($"{FuncName}({FieldName})");
+                            sql.Append($"{_funcName}({_fieldName})");
                         break;
                     default:
                         throw new ArgumentException();
@@ -44,11 +48,11 @@ namespace AttributeSql.Core.SqlAttribute.Select
             }
             catch (NullReferenceException ex)
             {
-                throw new Exception("需要的条件值为空，请检查模型端特性[AggregateFuncFieldAttribute]的参数配置！");
+                throw new AttrSqlException("需要的条件值为空，请检查模型端特性[AggregateFuncFieldAttribute]的参数配置！");
             }
             catch (ArgumentException ex)
             {
-                throw new Exception("未定义该函数的操作,请继续完善！");
+                throw new AttrSqlException("未定义该函数的操作,请继续完善！");
             }
             return sql.ToString();
         }

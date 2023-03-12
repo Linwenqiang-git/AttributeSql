@@ -1,5 +1,5 @@
 ﻿using AttributeSql.Base;
-using AttributeSql.Core.Repository;
+using AttributeSql.Core.SqlGenerators;
 using AttributeSql.MySql;
 using AttributeSql.Oracle;
 using AttributeSql.Pgsql;

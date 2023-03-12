@@ -17,6 +17,8 @@ namespace AttributeSql.Core.Enums
         [Description("Min")]
         Min,
         [Description("Sum")]
-        Sum
+        Sum,
+        [Description("Count")]
+        Count,
     }
 }

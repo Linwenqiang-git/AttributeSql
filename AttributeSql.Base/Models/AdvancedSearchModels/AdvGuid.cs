@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace AttributeSql.Base.Models.AdvancedSearchModels
 {
-    public sealed class StringField : IAdvancedQueryBaseField<string>
+    public class AdvGuid : AdvObject,IAdvancedQueryBaseField<Guid>
     {
         public RelationEume Relation { get; set; }
-        public OperatorEnum? Operator { get; set; }
-        public List<string> Values { get; set; }
+        public OperatorEnum Operator { get; set; }
+        public IEnumerable<Guid> Values { get; set; }
     }
 }

@@ -7,53 +7,53 @@ namespace AttributeSql.Core.SqlAttribute.Validator
     [AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
     public class NotAllowRepeatAttribute : Attribute
     {
-        private string DbFieldName { get; set; }
-        private string[] DbFieldNames { get; set; }
-        private string TableName { get; set; }
-        private string Key { get; set; }
-        private string Msg { get; set; }
-        private string SoftFieldName { get; set; }
-        private long SoftFieldValue { get; set; }
-        private bool IsRemoveSoftDeleteField { get; set; }
+        private string _dbFieldName;
+        private string[] _dbFieldNames;
+        private string _tableName;
+        private string _key;
+        private string _msg;
+        private string _softFieldName;
+        private long _softFieldValue;
+        private bool _isRemoveSoftDeleteField;
         /// <summary>
-        /// 初始化
+        /// Constructor
         /// </summary>
-        /// <param name="_DbFieldName">字段名即不能重复的字段</param>
-        /// <param name="_TableName">表名</param>
-        /// <param name="_Key">表主键字段</param>
-        /// <param name="_Msg">错误信息</param>
-        /// <param name="_SoftFieldName">软删除字段名称</param>
-        /// <param name="_SoftFieldValue">软删除标记的有效值</param>
-        /// <param name="_IsRemoveSoftDeleteField">是否将软删除字段纳入删除条件,默认纳入</param>
-        public NotAllowRepeatAttribute(string _DbFieldName, string _TableName, string _Key, string _Msg,string _SoftFieldName = "", long _SoftFieldValue = 0, bool _IsRemoveSoftDeleteField = false)
+        /// <param name="dbFieldName">字段名即不能重复的字段</param>
+        /// <param name="tableName">表名</param>
+        /// <param name="key">表主键字段</param>
+        /// <param name="msg">错误信息</param>
+        /// <param name="softFieldName">软删除字段名称</param>
+        /// <param name="softFieldValue">软删除标记的有效值</param>
+        /// <param name="isRemoveSoftDeleteField">是否将软删除字段纳入删除条件,默认纳入</param>
+        public NotAllowRepeatAttribute(string dbFieldName, string tableName, string key, string msg,string softFieldName = "", long softFieldValue = 0, bool isRemoveSoftDeleteField = false)
         {
-            DbFieldName = _DbFieldName;
-            TableName = _TableName;
-            Key = _Key;
-            Msg = _Msg;
-            SoftFieldName = _SoftFieldName;
-            IsRemoveSoftDeleteField = _IsRemoveSoftDeleteField;
-            SoftFieldValue = _SoftFieldValue;
+            _dbFieldName = dbFieldName;
+            _tableName = tableName;
+            _key = key;
+            _msg = msg;
+            _softFieldName = softFieldName;
+            _isRemoveSoftDeleteField = isRemoveSoftDeleteField;
+            _softFieldValue = softFieldValue;
         }
         /// <summary>
         /// 初始化
         /// </summary>
-        /// <param name="_DbFieldName">字段名即不能重复的字段</param>
-        /// <param name="_TableName">表名</param>
-        /// <param name="_Key">表主键字段</param>
-        /// <param name="_Msg">错误信息</param>
-        /// <param name="_SoftFieldName">软删除字段名称</param>
-        /// <param name="_SoftFieldValue">软删除标记的有效值</param>
-        /// <param name="_IsRemoveSoftDeleteField">是否将软删除字段纳入删除条件,默认纳入</param>
-        public NotAllowRepeatAttribute(string[] _DbFieldName, string _TableName, string _Key, string _Msg, string _SoftFieldName = "", long _SoftFieldValue = 0, bool _IsRemoveSoftDeleteField = false)
+        /// <param name="dbFieldNames">字段名即不能重复的字段</param>
+        /// <param name="tableName">表名</param>
+        /// <param name="key">表主键字段</param>
+        /// <param name="msg">错误信息</param>
+        /// <param name="softFieldName">软删除字段名称</param>
+        /// <param name="softFieldValue">软删除标记的有效值</param>
+        /// <param name="isRemoveSoftDeleteField">是否将软删除字段纳入删除条件,默认纳入</param>
+        public NotAllowRepeatAttribute(string[] dbFieldNames, string tableName, string key, string msg, string softFieldName = "", long softFieldValue = 0, bool isRemoveSoftDeleteField = false)
         {
-            DbFieldNames = _DbFieldName;
-            TableName = _TableName;
-            Key = _Key;
-            Msg = _Msg;
-            SoftFieldName = _SoftFieldName;
-            IsRemoveSoftDeleteField = _IsRemoveSoftDeleteField;
-            SoftFieldValue = _SoftFieldValue;
+            _dbFieldNames = dbFieldNames;
+            _tableName = tableName;
+            _key = key;
+            _msg = msg;
+            _softFieldName = softFieldName;
+            _isRemoveSoftDeleteField = isRemoveSoftDeleteField;
+            _softFieldValue = softFieldValue;
         }
         /// <summary>
         /// 获取表字段名
@@ -61,7 +61,7 @@ namespace AttributeSql.Core.SqlAttribute.Validator
         /// <returns></returns>
         public string GetDbFieldName()
         {
-            return DbFieldName;
+            return _dbFieldName;
         }
         /// <summary>
         /// 获取多字段的校验
@@ -69,7 +69,7 @@ namespace AttributeSql.Core.SqlAttribute.Validator
         /// <returns></returns>
         public string[] GetDbFieldNames()
         {
-            return DbFieldNames;
+            return _dbFieldNames;
         }
         /// <summary>
         /// 获取表名
@@ -77,7 +77,7 @@ namespace AttributeSql.Core.SqlAttribute.Validator
         /// <returns></returns>
         public string GetTableName()
         {
-            return TableName;
+            return _tableName;
         }
         /// <summary>
         /// 获取出错信息
@@ -85,7 +85,7 @@ namespace AttributeSql.Core.SqlAttribute.Validator
         /// <returns></returns>
         public string GetMsg()
         {
-            return Msg;
+            return _msg;
         }
         /// <summary>
         /// 获取主键字段
@@ -93,7 +93,7 @@ namespace AttributeSql.Core.SqlAttribute.Validator
         /// <returns></returns>
         public string GetPrimaryKey()
         {
-            return Key;
+            return _key;
         }
         /// <summary>
         /// 返回软删除字段名称
@@ -101,8 +101,8 @@ namespace AttributeSql.Core.SqlAttribute.Validator
         /// <returns></returns>
         public string GetSoftDeleteFieldName()
         {
-            if (!IsRemoveSoftDeleteField)
-                return SoftFieldName;
+            if (!_isRemoveSoftDeleteField)
+                return _softFieldName;
             return string.Empty;
         }
         /// <summary>
@@ -111,7 +111,7 @@ namespace AttributeSql.Core.SqlAttribute.Validator
         /// <returns></returns>
         public long GetSoftDeleteFieldValue()
         {
-            return SoftFieldValue;
+            return _softFieldValue;
         }
     }
 }

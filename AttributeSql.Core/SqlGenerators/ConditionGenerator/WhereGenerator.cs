@@ -18,8 +18,12 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.EntityFrameworkCore;
 using AttributeSql.Base.SqlExecutor;
 using Volo.Abp.EntityFrameworkCore;
+using AttributeSql.Base.Extensions;
+using AttributeSql.Base.SpecialSqlGenerators;
+using Mapster;
+using AttributeSql.Base.Enums;
 
-namespace AttributeSql.Core.SqlGenerator.ConditionGenerator
+namespace AttributeSql.Core.SqlGenerators.ConditionGenerator
 {
     internal class WhereGenerator
     {
@@ -36,8 +40,7 @@ namespace AttributeSql.Core.SqlGenerator.ConditionGenerator
         /// 生成Where部分
         /// </summary>
         /// <returns></returns>
-        public StringBuilder Generate<TDbContext>(ISqlExecutor<TDbContext> sqlExecutor) 
-                        where TDbContext : IEfCoreDbContext
+        public StringBuilder Generate(ASpecialSqlGenerator specialSqlGenerator) 
         {
             StringBuilder generalQueryBuilder = new StringBuilder();
             generalQueryBuilder.Append(_whereBase);
@@ -48,15 +51,17 @@ namespace AttributeSql.Core.SqlGenerator.ConditionGenerator
                 //对没有标记操作特性的字段不操作
                 if (prop.GetCustomAttributes(typeof(OperationCodeAttribute), true).Length == 0)
                     continue;
-
-                GeneralQueryGenerator generalQueryGenerator = new GeneralQueryGenerator(prop.GetValue(_searchModel, null));
+                var obj = prop.GetValue(_searchModel, null);
+                if (obj == null)
+                    continue;
+                GeneralQueryGenerator generalQueryGenerator = new GeneralQueryGenerator(obj);
                 //对有值的进行操作
                 if (!generalQueryGenerator.FieldHasValue(_ingnorIntDefault))
                     continue;
-                generalQueryBuilder.Append(" AND ");
+                generalQueryBuilder.Append($" {RelationEume.And.GetDescription()} ");
                 string tableField = generalQueryGenerator.BuildOperatorLeft(prop);
-                generalQueryBuilder.Append(tableField);
-                generalQueryBuilder.Append(generalQueryGenerator.BuildConventionRelationWithRight(prop, sqlExecutor, tableField));
+                //generalQueryBuilder.Append(tableField);
+                generalQueryBuilder.Append(generalQueryGenerator.BuildConventionRelationWithRight(prop, specialSqlGenerator, tableField));
                 //非聚合函数
                 if (prop.IsDefined(typeof(NonAggregateFuncAttribute), true))
                 {
@@ -68,24 +73,27 @@ namespace AttributeSql.Core.SqlGenerator.ConditionGenerator
             int advanceQueryPropertyHasValueIndex = 0;
             foreach (var prop in advanceQueryProperties)
             {
-                //todo:如何区分高级查询类型
-                AdvancedQueryGenerator<string> advancedQueryGenerator = new AdvancedQueryGenerator<string>(prop.GetValue(_searchModel, null));
+                var obj = prop.GetValue(_searchModel, null);
+                if (obj == null)
+                    continue;
+                AdvObject advObj = obj.Adapt<AdvObject>();
+                var advancedQueryGenerator = new AdvancedQueryGenerator(advObj);
                 if (!advancedQueryGenerator.FieldHasValue(_ingnorIntDefault))
                     continue;
                 if (++advanceQueryPropertyHasValueIndex == 1)
                 {
-                    advanceQueryBuilder.Append($" {advancedQueryGenerator.AdvancedQueryBaseField?.Relation.GetDescription()} (");
+                    advanceQueryBuilder.Append($" {advObj?.Relation.GetDescription()} {SymbolEnum.LeftBrackets.GetDescription()}");
                 }
                 else
                 {
-                    advanceQueryBuilder.Append($" {advancedQueryGenerator.AdvancedQueryBaseField?.Relation.GetDescription()}");
+                    advanceQueryBuilder.Append($" {advObj?.Relation.GetDescription()}");
                 }
                 string tableField = advancedQueryGenerator.BuildOperatorLeft(prop);
                 advanceQueryBuilder.Append(tableField);
-                advanceQueryBuilder.Append(advancedQueryGenerator.BuildConventionRelationWithRight(prop, sqlExecutor, tableField));
+                advanceQueryBuilder.Append(advancedQueryGenerator.BuildConventionRelationWithRight(prop, specialSqlGenerator, tableField));
             }
             if (advanceQueryPropertyHasValueIndex > 0)
-                advanceQueryBuilder.Append(")");
+                advanceQueryBuilder.Append(SymbolEnum.RightBrackets.GetDescription());
             if (advanceQueryBuilder.Length > 0)
                 return generalQueryBuilder.Append(advanceQueryBuilder);
             return generalQueryBuilder;

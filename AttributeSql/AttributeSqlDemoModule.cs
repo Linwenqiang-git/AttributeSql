@@ -1,7 +1,5 @@
-﻿using AttributeSql.Base.Models;
-using AttributeSql.Core;
+﻿using AttributeSql.Core;
 using AttributeSql.Core.Extensions;
-using AttributeSql.Core.Repository;
 using AttributeSql.Core.Services;
 using AttributeSql.Demo.DbContext;
 

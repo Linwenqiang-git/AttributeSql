@@ -16,6 +16,7 @@ using Volo.Abp.DependencyInjection;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using AttributeSql.Base.Enums;
+using AttributeSql.Base.Models.AdvancedSearchModels;
 
 namespace AttributeSql.Base.SqlExecutor
 {
@@ -186,42 +187,7 @@ namespace AttributeSql.Base.SqlExecutor
             return await command.ExecuteNonQueryAsync();
         }
         #endregion
-
-        #region Personalized Sql
-        /// <summary>
-        /// 分页查询sql
-        /// </summary>
-        /// <param name="Offset"></param>
-        /// <param name="Size"></param>
-        /// <returns></returns>
-        public abstract string PaginationSql(int? Offset, int? Size);
-        /// <summary>
-        /// 参数化构建
-        /// </summary>
-        /// <typeparam name="TParameter"></typeparam>
-        /// <typeparam name="TModel"></typeparam>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        public abstract DbParameter[] BuildParameter<TModel>(TModel model) where TModel : class;
-        #endregion
-
-        public void Dispose()
-        {
-            
-        }
-        /// <summary>
-        /// 通用查询关系构建
-        /// </summary>
-        /// <param name="propertyInfo"></param>
-        /// <param name="tableField"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public abstract StringBuilder GeneralQueryRelationBuild([NotNull] object obj, [NotNull] PropertyInfo propertyInfo, string tableField, OperatorEnum option);
-        /// <summary>
-        /// 高级查询关系构建
-        /// </summary>
-        /// <param name="propertyInfo"></param>
-        /// <param name="tableField"></param>
-        /// <returns></returns>
-        public abstract StringBuilder AdvanceQueryRelationBuild([NotNull] object obj, [NotNull] PropertyInfo propertyInfo, string tableField, OperatorEnum option);
+        
+        public void Dispose(){}
     }
 }

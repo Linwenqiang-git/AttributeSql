@@ -13,26 +13,28 @@ namespace AttributeSql.Core.SqlAttribute.CudAttr
         /// <summary>
         /// 数据库字段名
         /// </summary>
-        private string DbFieldName;
+        private string _dbFieldName;
         /// <summary>
         /// 是否为更新条件
         /// </summary>
-        private bool IsCondition;
+        private bool _isCondition;
         /// <summary>
         /// 是否允许更新成空值
         /// </summary>
-        private bool IsAllowEmpty;
-        public DbFiledMappingAttribute(string _DbFieldName)
+        private bool _isAllowEmpty;
+        private DbFiledMappingAttribute()
         {
-            DbFieldName = _DbFieldName;
-            IsCondition = false;
-            IsAllowEmpty = false;
+            _isCondition = false;
+            _isAllowEmpty = false;
         }
-        public DbFiledMappingAttribute(string _DbFieldName, bool _IsCondition)
+        public DbFiledMappingAttribute(string dbFieldName):this()
         {
-            DbFieldName = _DbFieldName;
-            IsCondition = _IsCondition;
-            IsAllowEmpty = false;
+            _dbFieldName = dbFieldName;            
+        }
+        public DbFiledMappingAttribute(string dbFieldName, bool isCondition) : this()
+        {
+            _dbFieldName = dbFieldName;
+            _isCondition = isCondition;
         }
         /// <summary>
         /// 构造函数
@@ -40,23 +42,23 @@ namespace AttributeSql.Core.SqlAttribute.CudAttr
         /// <param name="_DbFieldName">数据库字段名</param>
         /// <param name="_IsCondition">是否是删除条件(默认不是)</param>
         /// <param name="_IsAllowEmpty">是否允许更新成null(默认不允许)</param>
-        public DbFiledMappingAttribute(string _DbFieldName, bool _IsCondition, bool _IsAllowEmpty)
+        public DbFiledMappingAttribute(string dbFieldName, bool isCondition, bool isAllowEmpty)
         {
-            DbFieldName = _DbFieldName;
-            IsCondition = _IsCondition;
-            IsAllowEmpty = _IsAllowEmpty;
+            _dbFieldName = dbFieldName;
+            _isCondition = isCondition;
+            _isAllowEmpty = isAllowEmpty;
         }
         public string GetDbFieldName()
         {
-            return DbFieldName;
+            return _dbFieldName;
         }
         public bool GetIsCondition()
         {
-            return IsCondition;
+            return _isCondition;
         }
         public bool GetIsAllowEmpty()
         {
-            return IsAllowEmpty;
+            return _isAllowEmpty;
         }
     }
 }

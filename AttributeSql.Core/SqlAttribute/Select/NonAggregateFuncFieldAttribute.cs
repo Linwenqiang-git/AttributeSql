@@ -1,4 +1,8 @@
-﻿using System;
+﻿using AttributeSql.Base.Exceptions;
+using AttributeSql.Base.Extensions;
+using AttributeSql.Core.Enums;
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,48 +13,48 @@ namespace AttributeSql.Core.SqlAttribute.Select
     /// </summary>
     public class NonAggregateFuncFieldAttribute : FunctionAttribute
     {
-        private string FuncName;//函数名称
-        private string TableName;//表名
-        private string FieldName;//字段名
-        private string[] Parameter;//非聚合函数的其他参数
+        private NonAggregateFunctionEnum _funcName;//函数名称
+        private string _tableName;//表名
+        private string _fieldName;//字段名
+        private string[] _parameters;//非聚合函数的其他参数
         /// <summary>
         /// 初始化
         /// </summary>
-        /// <param name="_FuncName">函数名称</param>
-        /// <param name="_FieldName">表名</param>
-        /// <param name="_TableName">字段名</param>
-        /// <param name="_Parameter">非聚合函数的其他参数</param>
-        public NonAggregateFuncFieldAttribute(string _FuncName, string _FieldName, string _TableName = "", string[] _Parameter = null)
+        /// <param name="funcName">函数名称</param>
+        /// <param name="fieldName">表名</param>
+        /// <param name="tableName">字段名</param>
+        /// <param name="parameter">非聚合函数的其他参数</param>
+        public NonAggregateFuncFieldAttribute(NonAggregateFunctionEnum funcName, string fieldName, string tableName = "", string[] parameters = null)
         {
-            FuncName = _FuncName;
-            TableName = _TableName;
-            FieldName = _FieldName;
-            Parameter = _Parameter;
+            _funcName = funcName;
+            _tableName = tableName;
+            _fieldName = fieldName;
+            _parameters = parameters;
         }
-        public NonAggregateFuncFieldAttribute(string _FuncName)
+        public NonAggregateFuncFieldAttribute(NonAggregateFunctionEnum funcName)
         {
-            FuncName = _FuncName;
+            _funcName = funcName;
         }
         public string GetNonAggregateFuncField()
         {
             StringBuilder sql = new StringBuilder();
             try
             {
-                switch (FuncName.ToUpper())
+                switch (_funcName)
                 {
-                    case "GROUP_CONCAT"://分组连接函数
-                        if (!string.IsNullOrEmpty(TableName))
-                            sql.Append($"{FuncName}({TableName}.{FieldName})");
+                    case NonAggregateFunctionEnum.Group_Concat://分组连接函数
+                        if (!string.IsNullOrEmpty(_tableName))
+                            sql.Append($"{_funcName.GetDescription()}({_tableName}.{_fieldName})");
                         else
-                            sql.Append($"{FuncName}({FieldName})");
+                            sql.Append($"{_funcName}({_fieldName})");
                         break;
-                    case "DATE_FORMAT"://日期格式化函数
-                        if (Parameter == null || Parameter.Length == 0)
+                    case NonAggregateFunctionEnum.Date_Foramt://日期格式化函数
+                        if (_parameters == null || _parameters.Length == 0)
                             throw new NullReferenceException();
-                        if (!string.IsNullOrEmpty(TableName))
-                            sql.Append($"{FuncName}({TableName}.{FieldName},{Parameter[0]})");
+                        if (!string.IsNullOrEmpty(_tableName))
+                            sql.Append($"{_funcName.GetDescription()}({_tableName}.{_fieldName},{_parameters[0]})");
                         else
-                            sql.Append($"{FuncName}({FieldName},{Parameter[0]})");
+                            sql.Append($"{_funcName.GetDescription()}({_fieldName},{_parameters[0]})");
                         break;
                     default:
                         throw new ArgumentException();
@@ -58,11 +62,11 @@ namespace AttributeSql.Core.SqlAttribute.Select
             }
             catch (NullReferenceException ex)
             {
-                throw new Exception("函数需要的参数值为空，请检查模型端特性[NonAggregateFuncFieldAttribute]的参数配置！");
+                throw new AttrSqlException("函数需要的参数值为空，请检查模型端特性[NonAggregateFuncFieldAttribute]的参数配置！");
             }
             catch (ArgumentException ex)
             {
-                throw new Exception("未定义该函数的操作,请继续完善！");
+                throw new AttrSqlException("未定义该函数的操作,请继续完善！");
             }
             return sql.ToString();
         }

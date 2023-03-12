@@ -7,7 +7,7 @@ namespace AttributeSql.Core.Models
     /// <summary>
     /// 页面搜索父类
     /// </summary>
-    public class AttrPageSearch
+    public class AttrPageSearch : AttrAbpPageSearch
     {
         /// <summary>
         /// 第几页（从1开始）

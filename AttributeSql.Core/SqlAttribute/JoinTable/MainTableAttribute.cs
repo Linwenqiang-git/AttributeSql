@@ -10,12 +10,12 @@ namespace AttributeSql.Core.SqlAttribute.JoinTable
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class MainTableAttribute : Attribute
     {
-        private string mainTableName;
-        private string byName;
-        public MainTableAttribute(string _mainTableName, string _byName = "")
+        private string _mainTableName;
+        private string _byName;
+        public MainTableAttribute(string mainTableName, string byName = "")
         {
-            mainTableName = _mainTableName;
-            byName = _byName;
+            _mainTableName = mainTableName;
+            _byName = byName;
         }
         /// <summary>
         /// 获取主表名称
@@ -23,7 +23,7 @@ namespace AttributeSql.Core.SqlAttribute.JoinTable
         /// <returns></returns>
         public string GetMainTableName()
         {
-            return mainTableName;
+            return _mainTableName;
         }
         /// <summary>
         /// 获取主表别名
@@ -31,7 +31,7 @@ namespace AttributeSql.Core.SqlAttribute.JoinTable
         /// <returns></returns>
         public string GetMainTableByName()
         {
-            return byName;
+            return _byName;
         }
     }
 }

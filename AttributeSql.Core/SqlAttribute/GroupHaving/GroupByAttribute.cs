@@ -10,32 +10,31 @@ namespace AttributeSql.Core.SqlAttribute.GroupHaving
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
     public class GroupByAttribute : Attribute
     {
-        private string tableByName;
-        private string fieldName;
+        private string _tableByName;
+        private string _fieldName;
         /// <summary>
         /// 默认绑定，解析时会按照字段名字解析
         /// </summary>
         public GroupByAttribute()
         {
-            tableByName = "";
-            fieldName = "";
+            _tableByName = string.Empty;
+            _fieldName = string.Empty;
         }
-        public GroupByAttribute(string _fieldName)
-        {
-            tableByName = "";
-            fieldName = _fieldName;
+        public GroupByAttribute(string fieldName):this()
+        {            
+            _fieldName = fieldName;
         }
-        public GroupByAttribute(string _tableByName, string _fieldName)
+        public GroupByAttribute(string tableByName, string fieldName)
         {
-            tableByName = _tableByName;
-            fieldName = _fieldName;
+            _tableByName = tableByName;
+            _fieldName = fieldName;
         }
         public string GetGroupByField()
         {
-            if (!string.IsNullOrEmpty(tableByName))
-                return $"{tableByName}.{fieldName}";
+            if (!string.IsNullOrEmpty(_tableByName))
+                return $"{_tableByName}.{_fieldName}";
             else
-                return $"{fieldName}";
+                return $"{_fieldName}";
         }
     }
 }

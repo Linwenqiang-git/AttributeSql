@@ -16,8 +16,9 @@ using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.DependencyInjection;
 using AttrSqlDbLite.Core.SqlAttributeExtensions;
 using AttributeSql.Core.SqlAttributeExtensions.QueryExtensions;
+using AttributeSql.Base.SpecialSqlGenerators;
 
-namespace AttributeSql.Core.Repository
+namespace AttributeSql.Core.SqlGenerators
 {
     /// <summary>
     /// Sql生成器
@@ -30,6 +31,10 @@ namespace AttributeSql.Core.Repository
         /// </summary>
         private ISqlExecutor<TDbContext> _sqlExecutor;
         /// <summary>
+        /// 个性sql生成器
+        /// </summary>
+        private ASpecialSqlGenerator _specialSqlGenerator;
+        /// <summary>
         /// sql缓存
         /// </summary>
         private IMemoryCache _sqlMemoryCache;
@@ -37,9 +42,10 @@ namespace AttributeSql.Core.Repository
         /// Constructor
         /// </summary>
         /// <param name="context"></param>
-        public AttrSqlGenerator(ISqlExecutor<TDbContext> sqlExecutor, IMemoryCache memoryCache)
+        public AttrSqlGenerator(ISqlExecutor<TDbContext> sqlExecutor, ASpecialSqlGenerator specialSqlGenerator, IMemoryCache memoryCache)
         {
             _sqlExecutor = sqlExecutor;
+            _specialSqlGenerator = specialSqlGenerator;
             _sqlMemoryCache = memoryCache;
         }
         #region Private
@@ -124,7 +130,7 @@ namespace AttributeSql.Core.Repository
             TResultDto dto = new TResultDto();            
             string select = dto.Select();//获取查询的字段
             string join = dto.Join<TResultDto>();//获取连接的表
-            string where = pageSearch.Where(_sqlExecutor,ingnorIntDefault);//获取参数化查询where条件      
+            string where = pageSearch.Where(_specialSqlGenerator,ingnorIntDefault);//获取参数化查询where条件      
             if (whereSql != null)
             {
                 if (string.IsNullOrEmpty(where))
@@ -162,7 +168,7 @@ namespace AttributeSql.Core.Repository
                     throw new AttrSqlException("unrecognized paged data");
                 }
                 else
-                    Limit = _sqlExecutor.PaginationSql(pageSearch.Offset, pageSearch.Size);
+                    Limit = _specialSqlGenerator.PaginationSql(pageSearch.Offset, pageSearch.Size);
             }
             StringBuilder sql = new StringBuilder();
             sql.Append(select);
@@ -194,7 +200,7 @@ namespace AttributeSql.Core.Repository
             }
             var page = new AttrPageResult<TEntity>(pageSearch.Index, pageSearch.Size);
 
-            string where = pageSearch.Where(_sqlExecutor,ingnorIntDefault);//获取参数化查询where条件
+            string where = pageSearch.Where(_specialSqlGenerator,ingnorIntDefault);//获取参数化查询where条件
 
             string sort = string.Empty;
 
@@ -245,7 +251,7 @@ namespace AttributeSql.Core.Repository
                 groupByHaving = dto.GroupByHaving(); //获取分组部分
             }
             pageSearch = pageSearch?.TimeConvert();
-            string? where = pageSearch?.Where(_sqlExecutor,ingnorIntDefault);//获取参数化查询where条件      
+            string? where = pageSearch?.Where(_specialSqlGenerator,ingnorIntDefault);//获取参数化查询where条件      
             if (whereSql != null)
             {
                 if (string.IsNullOrEmpty(where))
@@ -281,7 +287,7 @@ namespace AttributeSql.Core.Repository
                     throw new AttrSqlException("无法识别的分页数据！");
                 }
                 else
-                    Limit = _sqlExecutor.PaginationSql(pageSearch.Offset, pageSearch.Size);
+                    Limit = _specialSqlGenerator.PaginationSql(pageSearch.Offset, pageSearch.Size);
             }            
             sql.Append(select);
             sql.Append(join);
@@ -292,7 +298,7 @@ namespace AttributeSql.Core.Repository
             var page = new AttrPageResult<TResultDto>(pageSearch.Index, pageSearch.Size);
             await TryCatch(async () =>
             {
-                var parameters = _sqlExecutor.BuildParameter(pageSearch);
+                var parameters = _specialSqlGenerator.BuildParameter(pageSearch);
                 page.Rows = await _sqlExecutor.QueryListBySqlAsync<TResultDto>($"{sql}", parameters);
                 int count = 0;
                 //如果有分页，统计当前查询共有多少条数据

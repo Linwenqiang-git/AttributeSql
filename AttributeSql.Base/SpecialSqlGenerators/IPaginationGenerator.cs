@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AttributeSql.Base.PersonalizedSqls
+namespace AttributeSql.Base.SpecialSqlGenerators
 {
-    public interface IPaginationExtend
+    public interface IPaginationGenerator
     {
         /// <summary>
         /// 分页sql

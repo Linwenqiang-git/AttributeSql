@@ -5,7 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using AttributeSql.Base.Exceptions;
 using AttributeSql.Core.Models;
-using AttributeSql.Core.Repository;
+using AttributeSql.Core.SqlGenerators;
+
 using AutoMapper;
 
 using Microsoft.EntityFrameworkCore;

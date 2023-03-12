@@ -1,14 +1,6 @@
-﻿using System;
-using System.Reflection;
-using System.Text;
-using AttributeSql.Base.Exceptions;
-using AttributeSql.Base.SqlExecutor;
+﻿using AttributeSql.Base.SpecialSqlGenerators;
 using AttributeSql.Core.Models;
-using AttributeSql.Core.SqlAttribute.JoinTable;
-using AttributeSql.Core.SqlAttribute.Select;
-using AttributeSql.Core.SqlAttribute.Where;
-using AttributeSql.Core.SqlGenerator.ConditionGenerator;
-using Newtonsoft.Json.Linq;
+using AttributeSql.Core.SqlGenerators.ConditionGenerator;
 
 using Volo.Abp.EntityFrameworkCore;
 
@@ -26,13 +18,12 @@ namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
         /// <param name="model"></param>
         /// <param name="ingnorIntDefault">int类型的默认值是否忽略,默认忽略</param>
         /// <returns></returns>
-        internal static string Where<TDbContext>(this AttrPageSearch searchModel, ISqlExecutor<TDbContext> sqlExecutor,bool ingnorIntDefault = true)
-                        where TDbContext : IEfCoreDbContext
+        internal static string Where(this AttrPageSearch searchModel, ASpecialSqlGenerator specialSqlGenerator, bool ingnorIntDefault = true)                        
         {
             WhereGenerator whereGenerator = new WhereGenerator(searchModel, ingnorIntDefault);
-            var builder = whereGenerator.Generate(sqlExecutor);
+            var builder = whereGenerator.Generate(specialSqlGenerator);
             if (builder.ToString() == whereBase)
-                return "";
+                return string.Empty;
             return builder.ToString();//去掉最后一个逗号
         }        
         #endregion

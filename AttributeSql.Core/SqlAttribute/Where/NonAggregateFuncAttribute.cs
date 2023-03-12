@@ -1,4 +1,5 @@
 ﻿using AttributeSql.Base.Enums;
+using AttributeSql.Base.Extensions;
 using AttributeSql.Core.Enums;
 using AttributeSql.Core.Extensions;
 
@@ -17,7 +18,7 @@ namespace AttributeSql.Core.SqlAttribute.Where
         /// <summary>
         /// 初始化
         /// </summary>
-        /// <param name="FuncName">非聚合函数名称</param>
+        /// <param name="funcName">非聚合函数名称</param>
         /// <param name="fields">字段集合</param>
         /// <param name="values">字段值</param>
         /// <param name="value"></param>

@@ -1,9 +1,5 @@
-﻿using AttributeSql.Core.Enums;
-using AttributeSql.Core.Extensions;
-
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using AttributeSql.Base.Extensions;
+using AttributeSql.Core.Enums;
 
 namespace AttributeSql.Core.SqlAttribute.Where
 {

@@ -16,6 +16,10 @@ namespace AttributeSql.Core.Enums
         /// 字符串连接函数
         /// </summary>
         [Description("CONCAT")]
-        Concat = 0,      
+        Concat = 0,
+        [Description("GROUP_CONCAT")]
+        Group_Concat,
+        [Description("DATE_FORMAT")]
+        Date_Foramt
     }
 }

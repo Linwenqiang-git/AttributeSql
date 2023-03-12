@@ -28,6 +28,8 @@ namespace AttributeSql.Base.Enums
         [Description("In")]
         In,
         [Description("Not In")]
-        NotIn
+        NotIn,
+        [Description("BETWEEN")]
+        Between
     }
 }

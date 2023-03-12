@@ -14,8 +14,9 @@ using System.Threading.Tasks;
 using AttributeSql.Base.SqlExecutor;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
+using AttributeSql.Base.SpecialSqlGenerators;
 
-namespace AttributeSql.Core.SqlGenerator.ConditionGenerator
+namespace AttributeSql.Core.SqlGenerators.ConditionGenerator
 {
     /// <summary>
     /// 常规查询生成器
@@ -36,8 +37,6 @@ namespace AttributeSql.Core.SqlGenerator.ConditionGenerator
         public virtual bool FieldHasValue(bool ingnorIntDefault = true)
         {
             //判断当前属性是否有值(主要针对string、int和数组类型)
-            if (this._obj == null)
-                return false;
             bool hasValue = true;
             if (this._obj is string && string.IsNullOrEmpty((string)this._obj))
             {
@@ -67,7 +66,7 @@ namespace AttributeSql.Core.SqlGenerator.ConditionGenerator
         /// <param name="propertyInfo"></param>
         /// <param name="isAppendAnd"></param>
         /// <returns></returns>
-        public string BuildOperatorLeft([NotNull] PropertyInfo propertyInfo)
+        public virtual string BuildOperatorLeft([NotNull] PropertyInfo propertyInfo)
         {
             string fieldCondition = propertyInfo.Name;
             if (propertyInfo.IsDefined(typeof(TableByNameAttribute), true))
@@ -86,7 +85,7 @@ namespace AttributeSql.Core.SqlGenerator.ConditionGenerator
         /// <param name="propertyInfo"></param>
         /// <param name="isAppendAnd"></param>
         /// <returns></returns>
-        protected string BuildTableAliasWithField([NotNull] PropertyInfo propertyInfo)
+        private string BuildTableAliasWithField([NotNull] PropertyInfo propertyInfo)
         {
             TableByNameAttribute? byName = propertyInfo.GetCustomAttributes(typeof(TableByNameAttribute), true)[0] as TableByNameAttribute;
             string fieldCondition = $" {byName?.GetName()}.";
@@ -105,7 +104,7 @@ namespace AttributeSql.Core.SqlGenerator.ConditionGenerator
         /// <param name="propertyInfo"></param>
         /// <param name="isAppendAnd"></param>
         /// <returns></returns>
-        protected string BuildOnlyField([NotNull] PropertyInfo propertyInfo)
+        private string BuildOnlyField([NotNull] PropertyInfo propertyInfo)
         {
             DbFieldNameAttribute? fieldName = propertyInfo.GetCustomAttributes(typeof(DbFieldNameAttribute), true)[0] as DbFieldNameAttribute;
             return fieldName?.GetDbFieldName();
@@ -117,7 +116,7 @@ namespace AttributeSql.Core.SqlGenerator.ConditionGenerator
         /// <param name="fieldCondition"></param>
         /// <param name="isAppendAnd"></param>
         /// <returns></returns>
-        protected string AddAggregateToFields([NotNull] PropertyInfo propertyInfo, string fieldCondition)
+        private string AddAggregateToFields([NotNull] PropertyInfo propertyInfo, string fieldCondition)
         {
             if (propertyInfo.IsDefined(typeof(AggregateFuncAttribute), true))
             {
@@ -137,54 +136,12 @@ namespace AttributeSql.Core.SqlGenerator.ConditionGenerator
         /// <param name="tableField"></param>
         /// <param name="isAppendAnd"></param>
         /// <exception cref="AttrSqlException"></exception>
-        public virtual StringBuilder BuildConventionRelationWithRight<TDbContext>([NotNull] PropertyInfo propertyInfo, [NotNull] ISqlExecutor<TDbContext> sqlExecutor, string tableField) 
-                        where TDbContext : IEfCoreDbContext
+        public virtual StringBuilder BuildConventionRelationWithRight([NotNull] PropertyInfo propertyInfo, [NotNull] ASpecialSqlGenerator specialSqlGenerator, string tableField)                         
         {
             StringBuilder builder = new StringBuilder();
-            //操作符 [like | in  |  =  | is | find_in_set]
-            if (propertyInfo.IsDefined(typeof(OperationCodeAttribute), true))
-            {
-                //builder.Append($" {tableField}"); //条件字段名
-                OperationCodeAttribute? option = propertyInfo.GetCustomAttributes(typeof(OperationCodeAttribute), true)[0] as OperationCodeAttribute;
-                builder.Append($" {option?.GetOperationDescription()}");//操作符
-                switch (option.GetOperation())
-                {
-                    case OperatorEnum.Is:
-                        int value = (int)this._obj;
-                        if (value == 1)
-                            builder.Append($" NOT NULL ");
-                        else if (value == 2)
-                            builder.Append($" NULL ");
-                        else
-                            throw new AttrSqlException("IS 操作符的值只允许为1(NOT NULL)或2(NULL),请检查传入参数的值是否正确！");
-                        break;
-                    case OperatorEnum.Like:
-                        if (this._obj is string)
-                            builder.Append($" '%{((string)this._obj).Trim().Replace("--", "")}%'");
-                        else
-                            builder.Append($" @{propertyInfo.Name}");//参数化查询
-                        break;
-                    case OperatorEnum.In:
-                        builder.Remove(builder.Length - 2, 2);//先去掉操作符
-                                                              //+1 加的是空格
-                        builder.Remove(builder.Length - (tableField.Length + 1), tableField.Length + 1);
-                        builder.Append("FIND_IN_SET");
-                        builder.Append($"({tableField},@{propertyInfo.Name})");
-                        break;
-                    case OperatorEnum.NotIn:
-                        builder.Remove(builder.Length - 2, 2);//先去掉操作符
-                                                              //+1 加的是空格
-                        builder.Remove(builder.Length - (tableField.Length + 1), tableField.Length + 1);
-                        builder.Append("NOT FIND_IN_SET");
-                        builder.Append($"({tableField},@{propertyInfo.Name})");
-                        break;
-                    default:
-                        builder.Append($" @{propertyInfo.Name}");//参数化查询
-                        break;
-                }
-            }
-            return builder;
-            
+            OperationCodeAttribute? option = propertyInfo.GetCustomAttributes(typeof(OperationCodeAttribute), true)[0] as OperationCodeAttribute;            
+            builder.Append(specialSqlGenerator.GeneralQueryRelationBuild(this._obj, propertyInfo, tableField, option.GetOperation()));
+            return builder;            
         }
         #endregion
     }

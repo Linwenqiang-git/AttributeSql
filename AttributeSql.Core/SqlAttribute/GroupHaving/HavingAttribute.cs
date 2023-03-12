@@ -7,14 +7,14 @@ namespace AttributeSql.Core.SqlAttribute.GroupHaving
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
     public class HavingAttribute : Attribute
     {
-        private string havingCondition;
-        public HavingAttribute(string _havingCondition)
+        private string _havingCondition;
+        public HavingAttribute(string havingCondition)
         {
-            havingCondition = _havingCondition;
+            _havingCondition = havingCondition;
         }
         public string GetHavingCondition()
         {
-            return havingCondition;
+            return _havingCondition;
         }
     }
 }

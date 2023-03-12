@@ -13,32 +13,32 @@ namespace AttributeSql.Core.SqlAttribute.OrderBy
         /// <summary>
         /// 表名
         /// </summary>
-        private string tableName;
+        private string _tableName;
         /// <summary>
         /// 表别名
         /// </summary>
-        private string byName;
+        private string _byName;
         /// <summary>
         /// 排序字段
         /// </summary>
-        private string sortField;
+        private string _sortField;
         /// <summary>
         /// 排序方式
         /// </summary>
-        private string sortWay;
+        private string _sortWay;
         /// <summary>
         /// 初始化，排序字段和排序方式必须要传
         /// </summary>
-        /// <param name="_sortWay"></param>
-        /// <param name="_sortField"></param>
-        /// <param name="_tableName"></param>
-        /// <param name="_byName"></param>
-        public DefaultOrderByAttribute(string _sortField, string _sortWay, string _byName = "", string _tableName = "")
+        /// <param name="sortWay"></param>
+        /// <param name="sortField"></param>
+        /// <param name="tableName"></param>
+        /// <param name="byName"></param>
+        public DefaultOrderByAttribute(string sortField, string sortWay, string byName = "", string tableName = "")
         {
-            tableName = _tableName;
-            byName = _byName;
-            sortField = _sortField;
-            sortWay = _sortWay;
+            _tableName = tableName;
+            _byName = byName;
+            _sortField = sortField;
+            _sortWay = sortWay;
         }
         /// <summary>
         /// 获取表名
@@ -46,7 +46,7 @@ namespace AttributeSql.Core.SqlAttribute.OrderBy
         /// <returns></returns>
         public string GetTableName()
         {
-            return tableName;
+            return _tableName;
         }
         /// <summary>
         /// 别名
@@ -54,7 +54,7 @@ namespace AttributeSql.Core.SqlAttribute.OrderBy
         /// <returns></returns>
         public string GetByName()
         {
-            return byName;
+            return _byName;
         }
         /// <summary>
         /// 排序字段
@@ -62,7 +62,7 @@ namespace AttributeSql.Core.SqlAttribute.OrderBy
         /// <returns></returns>
         public string GetSortField()
         {
-            return sortField;
+            return _sortField;
         }
         /// <summary>
         /// 排序方式
@@ -70,7 +70,7 @@ namespace AttributeSql.Core.SqlAttribute.OrderBy
         /// <returns></returns>
         public string GetSortWay()
         {
-            return sortWay;
+            return _sortWay;
         }
     }
 }

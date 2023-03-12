@@ -1,4 +1,8 @@
-﻿using System;
+﻿using AttributeSql.Base.Enums;
+using AttributeSql.Base.Exceptions;
+using AttributeSql.Base.Extensions;
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,48 +12,48 @@ namespace AttributeSql.Core.SqlAttribute.JoinTable
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public class SublistAttribute : Attribute
     {
-        private string SublistSql;
-        private string IncidenceRelation;
-        private string byName;
-        private string mainTableField;
-        private string joinField;
-        private string mainTableName;
+        private string _sublistSql;
+        private string _incidenceRelation;
+        private string _byName;
+        private string _mainTableField;
+        private string _joinField;
+        private string _mainTableName;
         private List<string> IncidenceRelationCollection = new List<string>() { "INNER", "OUT", "LEFT", "RIGHT" };
         /// <summary>
         /// 初始化
         /// </summary>
-        /// <param name="_Sublist">子表查询sql</param>
-        /// <param name="_IncidenceRelation">与关联表的关联关系（值：INNER,LEFT,RIGHT,OUT）</param>
-        /// <param name="_mainTableField">主表连接字段</param>
-        /// <param name="_joinField">内连接表字段</param>
-        /// <param name="_byName">内连接表别名</param>
-        /// <param name="_mainTableName">内连接主表别名</param>
-        public SublistAttribute(string _Sublist, string _IncidenceRelation, string _mainTableField, string _joinField, string _byName = "", string _mainTableName = "")
+        /// <param name="sublist">子表查询sql</param>
+        /// <param name="incidenceRelation">与关联表的关联关系（值：INNER,LEFT,RIGHT,OUT）</param>
+        /// <param name="mainTableField">主表连接字段</param>
+        /// <param name="joinField">内连接表字段</param>
+        /// <param name="byName">内连接表别名</param>
+        /// <param name="mainTableName">内连接主表别名</param>
+        public SublistAttribute(string sublist, string incidenceRelation, string mainTableField, string joinField, string byName = "", string mainTableName = "")
         {
-            SublistSql = _Sublist;
-            IncidenceRelation = _IncidenceRelation;
-            byName = _byName;
-            mainTableField = _mainTableField;
-            joinField = _joinField;
-            mainTableName = _mainTableName;
+            _sublistSql = sublist;
+            _incidenceRelation = incidenceRelation;
+            _byName = byName;
+            _mainTableField = mainTableField;
+            _joinField = joinField;
+            _mainTableName = mainTableName;
         }
         public string GetTableSql()
         {
-            if (string.IsNullOrEmpty(SublistSql))
-                throw new Exception("连接表sql不能为空，请检查Dto特性配置");
-            return SublistSql;
+            if (string.IsNullOrEmpty(_sublistSql))
+                throw new AttrSqlException("连接表sql不能为空，请检查Dto特性配置");
+            return _sublistSql;
         }
         public string GetInnerTableByName()
         {
-            return byName;
+            return _byName;
         }
         public string GetIncidenceRelation()
         {
-            if (string.IsNullOrEmpty(IncidenceRelation))
-                throw new Exception("关联关系不能为空，请检查Dto特性配置");
-            if (!IncidenceRelationCollection.Contains(IncidenceRelation.ToUpper()))
-                throw new Exception("关联关系填写错误，请检查Dto特性配置");
-            return IncidenceRelation;
+            if (string.IsNullOrEmpty(_incidenceRelation))
+                throw new AttrSqlException("关联关系不能为空，请检查Dto特性配置");
+            if (!IncidenceRelationCollection.Contains(_incidenceRelation.ToUpper()))
+                throw new AttrSqlException("关联关系填写错误，请检查Dto特性配置");
+            return _incidenceRelation;
         }
         /// <summary>
         /// 获取子查询表连接字符串
@@ -57,18 +61,18 @@ namespace AttributeSql.Core.SqlAttribute.JoinTable
         /// <returns></returns>
         public string GetConnectField()
         {
-            if (string.IsNullOrEmpty(mainTableField) || string.IsNullOrEmpty(joinField))
-                throw new Exception("表连接字段不能为空，请检查Dto特性配置");
+            if (string.IsNullOrEmpty(_mainTableField) || string.IsNullOrEmpty(_joinField))
+                throw new AttrSqlException("表连接字段不能为空，请检查Dto特性配置");
             StringBuilder join = new StringBuilder();
-            if (!string.IsNullOrEmpty(byName))
+            if (!string.IsNullOrEmpty(_byName))
             {
-                join.Append($"{byName}.{joinField}");
+                join.Append($"{_byName}.{_joinField}");
             }
             else
             {
-                join.Append($"{joinField}");
+                join.Append($"{_joinField}");
             }
-            join.Append("=");
+            join.Append(OperatorEnum.Equal.GetDescription());
             return join.ToString();
         }
         /// <summary>
@@ -77,13 +81,13 @@ namespace AttributeSql.Core.SqlAttribute.JoinTable
         /// <returns></returns>
         public string GetMainTableField()
         {
-            if (string.IsNullOrEmpty(mainTableField))
+            if (string.IsNullOrEmpty(_mainTableField))
                 throw new Exception("主表连接字段不能为空，请检查Dto特性配置");
-            return mainTableField;
+            return _mainTableField;
         }
         public string GetMainTableByName()
         {
-            return mainTableName;
+            return _mainTableName;
         }
     }
 }
