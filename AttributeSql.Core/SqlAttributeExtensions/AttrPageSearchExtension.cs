@@ -1,4 +1,5 @@
 ﻿using AttributeSql.Base.Exceptions;
+using AttributeSql.Core.Data;
 using AttributeSql.Core.Models;
 using AttributeSql.Core.SqlAttribute.OrderBy;
 using AttributeSql.Core.SqlAttribute.Select;
@@ -94,6 +95,19 @@ namespace AttributeSql.Core.SqlAttributeExtensions
                 return string.Empty;
             }
             return orderby.ToString();
+        }
+        /// <summary>
+        /// 数据过滤器
+        /// </summary>
+        /// <param name="pageSearch"></param>
+        /// <param name="abpDataFilter"></param>
+        /// <returns></returns>
+        internal static void AbpDataFilter(this AttrPageSearch pageSearch, IAttrSqlWithAbpDataFilter abpDataFilter)
+        {
+            pageSearch.Tenantid = abpDataFilter.GetCurrentTenantId();
+            bool? isFilterDelete = abpDataFilter.IsFilterDelete();
+            if (isFilterDelete != null && (bool)isFilterDelete)
+                pageSearch.Isdeleted = false;
         }
     }
 }

@@ -15,8 +15,14 @@ namespace AttributeSql.Core.Models
         /// <summary>
         /// 仅显示正常数据
         /// </summary>
-        [DbFieldName("a","isdeleted")]
+        [DbFieldName("isdeleted")]
         [OperationCode(OperatorEnum.Equal)]
-        public bool? Isdeleted { get; set; } = false;
+        public bool? Isdeleted { get; set; }
+        /// <summary>
+        /// 租户Id
+        /// </summary>
+        [DbFieldName("tenantid")]
+        [OperationCode(OperatorEnum.Equal)]
+        public Guid? Tenantid { get; set; }
     }
 }

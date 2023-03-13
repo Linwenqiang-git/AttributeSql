@@ -129,6 +129,36 @@ namespace AttributeSql.Base.SqlExecutor
         }
         public async ValueTask<int> QueryCountBySqlAsync(string sql, params object[] parameters)
             =>await QueryCountBySqlAsync(sql,30,parameters);
+        public async ValueTask<int> QueryCountWithRowNumBySqlAsync(string sql, params object[] parameters)
+            => await QueryCountWithRowNumBySqlAsync(sql, 30, parameters);
+        public async ValueTask<int> QueryCountWithRowNumBySqlAsync(string sql, int timeout, params object[] parameters)
+        {
+            var _context = await GetDbContextAsync();
+            var dbConnection = _context.Database.GetDbConnection();
+            if (dbConnection.State != ConnectionState.Open)
+            {
+                await _context.Database.OpenConnectionAsync();
+            }
+
+            await using var command = dbConnection.CreateCommand();
+            //验证事务是否开启
+            if (_context.Database.CurrentTransaction != null)
+            {
+                command.Transaction = _context.Database.CurrentTransaction.GetDbTransaction();
+            }
+
+            command.CommandTimeout = timeout;
+            command.CommandText = sql;
+            command.Parameters.AddRange(parameters);
+            command.CommandType = CommandType.Text;
+            await using var reader = await command.ExecuteReaderAsync();
+            if (reader == null || reader.HasRows == false)
+                return default;
+            var dt = new DataTable();
+            dt.Load(reader: reader);
+            return Convert.ToInt32(dt.Rows?.Count);
+        }
+
         #endregion
 
         #region  DbNonQueryExtend
@@ -189,5 +219,8 @@ namespace AttributeSql.Base.SqlExecutor
         #endregion
         
         public void Dispose(){}
+
+        
+        
     }
 }

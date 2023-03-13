@@ -1,147 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
+﻿using AttributeSql.Core.Data;
 using AttributeSql.Core.Models;
 using AttributeSql.Core.Services;
 using AttributeSql.Demo.DbContext;
 using AttributeSql.Demo.Dtos;
-using AttributeSql.Entity;
-using AttributeSql.Model;
+
 using Microsoft.AspNetCore.Mvc;
 
-using UFX.SCM.Cloud.CmsCenter.Domain.AggregatesModel.ContentManage;
+using System.Threading.Tasks;
 
+using Volo.Abp;
 using Volo.Abp.Application.Services;
 
 namespace AttributeSql.Controllers
-{    
+{
     public class DemoController : ApplicationService
     {           
-        private IAttrSqlService<AttributeSqlDemoDbContext> client { get; set; }
-        public DemoController(IAttrSqlService<AttributeSqlDemoDbContext> _client)
+        private IAttrSqlService<AttributeSqlDemoDbContext> _client { get; set; }
+        private IAttrSqlWithAbpDataFilter _abpDataFilter { get; set; }
+        public DemoController(IAttrSqlService<AttributeSqlDemoDbContext> client, IAttrSqlWithAbpDataFilter abpDataFilter)
         {
-            client = _client;
+            _client = client;
+            _abpDataFilter = abpDataFilter;
         }
         [HttpPost]
         public async Task<AttrResultModel> query(ArticlePageSearch search)
         {
-            var result = await client.GetSpecifyResultDto<ArticlePageSearch, ArticleResult>(search);
-            return result;
-        }
-        /// <summary>
-        /// 多表关联查询demo
-        /// </summary>
-        /// <param name="pageSearch"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<AttrResultModel> OrderQuery([FromBody] OrderPageSearch pageSearch)
-        {                                                                   
-            //pageSearch.Index = 1;
-            //pageSearch.Size = 10;
-            //对于查询而言,可不创建实体,可以直接通过DebugQuerySql来获取最终生成的sql文本
-            var result = AttrResultModel.Success();
-            string sql = client.DebugQuerySql<OrderSearchResultDto,OrderPageSearch>(pageSearch);
-            try
+            //var result = await _client.GetSpecifyResultDto<ArticlePageSearch, ArticleResult>(search);
+            //return result;
+            //过滤写法
+            using (_abpDataFilter.Disable<ISoftDelete>())
             {
-                result = await client.GetSpecifyResultDto<OrderPageSearch, OrderSearchResultDto>(pageSearch);                
-                //若需要遍历查询结果
-                var list = ((AttrPageResult<OrderSearchResultDto>)result.Result).Rows.ToList();
-
+                var filterResult = await _client.GetSpecifyResultDto<ArticlePageSearch, ArticleResult>(search);
+                return filterResult;
             }
-            catch (Exception ex)
-            {
-                result.Code = ResultCode.UnknownError;
-                result.Msg = ex.Message;
-            }
-            return result;
-        }
-        /// <summary>
-        /// 新增操作
-        /// </summary>
-        /// <param name="orderDto"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<AttrResultModel> InsertOrder([FromBody] CreateOrderDto orderDto)
-        {
-            //模型与实体的关系需要在UserProfile建立映射
-            var serverResult = await client.InsertAsync<CreateOrderDto, R01_Order>(orderDto, "新增出错");
-            //建议在执行下一次操作之前判断上一个执行的状态是否是成功
-            if (serverResult.Code == 0)
-            {
-                R02_OrderPay orderPay = new R02_OrderPay()
-                {
-                    R02_OrderPayNo = "编号",
-                    R01_OrderId = (int)serverResult.Result,
-                    R01_OrderNo = orderDto.R01_OrderNo,
-                    P02_ProductFlowId = orderDto.P02_ProductFlowId,
-                    R02_Title = orderDto.Title,
-                    R02_Body = orderDto.Body,
-                    R02_Amount = orderDto.Amount,
-                    R02_PayStatus = 1,
-                    R02_IsValid = 1,
-                    R02_CreateId = (long)orderDto.R01_CreateId,
-                    R02_CreateBy = orderDto.R01_CreateBy
-                };
-                //新增并返回主键
-                serverResult = await client.InsertEntityAsync(orderPay);
-                InsertDto dto = new InsertDto()
-                {
-                    R01_OrderNo = "insert",
-                    C02_CustomerId = 1,
-                    P01_ProductId = 1,
-                    P02_ProductFlowId = 1,
-                };
-                //通过Dto新增数据
-                await client.InsertAsync<InsertDto,R01_Order>(dto);
-            }
-            //最终会根据执行的状态来判断回滚还是提交
-            return serverResult;
-        }
-        /// <summary>
-        /// 更新操作
-        /// </summary>
-        /// <param name="orderDto"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<AttrResultModel> UpdateOrder([FromBody] CreateOrderDto orderDto)
-        {
-            //这里如果不指定主键的话，默认会按照实体的第一个带有ID的字段为主键,建议手动指定
-            var result = await client.UpdateHasValueFieldAsync<CreateOrderDto, R01_Order>(orderDto,"更新出错", "R01_OrderId");
-            result = await client.UpdateAsync<CreateOrderDto, R01_Order>(orderDto, "更新出错", "R01_OrderId");
-            result = await client.ExecUpdateSql<R01_Order>(null,"Update R01_Order set R01_OrderNo = 'test' where R01_OrderId = 1","更新出错");
-            OrderUpdate orderUpdate = new OrderUpdate()
-            {
-                C02_CustomerId = 1,
-                P01_ProductId = 1,
-                P02_ProductFlowId = 1,
-                R01_OrderNo = "11"
-            };
-            //生成的sql
-            /*
-                Update  tableName
-                set  DbfieldName2 = @C02_CustomerId,
-                    DbfieldName3 = @P01_ProductId,
-                    DbfieldName4 = @P02_ProductFlowId
-                Where  DbfieldName1 = @R01_OrderNo 
-             */
-            result = await client.UpdateAsync(orderUpdate);
-            return result;                     
-        }
-        /// <summary>
-        /// 刪除操作
-        /// </summary>
-        /// <param name="orderDto"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<AttrResultModel> DeleteOrder([FromBody] CreateOrderDto orderDto)
-        {
-            //直接删除
-            var serverResult = await client.DeleteAsync<CreateOrderDto, R01_Order>(orderDto, new string[] { "R01_OrderNo" }, "删除出错");
-            //软删除
-            serverResult = await client.SoftDeleteAsync<CreateOrderDto, R01_Order>(orderDto, "R01_IsValid", 2, "R01_OrderId");
-            return serverResult;
-        }
+        }       
     }
 }

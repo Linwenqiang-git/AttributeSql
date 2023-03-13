@@ -34,7 +34,7 @@ namespace AttributeSql.Core.SqlGenerators.ConditionGenerator
         {
             _searchModel = searchModel;
             _ingnorIntDefault = ingnorIntDefault;
-            _whereBase = " WHERE 1=1";
+            _whereBase = $" {SqlKeyWordEnum.Where.GetDescription()} 1=1";
         }
         /// <summary>
         /// 生成Where部分
@@ -60,7 +60,6 @@ namespace AttributeSql.Core.SqlGenerators.ConditionGenerator
                     continue;
                 generalQueryBuilder.Append($" {RelationEume.And.GetDescription()} ");
                 string tableField = generalQueryGenerator.BuildOperatorLeft(prop);
-                //generalQueryBuilder.Append(tableField);
                 generalQueryBuilder.Append(generalQueryGenerator.BuildConventionRelationWithRight(prop, specialSqlGenerator, tableField));
                 //非聚合函数
                 if (prop.IsDefined(typeof(NonAggregateFuncAttribute), true))

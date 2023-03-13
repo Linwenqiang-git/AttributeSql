@@ -19,15 +19,15 @@ namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
         internal static string Join<T>(this AttrBaseResult model) where T : AttrBaseResult
         {
             StringBuilder join = new StringBuilder();
-            object[] Mainobj = typeof(T).GetCustomAttributes(typeof(MainTableAttribute), true);
-            if (Mainobj == null || Mainobj.Length != 1)
+            object[] mainObj = typeof(T).GetCustomAttributes(typeof(MainTableAttribute), true);
+            if (mainObj == null || mainObj.Length != 1)
             {
                 throw new AttrSqlException("未定义主表或定义多个主表，请检查Dto特性配置!");
             }
-            MainTableAttribute mainTable = Mainobj[0] as MainTableAttribute;
+            MainTableAttribute mainTable = mainObj[0] as MainTableAttribute;
             join.Append($"{SqlKeyWordEnum.From.GetDescription()} {mainTable.GetMainTableName()} {mainTable.GetMainTableByName()} ");
-            object[] AllTableObj = typeof(T).GetCustomAttributes(true);
-            foreach (var table in AllTableObj)
+            object[] allTableObj = typeof(T).GetCustomAttributes(true);
+            foreach (var table in allTableObj)
             {
                 if (table.GetType() == typeof(LeftTableAttribute))
                 {

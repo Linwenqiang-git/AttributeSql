@@ -20,6 +20,8 @@ using AttributeSql.Base.SpecialSqlGenerators;
 using AttributeSql.Base.Enums;
 using AttributeSql.Base.Extensions;
 using AttributeSql.Core.Enums;
+using Volo.Abp.MultiTenancy;
+using AttributeSql.Core.Data;
 
 namespace AttributeSql.Core.SqlGenerators
 {
@@ -42,14 +44,22 @@ namespace AttributeSql.Core.SqlGenerators
         /// </summary>
         private IMemoryCache _sqlMemoryCache;
         /// <summary>
+        /// abp数据过滤器
+        /// </summary>
+        private IAttrSqlWithAbpDataFilter _abpDataFilter;
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="context"></param>
-        public AttrSqlGenerator(ISqlExecutor<TDbContext> sqlExecutor, ASpecialSqlGenerator specialSqlGenerator, IMemoryCache memoryCache)
+        public AttrSqlGenerator(ISqlExecutor<TDbContext> sqlExecutor, 
+                                ASpecialSqlGenerator specialSqlGenerator, 
+                                IMemoryCache memoryCache,
+                                IAttrSqlWithAbpDataFilter abpDataFilter)
         {
             _sqlExecutor = sqlExecutor;
             _specialSqlGenerator = specialSqlGenerator;
             _sqlMemoryCache = memoryCache;
+            _abpDataFilter = abpDataFilter;
         }
         #region Private
         private async Task<bool> TryCatch(Func<Task<string>> action)
@@ -122,7 +132,7 @@ namespace AttributeSql.Core.SqlGenerators
                 .SetPriority(CacheItemPriority.Normal);
                 _sqlMemoryCache.Set(sts[0], model, cacheEntryOptions);
             }
-        }
+        }        
         #endregion
 
         #region Debug sql
@@ -133,7 +143,8 @@ namespace AttributeSql.Core.SqlGenerators
             TResultDto dto = new TResultDto();            
             string select = dto.Select();//获取查询的字段
             string join = dto.Join<TResultDto>();//获取连接的表
-            string where = pageSearch.Where(_specialSqlGenerator,ingnorIntDefault);//获取参数化查询where条件      
+            pageSearch.AbpDataFilter(_abpDataFilter);
+            string where = pageSearch.Where<TResultDto>(_specialSqlGenerator,ingnorIntDefault);//获取参数化查询where条件                  
             if (whereSql != null)
             {
                 if (string.IsNullOrEmpty(where))
@@ -173,6 +184,7 @@ namespace AttributeSql.Core.SqlGenerators
                 else
                     Limit = _specialSqlGenerator.PaginationSql(pageSearch.Offset, pageSearch.Size);
             }
+            
             StringBuilder sql = new StringBuilder();
             sql.Append(select);
             sql.Append(join);
@@ -202,8 +214,8 @@ namespace AttributeSql.Core.SqlGenerators
                 tableName = typeof(TEntity).Name;
             }
             var page = new AttrPageResult<TEntity>(pageSearch.Index, pageSearch.Size);
-
-            string where = pageSearch.Where(_specialSqlGenerator,ingnorIntDefault);//获取参数化查询where条件
+            pageSearch.AbpDataFilter(_abpDataFilter);
+            string where = pageSearch.Where<TEntity>(_specialSqlGenerator,ingnorIntDefault);//获取参数化查询where条件
 
             string sort = string.Empty;
 
@@ -254,7 +266,8 @@ namespace AttributeSql.Core.SqlGenerators
                 groupByHaving = dto.GroupByHaving(); //获取分组部分
             }
             pageSearch = pageSearch?.TimeConvert();
-            string? where = pageSearch?.Where(_specialSqlGenerator,ingnorIntDefault);//获取参数化查询where条件      
+            pageSearch?.AbpDataFilter(_abpDataFilter);
+            string? where = pageSearch?.Where<TResultDto>(_specialSqlGenerator,ingnorIntDefault);//获取参数化查询where条件                  
             if (whereSql != null)
             {
                 if (string.IsNullOrEmpty(where))
@@ -285,7 +298,7 @@ namespace AttributeSql.Core.SqlGenerators
             {
                 if (pageSearch.Index < 1 || pageSearch.Size < 1)
                 {                    
-                    throw new AttrSqlException("无法识别的分页数据！");
+                    throw new AttrSqlException("unrecognized paged data");
                 }
                 else
                     Limit = _specialSqlGenerator.PaginationSql(pageSearch.Offset, pageSearch.Size);
@@ -305,19 +318,31 @@ namespace AttributeSql.Core.SqlGenerators
                 //如果有分页，统计当前查询共有多少条数据
                 if (!string.IsNullOrEmpty(Limit))
                 {
-                    string countsql = $"{SqlKeyWordEnum.Select.GetDescription()} {AggregateFunctionEnum.Count.GetDescription()}(*) {SqlKeyWordEnum.As.GetDescription()} rownum {join} {where} {groupByHaving}";
-                    try
+                    StringBuilder countSqlBuilder = new StringBuilder();
+                    
+                    if (string.IsNullOrEmpty(groupByHaving))
                     {
-                        count = await _sqlExecutor.QueryCountBySqlAsync(countsql, parameters);
-                    }
-                    catch (AttrSqlException ex)
-                    {
-                        if (ex.Message.ToLower().Contains($"unknown column"))
+                        countSqlBuilder.Append(SqlKeyWordEnum.Select.GetDescription());
+                        countSqlBuilder.Append($" {AggregateFunctionEnum.Count.GetDescription()}(*) {SqlKeyWordEnum.As.GetDescription()} rownum");
+                        countSqlBuilder.Append($" {join} {where} {groupByHaving}");
+                        try
                         {
-                            //去掉limit
-                            countsql = $"{select} {join} {where} {groupByHaving}";
-                            count = await _sqlExecutor.QueryCountBySqlAsync(countsql, parameters);
+                            count = await _sqlExecutor.QueryCountBySqlAsync(countSqlBuilder.ToString(), parameters);
                         }
+                        catch (AttrSqlException ex)
+                        {
+                            if (ex.Message.ToLower().Contains($"unknown column"))
+                            {
+                                var countsql = $"{select} {join} {where} {groupByHaving}";
+                                count = await _sqlExecutor.QueryCountWithRowNumBySqlAsync(countsql, parameters);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        countSqlBuilder.Append($"{select}");
+                        countSqlBuilder.Append($" {join} {where} {groupByHaving}");
+                        count = await _sqlExecutor.QueryCountWithRowNumBySqlAsync(countSqlBuilder.ToString(), parameters);
                     }
                 }
                 page.Total = count;

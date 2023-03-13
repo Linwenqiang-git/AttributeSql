@@ -22,6 +22,8 @@ namespace AttributeSql.Base.SqlExecutor
 
         ValueTask<int> QueryCountBySqlAsync(string sql, int timeout, object[] parameters);
         ValueTask<int> QueryCountBySqlAsync(string sql, params object[] parameters);
+        ValueTask<int> QueryCountWithRowNumBySqlAsync(string sql, int timeout, params object[] parameters);
+        ValueTask<int> QueryCountWithRowNumBySqlAsync(string sql, params object[] parameters);
         #endregion
 
         #region DbNonQueryExtend

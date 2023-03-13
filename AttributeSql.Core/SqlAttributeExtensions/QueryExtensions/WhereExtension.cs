@@ -4,6 +4,8 @@ using AttributeSql.Base.SpecialSqlGenerators;
 using AttributeSql.Core.Models;
 using AttributeSql.Core.SqlGenerators.ConditionGenerator;
 
+using System.Linq.Expressions;
+
 using Volo.Abp.EntityFrameworkCore;
 
 namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
@@ -18,15 +20,18 @@ namespace AttributeSql.Core.SqlAttributeExtensions.QueryExtensions
         /// 参数化字段的名称需要与模型字段名称一致
         /// </summary>
         /// <param name="model"></param>
+        /// <param name="specialSqlGenerator">个性sql生成器</param>
         /// <param name="ingnorIntDefault">int类型的默认值是否忽略,默认忽略</param>
         /// <returns></returns>
-        internal static string Where(this AttrPageSearch searchModel, ASpecialSqlGenerator specialSqlGenerator, bool ingnorIntDefault = true)                        
+        internal static string Where<TResultDto>(this AttrPageSearch searchModel, ASpecialSqlGenerator specialSqlGenerator, bool ingnorIntDefault = true)
+            where TResultDto : AttrBaseResult, new()
         {
             WhereGenerator whereGenerator = new WhereGenerator(searchModel, ingnorIntDefault);
             var builder = whereGenerator.Generate(specialSqlGenerator);
             if (builder.ToString() == whereBase)
                 return string.Empty;
-            return builder.ToString();//去掉最后一个逗号
+            AbpDataFilterGenerator abpDataFilterGenerator = new AbpDataFilterGenerator();
+            return abpDataFilterGenerator.Generate<TResultDto>(builder.ToString());
         }        
         #endregion
         /// <summary>

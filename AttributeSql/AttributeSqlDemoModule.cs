@@ -8,11 +8,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Http;
 
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Mvc;
@@ -21,6 +23,8 @@ using Volo.Abp.AspNetCore.Mvc.ExceptionHandling;
 using Volo.Abp.Autofac;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.Modularity;
+using Volo.Abp.Data;
+using Volo.Abp.MultiTenancy;
 
 namespace AttributeSql
 {
@@ -58,17 +62,22 @@ namespace AttributeSql
             {
                 options.UseNpgsql();
             });
-            //根据自己的数据库添加对应的执行器
-            context.Services.AddPgsqlExecutorService();
+            context.Services.Configure<AbpDataFilterOptions>(a =>
+            {
+                //运营中心去掉租户过滤
+                a.DefaultStates.Add(typeof(IMultiTenant), new DataFilterState(false));
+            });
+
             //注入特性sql服务
+            context.Services.AddPgsqlExecutorService();
+
             context.Services.AddTransient(typeof(IAttrSqlService<>), typeof(AttrSqlService<>));
             ConfigureSwaggerServices(context.Services);
         }
         public override void OnApplicationInitialization(ApplicationInitializationContext context)
         {
             var app = context.GetApplicationBuilder();
-            var env = context.GetEnvironment();
-
+            var env = context.GetEnvironment();            
             // 路由
             app.UseRouting();
 
@@ -85,7 +94,7 @@ namespace AttributeSql
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "SCM CmsCenter API");
             });
-
+            
         }
         private void ConfigureSwaggerServices(IServiceCollection service)
         {

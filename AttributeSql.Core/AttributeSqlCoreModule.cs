@@ -9,6 +9,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
 using Volo.Abp.Modularity;
+using Volo.Abp.MultiTenancy;
 
 namespace AttributeSql.Core
 {
@@ -17,6 +18,7 @@ namespace AttributeSql.Core
                typeof(AttributeSqlOracleModule),
                typeof(AttributeSqlSqlServerModule))]    
     [DependsOn(typeof(AttributeSqlBaseModule))]
+    [DependsOn(typeof(AbpMultiTenancyModule))]
     public class AttributeSqlCoreModule : AbpModule
     {
         public override void ConfigureServices(ServiceConfigurationContext context)
