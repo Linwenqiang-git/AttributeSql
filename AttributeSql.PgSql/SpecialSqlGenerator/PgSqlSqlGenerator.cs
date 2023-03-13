@@ -152,7 +152,9 @@ namespace AttributeSql.PgSql.SpecialSqlGenerator
                 if (advObject.Values.Count() != 2)
                     throw new AttrSqlSyntaxError($"[{advObject.Operator}]操作只能包含两个选项值");
                 builder.Append($" {advObject.Operator.GetDescription()}");// 操作符
-                builder.Append($" @{propertyInfo.Name}_1 And @{propertyInfo.Name}_2");//参数化查询
+                builder.Append(SymbolEnum.LeftBrackets.GetDescription());
+                builder.Append($" @{propertyInfo.Name}_1 {RelationEume.And.GetDescription()} @{propertyInfo.Name}_2");//参数化查询
+                builder.Append(SymbolEnum.RightBrackets.GetDescription());
                 return builder;
             }
             //List包含多个值，默认使用In 和 Not In
